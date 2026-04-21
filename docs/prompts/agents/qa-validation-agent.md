@@ -1,5 +1,5 @@
 created: 2026-04-21 08:33:31 BST
-last_updated: 2026-04-21 09:38:39 BST
+last_updated: 2026-04-21 10:01:04 BST
 prompt_used:
 
 # QA/Validation Agent Prompt
@@ -15,3 +15,9 @@ Owns acceptance criteria, contract checks, workflow tests, and regression covera
 ## Status
 
 Placeholder. Full prompt to be prepared later.
+
+## Validation Notes To Include
+
+- Dataset-building validation must cover selected asset limit, missing/fetchable price history, minimum valid price observations, empty transformed datasets, and excessive missing data.
+- Dataset-building failures should map to user-facing UI errors.
+- Relevant spec: `/docs/specs/data-backend/dataset-building.md`.

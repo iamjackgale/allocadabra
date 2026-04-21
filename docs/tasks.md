@@ -1,5 +1,5 @@
 created: 2026-04-20 20:06:11 BST
-last_updated: 2026-04-21 09:40:05 BST
+last_updated: 2026-04-21 13:03:50 BST
 
 # Task Tracker
 
@@ -20,8 +20,8 @@ last_updated: 2026-04-21 09:40:05 BST
 | 004 | TODO | Orchestrator Agent | Do a second review pass of the draft `plan.md` looking for corrections and improvements. |  |
 | 005 | DONE | Orchestrator Agent | Complete `docs/specs/data-backend/coingecko-api.md`. | 2026-04-21 08:55:31 BST |
 | 006 | DONE | Orchestrator Agent | Complete `docs/specs/data-backend/data-storage.md`. | 2026-04-21 09:30:05 BST |
-| 007 | TODO | Orchestrator Agent | Complete `docs/specs/data-backend/dataset-building.md`. |  |
-| 008 | TODO | Orchestrator Agent | Complete `docs/specs/data-backend/riskfolio-lib.md`. |  |
+| 007 | DONE | Orchestrator Agent | Complete `docs/specs/data-backend/dataset-building.md`. | 2026-04-21 10:01:04 BST |
+| 008 | DONE | Orchestrator Agent | Complete `docs/specs/data-backend/riskfolio-lib.md`. | 2026-04-21 10:17:20 BST |
 | 009 | DONE | Orchestrator Agent | Complete `docs/specs/data-backend/session-storage.md`. | 2026-04-21 09:30:05 BST |
 | 010 | TODO | Orchestrator Agent | Complete `docs/specs/frontend/ui-design-build.md`. |  |
 | 011 | TODO | Orchestrator Agent | Complete `docs/specs/frontend/agent-chat.md`. |  |
@@ -34,7 +34,8 @@ last_updated: 2026-04-21 09:40:05 BST
 | 018 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/product-ux-agent.md`. |  |
 | 019 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/frontend-agent.md`. |  |
 | 020 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/backend-data-agent.md`. |  |
-| 021 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/modelling-agent.md`. |  |
+| 021 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/modelling-agent.md`. | 2026-04-21 13:03:50 BST |
 | 022 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/ai-perplexity-agent.md`. |  |
 | 023 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/qa-validation-agent.md`. |  |
 | 024 | TODO | Orchestrator Agent | Decide Python frontend framework and major browser-local app dependencies for inclusion in `plan.md`. |  |
+| 025 | DONE | Orchestrator Agent | Create shared logging spec at `docs/specs/app/logging.md`. | 2026-04-21 10:53:18 BST |

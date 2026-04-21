@@ -1,5 +1,5 @@
 created: 2026-04-20 20:06:11 BST
-last_updated: 2026-04-21 09:41:42 BST
+last_updated: 2026-04-21 10:53:18 BST
 
 # Allocadabra Project Plan
 
@@ -45,6 +45,7 @@ Confirmed:
 | System | Type | Use |
 |---|---|---|
 | Python | Language | Primary implementation language for the app and modelling workflow. |
+| pandas | Python data library | Build canonical price dataframes and model-specific transformed datasets. |
 | `riskfolio-lib` | Python modelling library | Portfolio modelling and strategic asset allocation calculations. |
 | Perplexity | External LLM provider | AI model-plan generation, model subset suggestion, and result reflection. |
 | CoinGecko Demo API | Market data API | Token list and token price history source. |
@@ -56,7 +57,27 @@ To decide:
 - Browser-local storage implementation.
 - Charting/visualisation dependencies.
 - Export packaging dependencies.
-- Any compatibility layer needed to run Python modelling work from a browser-local app.
+- Pyodide feasibility for browser-local Python execution with `riskfolio-lib`.
+
+## Repository Layout
+
+- `/app`: core processing functionality for ingestion, storage management, dataset building, modelling, AI/LLM calls, analysis, and export preparation.
+- `/app/ingestion`: CoinGecko data gathering and normalization logic.
+- `/app/processing`: dataset building, model preparation, modelling workflows, and output analysis logic.
+- `/app/storage`: storage management logic for reading and writing browser-local/cache-backed data.
+- `/app/ai`: Perplexity/LLM integration logic and prompt orchestration.
+- `/frontend`: UI/frontend implementation.
+- `/scripts`: command-style entry points that trigger app actions and can later be wired to UI buttons.
+- `/storage/cache`: stored data only, not application logic.
+- `/storage/cache/coingecko`: cached CoinGecko token and price data.
+- `/storage/cache/user-inputs`: the single active user input state.
+- `/storage/cache/model-outputs`: the current model output set.
+
+## Cross-Cutting App Standards
+
+- Logging must follow `/docs/specs/app/logging.md`.
+- Production paths should use the shared logging utility and named module loggers.
+- Production paths should not use `print()` for progress reporting.
 
 ## Agent Responsibilities
 
@@ -81,7 +102,7 @@ To decide:
 
 - Limit each modelling run to no more than 10 selected assets.
 - Limit each comparison run to no more than 3 models.
-- Use 365 days of daily price history as the initial modelling window.
+- Limit the initial modelling window to a maximum of 365 daily observations.
 - Avoid continuous background fetching; CoinGecko calls should be page-load, dropdown/search, or model-generation triggered.
 - Reuse browser-cached CoinGecko data wherever possible before making new API calls.
 - Run expensive modelling work asynchronously from the UI thread where practical, so the interface remains responsive.
@@ -116,5 +137,6 @@ Current spec areas include:
 - Reflection conversation contract.
 - Local cache/session state contract.
 - Export contract.
+- Shared logging contract.
 
 Detailed specs and contracts are the next planning action.
