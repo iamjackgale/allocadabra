@@ -1,5 +1,5 @@
 created: 2026-04-20 20:06:11 BST
-last_updated: 2026-04-21 08:27:31 BST
+last_updated: 2026-04-21 09:41:42 BST
 
 # Allocadabra Project Plan
 
@@ -9,7 +9,7 @@ Allocadabra is a web application for students on an intro crypto treasury manage
 
 Allocadabra wraps `riskfolio-lib`; it does not modify or fork the library. The product is educational and should not present outputs as financial advice, trading instructions, or guaranteed outcomes.
 
-## V1 Workflow
+## Workflow
 
 1. User starts a new modelling workflow.
 2. System fetches a selection of crypto asset options from the CoinGecko API.
@@ -31,19 +31,38 @@ Progress should be cached locally so a user can leave the page and resume mid-qu
 ## Architecture Components
 
 - Frontend: browser-based workflow for asset search, preference capture, plan confirmation, result comparison, deeper exploration, AI reflection, export, resume, and reset.
-- Backend/API: coordinates frontend requests, CoinGecko data access, Perplexity calls, modelling execution, local cache, and exports.
+- App/Data Layer: coordinates CoinGecko data access, Perplexity calls, modelling execution, browser-local storage, and exports within a single holistic app.
 - Asset Data Layer: fetches and normalizes crypto asset options from CoinGecko for searchable selection.
 - LLM Layer: uses Perplexity to generate the natural-language modelling plan, suggest supported model subsets, and support post-result reflection.
 - Modelling Layer: wraps `riskfolio-lib` and runs only confirmed models from the supported model set.
-- Local Cache: stores in-progress workflow state so users can leave and resume.
+- Browser-Local Storage: stores cached CoinGecko data, the single active input state, and current model outputs so users can leave and resume.
 - Export Layer: packages generated outputs for download after modelling and reflection.
+
+## Tech Stack
+
+Confirmed:
+
+| System | Type | Use |
+|---|---|---|
+| Python | Language | Primary implementation language for the app and modelling workflow. |
+| `riskfolio-lib` | Python modelling library | Portfolio modelling and strategic asset allocation calculations. |
+| Perplexity | External LLM provider | AI model-plan generation, model subset suggestion, and result reflection. |
+| CoinGecko Demo API | Market data API | Token list and token price history source. |
+| Browser-local storage/cache | Local persistence model | Stores CoinGecko cache, active user inputs, and current model outputs on the user's machine. |
+
+To decide:
+
+- Python frontend/web app framework.
+- Browser-local storage implementation.
+- Charting/visualisation dependencies.
+- Export packaging dependencies.
+- Any compatibility layer needed to run Python modelling work from a browser-local app.
 
 ## Agent Responsibilities
 
 - Orchestrator Agent: owns `/docs`, records project decisions, maintains plan/task/spec consistency, and does not write production code.
 - Frontend Agent: owns the student-facing web workflow and result exploration experience.
-- Backend/API Agent: owns service boundaries, API coordination, cache integration, and export endpoints.
-- Asset Data Agent: owns CoinGecko integration and asset-option normalization.
+- Backend/Data Agent: owns app data boundaries, CoinGecko integration, browser-local storage, session state, and export support.
 - LLM Agent: owns Perplexity prompts, modelling-plan generation, model-subset suggestion, and reflection flow.
 - Modelling Agent: owns `riskfolio-lib` integration and the fixed supported model registry.
 - QA Agent: owns validation strategy, workflow testing, and regression checks.
@@ -57,6 +76,28 @@ Progress should be cached locally so a user can leave the page and resume mid-qu
 - The system should support follow-up questions about results and trade-offs.
 - The system should preserve local in-progress state across page exits and reloads.
 - The system should offer exports of generated files/results.
+
+## Browser-Local Runtime Constraints
+
+- Limit each modelling run to no more than 10 selected assets.
+- Limit each comparison run to no more than 3 models.
+- Use 365 days of daily price history as the initial modelling window.
+- Avoid continuous background fetching; CoinGecko calls should be page-load, dropdown/search, or model-generation triggered.
+- Reuse browser-cached CoinGecko data wherever possible before making new API calls.
+- Run expensive modelling work asynchronously from the UI thread where practical, so the interface remains responsive.
+- Present result summaries first and load deeper model exploration views only when the user requests them.
+- Keep one active workflow state and one active model-output set; do not maintain a full in-browser history of prior runs.
+
+## External Service Decisions
+
+- CoinGecko access uses Demo API authentication against `https://api.coingecko.com/api/v3` with the `x-cg-demo-api-key` header.
+- CoinGecko API keys are loaded from `.env` and must not be committed.
+- CoinGecko usage is limited to free public endpoints available with the demo API key.
+- Token-list retrieval supports the asset selection UI and may be triggered on page load, dropdown open, or user-prompted search confirmation.
+- Token-price retrieval is handled entirely by the app data layer and only triggered after the user confirms modelling scope and chooses to generate models.
+- CoinGecko market data, active user inputs, and current model outputs are stored locally in the user's browser.
+- The app supports one active set of user inputs and one active set of model outputs; previous inputs/outputs are recoverable only if the user downloaded them.
+- The app should not include an in-app cache-clearing control; browser storage is cleared only through the user's browser.
 
 ## Initial Spec Areas
 
