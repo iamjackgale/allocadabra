@@ -1,5 +1,5 @@
-created: 2026-04-21 20:06:11 BST
-last_updated: 2026-04-21 20:06:11 BST
+created: 2026-04-20 20:06:11 BST
+last_updated: 2026-04-21 08:27:31 BST
 
 # Allocadabra Project Plan
 
@@ -58,13 +58,15 @@ Progress should be cached locally so a user can leave the page and resume mid-qu
 - The system should preserve local in-progress state across page exits and reloads.
 - The system should offer exports of generated files/results.
 
-## Deferred Specs
+## Initial Spec Areas
 
-Specs and contracts are the next planning action after this V1 outline is committed. Do not populate detailed specs yet.
+Initial spec stubs have been created under `/docs/specs`. These files capture the current areas of concern without yet defining detailed schemas, API contracts, prompts, or implementation rules.
 
-Expected future specs include:
+Current spec areas include:
 
 - CoinGecko asset option contract.
+- CoinGecko price data ingestion.
+- Cached market data storage.
 - User preference capture contract.
 - Perplexity modelling-plan contract.
 - Supported model registry contract.
@@ -73,3 +75,5 @@ Expected future specs include:
 - Reflection conversation contract.
 - Local cache/session state contract.
 - Export contract.
+
+Detailed specs and contracts are the next planning action.
