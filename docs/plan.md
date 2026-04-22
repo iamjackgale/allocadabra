@@ -1,13 +1,23 @@
 created: 2026-04-20 20:06:11 BST
-last_updated: 2026-04-22 21:59:59 BST
+last_updated: 2026-04-22 22:13:25 BST
 
 # Allocadabra Project Plan
 
 ## Project Goal
 
-Allocadabra is a web application for students on an intro crypto treasury management course. It helps users explore strategic crypto treasury allocation by selecting assets, describing preferences, confirming an AI-generated modelling plan, comparing model outputs, and reflecting on trade-offs.
+Allocadabra is a local Streamlit web application for students on an intro crypto treasury management course. It helps users explore strategic crypto treasury allocation by selecting crypto assets, describing treasury preferences, confirming an AI-generated modelling plan, running supported portfolio models, comparing outputs, and reflecting on trade-offs.
 
-Allocadabra wraps `riskfolio-lib`; it does not modify or fork the library. The product is educational and should not present outputs as financial advice, trading instructions, or guaranteed outcomes.
+Allocadabra wraps `riskfolio-lib`; it does not modify or fork the library. The product is educational and must not present outputs as financial advice, trading instructions, or guaranteed outcomes.
+
+## Product Principles
+
+- Build a focused hackathon V1 that can run as one local app from the repo.
+- Keep the user journey clear: Configuration, Modelling, Review.
+- Let users specify preferences rather than requiring full manual assumptions.
+- Use AI for guided configuration and result interpretation, not autonomous investment advice.
+- Present comparable model summaries first, then allow deeper exploration.
+- Keep implementation practical: no separate backend service, no accounts, no cloud persistence, no mobile optimization beyond a holding screen.
+- Preserve clear ownership boundaries between frontend, backend/data, modelling, AI, product/UX, QA, and orchestration.
 
 ## Workflow
 
@@ -17,44 +27,103 @@ Allocadabra has three workflow phases:
 2. Modelling Phase.
 3. Review Phase.
 
-Configuration Phase:
+### Configuration Phase
 
-1. User starts a new modelling workflow.
-2. System fetches a selection of crypto asset options from the CoinGecko API.
-3. User selects assets from a searchable dropdown.
-4. User provides modelling preferences rather than full manual assumptions.
-5. Configuration Mode AI helps the user complete required inputs and answer technical app-use questions.
-6. Perplexity generates a natural-language modelling plan for user confirmation.
-7. Perplexity may suggest a subset from the supported model set.
-8. User confirms the modelling plan before any model execution.
+User-facing purpose:
 
-Modelling Phase:
+- Select assets.
+- Set treasury objective and risk appetite.
+- Optionally set supported constraints.
+- Choose supported models.
+- Use Configuration Mode chat for help.
+- Generate, review, and accept a modelling plan.
 
-1. System validates the confirmed configuration and model constraints.
-2. System runs the confirmed model subset through `riskfolio-lib`.
-3. System flags modelling issues and triggers rebuilds or user-facing errors before Review Phase.
-4. System prepares output summaries, metrics, charts, and exportable artifacts.
+Core rules:
 
-Review Phase:
+- Asset selection uses a searchable CoinGecko-backed dropdown.
+- Search uses token `symbol` and `name`, not `id`.
+- Users select at least 2 assets and no more than 10.
+- Treasury objective is one of:
+  - `Maximize return`
+  - `Stable performance`
+  - `Best risk-adjusted returns`
+  - `Reduce drawdowns`
+  - `Diversify exposure`
+- Risk appetite is one of:
+  - `Very low`
+  - `Low`
+  - `Medium`
+  - `High`
+  - `Very high`
+- Risk appetite informs AI wording and Review ranking, but does not change how models are run in V1.
+- Initial supported models are pre-selected by default, but users may deselect down to one.
+- Optional constraints are limited to supported allocation and asset-count constraints.
+- `Generate Plan` runs deterministic validation before AI.
+- Generated modelling plan temporarily replaces the form and is accepted, regenerated, or sent back to configuration.
+- Users cannot directly edit generated modelling plans in V1.
 
-1. System presents comparable result summaries for the different models.
-2. Review Mode AI provides a short neutral opening comparison against the user's stated preferences.
-3. User can explore model results in more detail.
-4. User can ask Perplexity follow-up questions about results and model trade-offs.
-5. System offers exports of generated outputs, excluding chat transcripts.
-6. User can reset or refresh the workflow when they choose.
+### Modelling Phase
 
-Progress should be cached locally so a user can leave the app and resume mid-query.
+User-facing purpose:
+
+- Show that the app is working while data is fetched, datasets are built, models run, metrics/charts are prepared, and downloads are packaged.
+
+Core rules:
+
+- Use a full Modelling screen, not the Configuration/Review two-panel layout.
+- Use red accent/backlighting while Modelling is active.
+- Show a progress bar with major checkpoints:
+  - Validation.
+  - Ingestion.
+  - Datasets.
+  - Modelling.
+  - Analysis.
+  - Outputs.
+- Show one smooth transient micro-log line at a time, not a CLI-style log.
+- Show approximate elapsed time, but avoid percentage progress unless accurate.
+- Users may cancel or return to Configuration while modelling is active.
+- Warn users not to close or refresh while modelling is active.
+- If refresh interrupts a run, show interrupted state; interrupted-run resume is V2.
+- When outputs and review artifacts are ready, Modelling is complete, the accent changes to green, and the UI shows `Review Results`.
+- If the app reloads after review artifacts are ready, reopen in Review.
+- Configuration chat is wiped when Modelling succeeds and review artifacts are ready.
+- If at least one selected model succeeds, Review may proceed with failed models marked.
+- If no selected models succeed, stay in Modelling and require retry or return to Configuration.
+
+### Review Phase
+
+User-facing purpose:
+
+- Compare model outputs.
+- Explore charts and artifacts.
+- Ask Review Mode AI questions about visible outputs and trade-offs.
+- Download generated artifacts.
+- Return to Configuration or start a new model.
+
+Core rules:
+
+- Desktop layout uses Review Mode chat on the left and Model Review on the right.
+- Summary metrics comparison is open by default.
+- Review Mode AI gives the opening comparison in chat only.
+- Review ranking is prepared before Review starts and does not update based on Review chat in V1.
+- Review chat receives visible output context automatically, but the user does not see context-injection details.
+- Review chat cannot control UI navigation in V1.
+- One Review output section is open at a time.
+- Failed models may appear in red with failure reasons.
+- `Return To Configure` warns that current outputs and Review chat will be replaced.
+- `Start New Model` asks for confirmation.
 
 ## Architecture Components
 
-- Frontend: Streamlit-based local web workflow for asset search, preference capture, plan confirmation, result comparison, deeper exploration, AI reflection, export, resume, and reset.
-- App/Data Layer: coordinates CoinGecko data access, Perplexity calls, modelling execution, local cache/session storage, and exports within a single holistic app.
-- Asset Data Layer: fetches and normalizes crypto asset options from CoinGecko for searchable selection.
-- LLM Layer: uses Perplexity to generate the natural-language modelling plan, suggest supported model subsets, and support post-result reflection.
-- Modelling Layer: wraps `riskfolio-lib` and runs only confirmed models from the supported model set.
-- Local App Storage: stores cached CoinGecko data, the single active input state, and current model outputs so users can leave and resume.
-- Export Layer: packages generated outputs for download after modelling and reflection.
+- Frontend: Streamlit-based local web workflow for Configuration, Modelling, Review, exports, resume, and reset.
+- App/Data Layer: coordinates CoinGecko access, local cache/session storage, validation boundaries, and export bundling.
+- Asset Data Layer: fetches and normalizes CoinGecko token list and price history.
+- LLM Layer: uses Perplexity for Configuration Mode, modelling-plan generation, Review Mode explanation, metadata parsing, and guardrail enforcement.
+- Modelling Layer: builds datasets, applies transformations, runs `riskfolio-lib`, computes metrics, and produces chart/export artifacts.
+- Local App Storage: stores cached CoinGecko data, the single active workflow state, current chat state, and current model output set.
+- Export Layer: packages generated artifacts for download.
+- Product/UX Layer: reviews and directs the workflow before implementation and during later review passes.
+- QA/Validation Layer: validates contracts, workflows, errors, regressions, and acceptance criteria.
 
 ## Tech Stack
 
@@ -62,21 +131,24 @@ Confirmed:
 
 | System | Type | Use |
 |---|---|---|
-| Python | Language | Primary implementation language for the app and modelling workflow. |
-| Streamlit | Python UI framework | Single local web app runtime for the three-phase user workflow. |
-| pandas | Python data library | Build canonical price dataframes and model-specific transformed datasets. |
+| Python | Language | Primary implementation language for app, data, AI integration, and modelling. |
+| Streamlit | Python UI framework | Single local web app runtime for the three-phase workflow. |
+| pandas | Python data library | Canonical price dataframes and model-specific transformed datasets. |
 | `riskfolio-lib` | Python modelling library | Portfolio modelling and strategic asset allocation calculations. |
+| Plotly | Python charting library | V1 charts and `.png` chart export where practical. |
 | Perplexity Agent API | Multi-provider LLM API | Shared AI integration for Configuration Mode and Review Mode. |
 | `perplexity/sonar` | Default LLM model | Initial model for app chat/completion through Perplexity. |
 | `perplexityai` | Python SDK | Python client for calling the Perplexity Agent API. |
 | CoinGecko Demo API | Market data API | Token list and token price history source. |
-| Plotly | Python charting library | V1 charting dependency for Streamlit charts and `.png` chart export where practical. |
-| Local filesystem storage/cache | Local persistence model | Stores CoinGecko cache, active user inputs, and current model outputs under the local app workspace. |
+| Local filesystem storage/cache | Local persistence model | Stores CoinGecko cache, active user inputs, chat state, and current model outputs under the local app workspace. |
 
 To decide:
 
-- Export packaging dependencies.
-- Exact local cache file formats and schema versioning.
+- Export packaging dependency.
+- Exact local cache/session file formats and schema versioning.
+- Frontend-callable app-layer function names and return shapes.
+- Model output manifest shape.
+- Streamlit pattern for one-open-section Review behaviour.
 
 ## Repository Layout
 
@@ -85,108 +157,202 @@ To decide:
 - `/app/processing`: dataset building, model preparation, modelling workflows, and output analysis logic.
 - `/app/storage`: storage management logic for reading and writing local cache-backed data.
 - `/app/ai`: Perplexity/LLM integration logic and prompt orchestration.
-- `/frontend`: UI/frontend implementation.
+- `/frontend`: Streamlit UI/frontend implementation.
 - `/scripts`: command-style entry points that trigger app actions and can later be wired to UI buttons.
 - `/storage/cache`: stored data only, not application logic.
 - `/storage/cache/coingecko`: cached CoinGecko token and price data.
 - `/storage/cache/user-inputs`: the single active user input state.
 - `/storage/cache/model-outputs`: the current model output set.
+- `/docs`: project source of truth for plan, tasks, specs, prompts, validation, and review briefs.
 
-## Cross-Cutting App Standards
+## Data And Storage Decisions
 
-- Logging must follow `/docs/specs/app/logging.md`.
-- Production paths should use the shared logging utility and named module loggers.
-- Production paths should not use `print()` for progress reporting.
+- The app does not require a separate backend service.
+- CoinGecko market data is cached locally and persists until the user clears local storage files outside the app.
+- Workflow reset must not clear CoinGecko market-data cache.
+- The app supports one active set of user inputs and one active set of model outputs.
+- Previous inputs and outputs are recoverable only if the user downloaded them.
+- User inputs export as `.json`.
+- AI modelling plan exports as `.md`.
+- Model tables export as `.csv`.
+- Chart images export as `.png`.
+- Download bundles include every generated artifact, including accepted modelling plan and user input JSON.
+- AI chat transcripts are not exportable in V1.
+- Review UI position does not need to persist; reload defaults to summary metrics and the first model in run order.
+
+## CoinGecko Decisions
+
+- Base URL: `https://api.coingecko.com/api/v3`
+- Auth mode: Demo API.
+- Auth header: `x-cg-demo-api-key`.
+- API key source: `.env`; exact variable name remains to be finalized.
+- Use only free public endpoints accessible with the demo key.
+- Token list endpoint: `GET /coins/list`.
+- Token list parameters: `status=active`, `include_platform=false`.
+- Token list normalized fields: `id`, `symbol`, `name`.
+- Omit tokens missing any of `id`, `symbol`, or `name`.
+- Price endpoint: `GET /coins/{id}/market_chart`.
+- Price parameters: `vs_currency=usd`, `interval=daily`, `precision=full`, `days=365`.
+- Price normalized fields: UTC `date`, numeric `price`.
+- Forward-fill missing prices only after the first valid price.
+- Token prices are fetched only after the user confirms scope and starts modelling.
+- Assets found during Modelling to have fewer than 90 valid daily prices are recorded in an insufficient-history suppression cache.
+
+## Dataset And Modelling Decisions
+
+- V1 modelling uses up to 365 daily observations from CoinGecko.
+- Selected assets need at least 90 valid daily prices.
+- Canonical dataset is a pandas price dataframe indexed by UTC date.
+- User-facing price columns use `[SYMBOL]_price`; internal metadata maps symbols back to CoinGecko IDs.
+- Model-specific datasets are produced through reusable transformation functions.
+- Initial supported models:
+  - Mean Variance.
+  - Risk Parity.
+  - Hierarchical Risk Parity.
+- Future-only model candidates:
+  - Worst Case.
+  - Ordered Weighted Average.
+  - Hierarchical Equal Risk.
+- V1 comparison supports no more than 3 models at once.
+- Initial outputs include:
+  - weights dataframe.
+  - side-by-side summary metrics.
+  - allocation weights.
+  - allocation over time.
+  - cumulative performance.
+  - drawdown.
+  - rolling volatility.
+  - efficient frontier where available.
+  - risk contribution where available.
+  - dendrogram/cluster data where available.
+- Allocation-over-time initially repeats static optimized weights across the 365-day window.
+- Benchmark rows are deferred beyond V1.
+- The Modelling Agent owns solver/runtime feasibility and dependency questions for `riskfolio-lib`, `cvxpy`, and required solvers.
+
+## Review Metrics
+
+V1 side-by-side comparison should include:
+
+- total return.
+- max drawdown.
+- Sharpe.
+- Calmar.
+- Omega.
+- Sortino.
+- annualized return.
+- annualized volatility.
+- 30d volatility.
+- average drawdown.
+- skewness.
+- kurtosis.
+- CVaR.
+- CDaR.
+
+Metric rows should include one-line tooltips and use green/yellow/red ranking alongside visible numbers. Colour must not be the only meaning carrier.
 
 ## AI Interaction Modes
 
 Allocadabra uses two AI interaction modes:
 
-- Configuration Mode: helps users select assets, set preferences, ask technical questions about using the app, generate the modelling plan, and suggest a supported model subset before model execution.
-- Review Mode: helps users interpret model outputs, compare trade-offs, and ask technical follow-up questions after model generation.
+- Configuration Mode: helps users select assets, understand preferences, ask technical app-use questions, use supported constraints, and generate/validate the modelling plan.
+- Review Mode: helps users interpret outputs, compare trade-offs, understand metrics/charts, and ask technical follow-up questions after model generation.
 
-Mode rules:
+Shared AI rules:
 
-- Configuration Mode receives user inputs and predefined app/course context, but no model outputs.
-- Review Mode receives the confirmed modelling plan and model output summary by default.
-- Review Mode may receive detailed output data only when the user asks about a specific output.
-- Configuration Mode and Review Mode use separate chat sessions within the single active workflow state.
-- The app wipes Configuration Mode chat context before Review Mode and reinjects the confirmed modelling plan into Review Mode.
-- Chat transcripts are not exportable in V1.
-- AI responses must always include the educational/no-advice/no-warranty guardrails defined in `/docs/specs/ai/ai-model-integration.md`.
+- Use one shared Perplexity integration.
+- Use `perplexity/sonar` through `perplexityai` by default.
+- Use `PERPLEXITY_API_KEY`.
+- Disable Perplexity web search in V1.
+- Do not cite external sources or reference live data in AI responses.
+- Inject educational/no-advice/no-warranty guardrails into every AI request.
+- Keep responses short by default, with expansion on request.
+- Store AI messages in active session state, but do not export chat transcripts.
+- Log AI phases and errors, not full prompt/response payloads.
+- Reject unsafe, unsupported, or invalid actable AI outputs.
+
+Configuration Mode specifics:
+
+- Receives active user inputs and predefined app/course context.
+- Does not receive model outputs.
+- Can suggest model changes in chat, but the user must apply them manually.
+- During modelling-plan generation, respects the models selected by the user.
+- Modelling plan is Markdown plus structured metadata.
+- Existing pasted modelling plans can be parsed and validated for import.
+
+Review Mode specifics:
+
+- Receives confirmed modelling plan and model output summary by default.
+- Receives visible model/output context automatically on every chat turn.
+- May receive detailed data for referenced or visible model/output pairs.
+- Does not receive the full Configuration Mode transcript by default.
+- Cannot trigger model rebuilds.
+- Cannot control Review UI navigation in V1.
 
 ## User Interface Direction
 
 - Use three phase screens on one base Streamlit app URL: Configuration, Modelling, Review.
 - Configuration and Review use a two-panel desktop layout with AI chat on the left and the active workflow component on the right.
-- Modelling uses a focused progress screen with user-facing checkpoint logs, hidden/expandable detailed logs, and a compact copy of the agreed modelling plan.
-- V1 is not mobile optimized; mobile users should see a holding screen.
+- Modelling uses a focused progress screen with progress bar, micro-log text, elapsed time, animated dots, and collapsed modelling plan.
+- V1 is not mobile optimized; mobile users see a holding screen.
 - Visual style should be clean, academic, dashboard-like, light/dark compatible, and should avoid crypto-themed branding.
-- Configuration and Review should use a subtle green accent/backlight to signal user-led phases; Modelling should use a subtle red accent/backlight to signal app-led processing.
-- The frontend should not include hackathon branding.
+- Configuration and Review use subtle green accent/backlighting for user-led phases.
+- Modelling uses subtle red accent/backlighting for app-led processing.
+- When Modelling finishes and Review is ready, the accent changes back to green.
+- The frontend should not include hackathon or sponsor branding.
+- Persistent footer:
+  `Experimental project produced for educational purposes only. No warranty as to correctness. Licence: MIT`
+- Include `© 2026 Jack Harry Gale`, with `Jack Harry Gale` linking to `https://jackgale.uk`.
+
+## Cross-Cutting Standards
+
+- Logging must follow `/docs/specs/app/logging.md`.
+- Use one shared logging utility and named module loggers.
+- Production paths should not use `print()` for progress reporting.
+- Use parameterized logging rather than f-strings in logger calls.
+- User-facing Modelling progress logs are separate from detailed application logs.
+- Do not expose raw API keys, prompt payloads, detailed backend logs, or sensitive request data to users.
+- All implementation agents should fill in `prompt_used` in their prompt file when starting work.
+- All implementation agents should review relevant specs and raise pressing questions before implementation.
 
 ## Agent Responsibilities
 
 - Orchestrator Agent: owns `/docs`, records project decisions, maintains plan/task/spec consistency, and does not write production code.
-- Frontend Agent: owns the student-facing web workflow and result exploration experience.
-- Backend/Data Agent: owns app data boundaries, CoinGecko integration, local cache/session storage, session state, and export support.
-- LLM Agent: owns Perplexity prompts, modelling-plan generation, model-subset suggestion, and reflection flow.
-- Modelling Agent: owns `riskfolio-lib` integration and the fixed supported model registry.
-- QA Agent: owns validation strategy, workflow testing, and regression checks.
+- Product/UX Agent: reviews and directs product/UX quality, starting with Design Review 1 before code-producing agents begin.
+- Backend/Data Agent: owns CoinGecko ingestion, local cache/session storage, frontend-facing data interfaces, export bundling boundaries, and active workflow persistence.
+- Modelling Agent: owns dataset preparation, transformation registry, `riskfolio-lib` integration, solver/runtime feasibility, model execution, metrics, and model output artifacts.
+- AI/Perplexity Agent: owns Perplexity integration, guardrails, prompt templates, Configuration/Review orchestration, response parsing, metadata validation, fixed refusal/error messages, and chat/session hooks.
+- Frontend Agent: owns Streamlit screens/components, phase transitions, chat rendering, parameters UI, modelling progress UI, review UI, downloads, and visible-context exposure.
+- QA/Validation Agent: owns acceptance criteria, contract checks, workflow tests, error coverage, and regression validation.
 
-## Known Constraints
+## Implementation Gate
 
-- `riskfolio-lib` model details remain intentionally light until the Modelling Agent defines the fixed supported model set.
-- Perplexity output remains iterative, but it must be constrained to supported model names.
-- The user must confirm the natural-language modelling plan before models run.
-- Model results should be presented as summaries first, with deeper exploration available.
-- The system should support follow-up questions about results and trade-offs.
-- The system should preserve local in-progress state across page exits and reloads.
-- The system should offer exports of generated files/results.
-- V1 should run as one local Streamlit app, not separate frontend/backend processes.
-- V1 should not optimize for mobile beyond a clear holding screen.
+Before code-producing agents start:
 
-## Local App Runtime Constraints
+1. Product/UX Agent completes Design Review 1 and raises exactly 10 high-priority UX questions.
+2. Orchestrator/user answers or triages those questions.
+3. Orchestrator updates relevant specs, prompts, and tasks.
 
-- Limit each modelling run to no more than 10 selected assets.
-- Limit each comparison run to no more than 3 models.
-- Limit the initial modelling window to a maximum of 365 daily observations.
-- Avoid continuous background fetching; CoinGecko calls should be page-load, dropdown/search, or model-generation triggered.
-- Reuse locally cached CoinGecko data wherever possible before making new API calls.
-- Keep Streamlit UI responsive with clear phase screens, progress states, and user-facing checkpoint logs during model execution.
-- Present result summaries first and load deeper model exploration views only when the user requests them.
-- Keep one active workflow state and one active model-output set; do not maintain a full local history of prior runs.
+Early implementation tasks should then resolve interface contracts:
 
-## External Service Decisions
+- Backend/Data Agent defines cache/session schemas and frontend-facing state interfaces.
+- Backend/Data Agent defines callable token-list, validation, and export-bundling interfaces.
+- AI/Perplexity Agent defines callable AI plan/chat interfaces and fixed refusal/error messages.
+- Modelling Agent defines callable run/progress/output-manifest interfaces.
+- Frontend Agent decides the one-open-section Review implementation pattern in Streamlit.
 
-- CoinGecko access uses Demo API authentication against `https://api.coingecko.com/api/v3` with the `x-cg-demo-api-key` header.
-- CoinGecko API keys are loaded from `.env` and must not be committed.
-- CoinGecko usage is limited to free public endpoints available with the demo API key.
-- Token-list retrieval supports the asset selection UI and may be triggered on page load, dropdown open, or user-prompted search confirmation.
-- Token-price retrieval is handled entirely by the app data layer and only triggered after the user confirms modelling scope and chooses to generate models.
-- CoinGecko market data, active user inputs, and current model outputs are stored locally under the app workspace.
-- The app supports one active set of user inputs and one active set of model outputs; previous inputs/outputs are recoverable only if the user downloaded them.
-- The app should not include an in-app cache-clearing control; local cache data is cleared only if the user removes local storage/cache files outside the app.
-- Perplexity uses `PERPLEXITY_API_KEY` from `.env`/environment configuration.
-- Perplexity calls use `perplexity/sonar` through the shared app AI integration by default.
+## Key V2 / Deferred Items
 
-## Initial Spec Areas
-
-Initial specs have been created under `/docs/specs`. These files capture current contracts and implementation boundaries while leaving detailed schemas and final dependency choices to the owning implementation agents.
-
-Current spec areas include:
-
-- CoinGecko asset option contract.
-- CoinGecko price data ingestion.
-- Cached market data storage.
-- User preference capture contract.
-- Perplexity modelling-plan contract.
-- Supported model registry contract.
-- Riskfolio-Lib execution contract.
-- Result summary and exploration contract.
-- Reflection conversation contract.
-- Local cache/session state contract.
-- Export contract.
-- Shared logging contract.
-
-Remaining planning work should focus on completing agent prompts, validation criteria, final dependency choices, and implementation handoff.
+- Mobile-optimized UI.
+- Pure browser/Pyodide runtime.
+- Web search through Perplexity.
+- Alternate LLM/provider options.
+- Chat transcript export.
+- Full Configuration transcript access in Review Mode.
+- Direct modelling-plan editing.
+- Benchmarks and benchmark rows.
+- Worst Case, Ordered Weighted Average, and Hierarchical Equal Risk models.
+- Rolling optimization or scheduled rebalancing.
+- Multiple open Review sections.
+- Persisting Review open section/selected model across reload.
+- Resuming interrupted modelling runs after reload.
+- AI-controlled Review UI navigation.
