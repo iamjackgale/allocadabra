@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:33:31 BST |
-| last_updated | 2026-04-22 22:27:16 BST |
+| last_updated | 2026-04-22 23:09:50 BST |
 | prompt_used | |
 
 # Frontend Agent Prompt
@@ -113,6 +113,7 @@ Shared boundary specs:
   - Review.
 - Implement phase state transitions and user-facing navigation controls.
 - Implement green accent/backlighting for Configuration and Review and red accent/backlighting for Modelling.
+- Pair phase accent changes with restrained phase headers: `CONFIGURATION` and `REVIEW` in the right-hand workflow pane, and `MODELLING` centred on the full Modelling screen.
 - Implement the reusable Streamlit chat component configured by mode.
 - Implement the Model Parameters component.
 - Implement the Modelling progress page.
@@ -128,6 +129,7 @@ Shared boundary specs:
 Layout:
 
 - Desktop: AI chat on the left, Model Parameters component on the right.
+- The right-hand workflow pane should have a restrained `CONFIGURATION` phase header.
 - Mobile: show a holding screen stating that the app has not yet been optimized for mobile.
 - Chat is always visible and available immediately.
 
@@ -170,12 +172,14 @@ Model Parameters component:
 - `Generate Plan` must run deterministic validation before AI.
 - Validation feedback should preferably surface through the chat experience.
 - Generated modelling plan temporarily replaces the form as Markdown.
-- Plan actions:
-  - start modelling.
-  - regenerate.
-  - return to configure.
-- Returning to configure invalidates the generated plan.
+- Generated-plan actions are exactly:
+  - `Run`: begin validation and modelling to move past Configuration Phase.
+  - `Regenerate`: generate another plan while staying in the same core workflow.
+  - `Reconfigure`: abandon the current plan and return to the configuration screen with previous items still selected.
+- `Reconfigure` requires confirmation copy: `This abandons the current plan and returns to Configuration with your previous selections still filled in.`
+- `Reconfigure` invalidates the generated plan.
 - Include `Reset Configuration`.
+- `Reset Configuration` requires confirmation copy: `This clears your selected assets, preferences, constraints, generated plan, chats, and outputs.`
 
 ## Chat Component
 
@@ -212,6 +216,7 @@ Review Mode:
 
 - Full phase screen, not two-panel layout.
 - Red accent/backlight throughout active modelling.
+- Show a restrained centred `MODELLING` phase header.
 - Use a progress bar with major checkpoints:
   - Validation.
   - Ingestion.
@@ -225,16 +230,19 @@ Review Mode:
 - Show approximate elapsed time.
 - Do not show percentage progress unless accurate.
 - Use subtle animated dots.
-- Accepted modelling plan is collapsed by default below progress, Markdown only.
+- Confirmed modelling plan is collapsed by default below progress, Markdown only.
 - No modelling-plan download on this page.
-- User can cancel or return to Configuration during modelling, with warning.
+- User can use `Cancel` during modelling, with warning.
+- `Cancel` abandons the active run and generated plan, deletes partial model outputs, keeps cached market data unchanged, and returns to the editable Configuration component with previous configuration options still selected.
+- `Cancel` requires confirmation copy: `This abandons the current modelling run, deletes partial outputs, and returns to Configuration with your previous options selected.`
 - Warn users not to close or refresh while modelling is active.
-- If refresh interrupts the run, show interrupted state unless resume is cheap and reliable.
+- If refresh interrupts the run, show interrupted state copy: `The previous modelling run was interrupted. You can return to Configuration with your previous options selected, or restart the run.`
 - No detailed logs for normal users.
 - No modelling warnings if outputs succeed; defer to Review.
 - CoinGecko timeout can retry on the page.
-- Solver failure for one model asks whether to continue to Review with partial results.
+- Solver failure for one model should not block Review if at least one selected model succeeds.
 - Minimum to enter Review: one successful model.
+- If at least one selected model succeeds, proceed directly to Review with failed models marked; do not pause for failed-model retries in V1.
 - When review artifacts are ready, switch accent to green and show `Review Results`.
 - If the app reloads after artifacts are ready, open Review automatically.
 
@@ -243,6 +251,11 @@ Review Mode:
 Layout:
 
 - Desktop: AI chat on the left, Model Review component on the right.
+- The right-hand workflow pane should have a restrained `REVIEW` phase header.
+- Beneath the `REVIEW` phase header, show:
+  - `Compare model outputs against your selected objective and risk appetite. Green/yellow/red rankings compare these models within this run only.`
+  - `Ranked for: [Treasury objective] · [Risk appetite]`
+- Use the user's selected objective and risk appetite in the `Ranked for` line, for example: `Ranked for: Reduce drawdowns · Medium risk appetite`.
 - Model Review component takes the full right panel.
 - Use simple Streamlit-native components where practical.
 - Only one output section open at a time.
@@ -270,8 +283,9 @@ Controls:
 - Failed models can appear in red.
 - Each section has a download control.
 - Missing artifacts show disabled download state with explanation.
-- `Return To Configure` warns that current outputs and Review chat will be replaced.
-- `Start New Model` asks for confirmation.
+- Missing artifact disabled explanation: `This artifact was not generated for this run.`
+- `Return To Configure` requires confirmation copy: `This returns to Configuration and clears the current outputs and Review chat. Download results first if you want to keep them.`
+- `Start New Model` requires confirmation copy: `This clears the current configuration, outputs, and Review chat. Download results first if you want to keep them.`
 
 Summary metrics:
 
@@ -291,6 +305,7 @@ Summary metrics:
 - CDaR.
 - Include one-line tooltips indicating meaning and higher/lower-is-better.
 - Use green/yellow/red ranking and visible numbers.
+- Make clear that green/yellow/red rankings compare models within the current run only.
 - Defer benchmarks beyond V1.
 
 Charts and downloads:
@@ -300,7 +315,7 @@ Charts and downloads:
 - Do not show chart data tables under charts in V1.
 - Underlying data should be downloadable.
 - Chart image exports are `.png`.
-- `Download All` includes all generated artifacts, accepted modelling plan, and user input JSON.
+- `Download All` includes all generated artifacts, confirmed modelling plan, and user input JSON.
 
 AI context:
 
@@ -339,11 +354,11 @@ AI context:
 
 - Verify Configuration, Modelling, and Review phase transitions.
 - Verify mobile holding screen.
-- Verify green/red/green phase accent states.
+- Verify green/red/green phase accent states and phase headers.
 - Verify asset count limits and constraint validation.
-- Verify generated plan replacement/return/regenerate flow.
+- Verify generated plan `Run`/`Regenerate`/`Reconfigure` flow.
 - Verify chat mode separation and persistence rules.
-- Verify modelling cancel/return/interrupted/success states.
+- Verify modelling cancel/interrupted/success states.
 - Verify partial-success Review entry.
 - Verify Review context exposure to AI layer.
 - Verify downloads and disabled missing-artifact states.

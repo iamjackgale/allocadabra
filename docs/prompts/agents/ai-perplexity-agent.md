@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:33:31 BST |
-| last_updated | 2026-04-22 22:27:16 BST |
+| last_updated | 2026-04-22 22:58:18 BST |
 | prompt_used | |
 
 # AI/Perplexity Agent Prompt
@@ -189,7 +189,7 @@ Review Mode supports:
 - answering technical follow-up questions.
 - explaining methodology in student-friendly language when asked.
 
-Review Mode starts only after the Modelling Phase has completed successfully enough outputs to review. If a selected model fails, the app should remain in Modelling Phase and ask the user to try again.
+Review Mode starts only after the Modelling Phase has completed successfully enough outputs to review. In V1, if at least one selected model succeeds, the app should proceed directly to Review and mark failed models clearly; failed-model retries before Review are deferred beyond V1.
 
 Default context:
 
@@ -212,6 +212,7 @@ Opening comparison:
 - Deterministic app logic prepares ranking/summary inputs.
 - AI writes a short neutral explanation.
 - Ranking may only compare models against the user's stated preferences.
+- Include a brief reminder that the comparison is not financial advice and no warranty is given as to the accuracy of the information.
 - Review Mode chat must not update or rewrite the V1 ranking.
 
 Review Mode must not trigger model rebuilds. It can suggest returning to Configuration Phase or Modelling Phase if the user wants a different setup.

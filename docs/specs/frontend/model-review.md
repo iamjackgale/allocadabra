@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 21:59:59 BST |
+| last_updated | 2026-04-22 23:09:50 BST |
 
 # Model Review Spec
 
@@ -26,6 +26,10 @@ Define the component that lets users review model outputs and download copies of
 - Use vertical dropdown/accordion sections, one for each output type.
 - Only one output section should be open at a time in V1.
 - The side-by-side metrics table opens by default when entering Review.
+- Above the default metrics comparison, show concise non-chat hierarchy cues:
+  - `Compare model outputs against your selected objective and risk appetite. Green/yellow/red rankings compare these models within this run only.`
+  - `Ranked for: [Treasury objective] · [Risk appetite]`
+- The `Ranked for` line should use the user's selected objective and risk appetite, for example: `Ranked for: Reduce drawdowns · Medium risk appetite`.
 - The component takes the full right panel beside chat and should not add a separate internal sidebar.
 
 ## Output Sections
@@ -53,7 +57,7 @@ Per-model charts should include a short explanatory tooltip.
 
 Chart data should not be shown as tables under charts in V1; underlying data should be downloadable.
 
-The accepted modelling plan should appear as the last item at the bottom of the review pane.
+The confirmed modelling plan should appear as the last item at the bottom of the review pane.
 
 ## Controls
 
@@ -65,7 +69,7 @@ The accepted modelling plan should appear as the last item at the bottom of the 
 - Selected model defaults to first model in run order.
 - Failed models may appear in the selector in red with failure state.
 - `Download All` should return a zip of every generated artifact.
-- `Download All` should include accepted modelling plan and user input JSON.
+- `Download All` should include confirmed modelling plan and user input JSON.
 - Per-section downloads should export chart images as `.png` in V1.
 - If an artifact is missing, show a disabled download state with a short explanation.
 
@@ -74,6 +78,7 @@ The accepted modelling plan should appear as the last item at the bottom of the 
 - Open the side-by-side metrics table first.
 - Review Mode AI should provide a short neutral opening comparison in chat only.
 - Do not pin the AI overview above the review component.
+- The Review pane should still show the concise non-chat hierarchy cues defined above so users understand the comparison surface without duplicating the AI opening comparison.
 - The initial selected model should be the first model in run order.
 - Ranking should be against the user's stated preferences and should not update dynamically from Review chat in V1.
 
@@ -103,6 +108,7 @@ Metric table rules:
 - Use green/yellow/red ranking across models alongside numeric values.
 - Green indicates better relative values and red indicates worse relative values.
 - Do not rely on colour alone; numbers must remain visible.
+- Ranking copy must make clear that green/yellow/red rankings compare models within the current run only.
 - Benchmark rows are deferred beyond V1.
 
 ## AI Context Awareness
@@ -138,17 +144,19 @@ Review chat cannot trigger UI navigation or control the visible review component
 - Review does not need to remember the open output section or selected model across reload in V1.
 - On reload, default back to summary metrics and the first model in run order.
 - Include `Return To Configure` in Review.
-- `Return To Configure` should warn that current outputs and Review chat will be replaced.
-- `Start New Model` should ask for confirmation before clearing Review state.
+- `Return To Configure` requires confirmation copy: `This returns to Configuration and clears the current outputs and Review chat. Download results first if you want to keep them.`
+- After confirmed `Return To Configure`, return to the editable Configuration form with prior configuration options selected and clear Review chat and current model outputs.
+- `Start New Model` requires confirmation copy: `This clears the current configuration, outputs, and Review chat. Download results first if you want to keep them.`
+- After confirmed `Start New Model`, return to an empty/default Configuration form and clear active inputs, generated plan, Review chat, and model outputs.
 
 ## Failure Rules
 
 - If at least one model output exists, the user may enter Review even if another selected model failed.
 - Failed models should show in red where they appear in review controls or comparison tables.
-- Modelling failures should be handled in the Modelling phase, with retry/fix or return-to-configure options.
+- Modelling failures should be handled in the Modelling phase, with retry/fix or `Cancel` back to Configuration options.
 - Review Mode should not trigger model rebuilds.
 - If a chart cannot render but model outputs exist, allow Review with available tables and other artifacts.
-- If a downloadable artifact is missing, show a disabled download button/state with explanation.
+- If a downloadable artifact is missing, show a disabled download button/state with explanation: `This artifact was not generated for this run.`
 
 ## Notes
 

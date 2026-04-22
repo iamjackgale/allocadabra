@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 21:23:40 BST |
+| last_updated | 2026-04-22 22:58:18 BST |
 
 # Review Agent Spec
 
@@ -23,7 +23,7 @@ Review Mode begins after model outputs exist and helps users interpret model res
 
 Review Mode starts only after the Modelling Phase completes enough outputs to review.
 
-The Modelling Phase is responsible for detecting modelling errors, failed models, and rebuild requirements before Review Mode begins. If at least one selected model succeeds, Review Mode may still open with failed models clearly marked in red. If no selected models succeed, the app should keep the user in the Modelling Phase and ask them to try again rather than entering Review Mode.
+The Modelling Phase is responsible for detecting modelling errors, failed models, and rebuild requirements before Review Mode begins. In V1, if at least one selected model succeeds, Review Mode opens directly with failed models clearly marked in red. If no selected models succeed, the app should keep the user in the Modelling Phase and ask them to try again rather than entering Review Mode.
 
 ## Context Inputs
 
@@ -62,6 +62,8 @@ The deterministic app prepares ranking and summary inputs. The AI writes the sho
 The initial comparison may rank models only against the user's stated preferences from Configuration Mode. It must not declare a universally best portfolio.
 
 The opening comparison should explain which model appears to fit the user's requirements best, why, and what strengths the other selected models have by comparison. If any selected model failed, mention the failure neutrally and do not invent results for it.
+
+The opening comparison should include a brief no-advice/no-warranty reminder: the comparison is not financial advice, and no warranty is given as to the accuracy of the information.
 
 In V1, the ranking is generated between the Modelling Phase and the start of Review Mode. User chat during Review Mode should not update or rewrite the ranking.
 

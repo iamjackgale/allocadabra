@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-22 22:27:16 BST |
+| last_updated | 2026-04-22 23:09:50 BST |
 
 # Allocadabra Project Plan
 
@@ -61,7 +61,11 @@ Core rules:
 - Initial supported models are pre-selected by default, but users may deselect down to one.
 - Optional constraints are limited to supported allocation and asset-count constraints.
 - `Generate Plan` runs deterministic validation before AI.
-- Generated modelling plan temporarily replaces the form and is accepted, regenerated, or sent back to configuration.
+- Generated modelling plan temporarily replaces the form and offers exactly three actions:
+  - `Run`: begin validation and modelling to move past Configuration Phase.
+  - `Regenerate`: generate another plan while staying in the same core workflow.
+  - `Reconfigure`: abandon the current plan and return to the configuration screen with previous items still selected.
+- `Reconfigure` requires confirmation copy: `This abandons the current plan and returns to Configuration with your previous selections still filled in.`
 - Users cannot directly edit generated modelling plans in V1.
 
 ### Modelling Phase
@@ -74,6 +78,7 @@ Core rules:
 
 - Use a full Modelling screen, not the Configuration/Review two-panel layout.
 - Use red accent/backlighting while Modelling is active.
+- Show a restrained phase header that reads `MODELLING` in the centre of the full Modelling screen.
 - Show a progress bar with major checkpoints:
   - Validation.
   - Ingestion.
@@ -83,14 +88,19 @@ Core rules:
   - Outputs.
 - Show one smooth transient micro-log line at a time, not a CLI-style log.
 - Show approximate elapsed time, but avoid percentage progress unless accurate.
-- Users may cancel or return to Configuration while modelling is active.
+- Users may `Cancel` while modelling is active.
+- `Cancel` requires confirmation copy: `This abandons the current modelling run, deletes partial outputs, and returns to Configuration with your previous options selected.`
+- `Cancel` abandons the active run and generated plan, deletes partial model outputs, keeps cached market data unchanged, and returns to the Configuration screen with the previous configuration options still selected.
+- After `Cancel`, the right-hand Configuration pane shows the editable configuration component, not the abandoned modelling plan.
 - Warn users not to close or refresh while modelling is active.
-- If refresh interrupts a run, show interrupted state; interrupted-run resume is V2.
+- If refresh interrupts a run, show interrupted state with copy: `The previous modelling run was interrupted. You can return to Configuration with your previous options selected, or restart the run.`
+- Interrupted-run resume is V2.
 - When outputs and review artifacts are ready, Modelling is complete, the accent changes to green, and the UI shows `Review Results`.
 - If the app reloads after review artifacts are ready, reopen in Review.
 - Configuration chat is wiped when Modelling succeeds and review artifacts are ready.
-- If at least one selected model succeeds, Review may proceed with failed models marked.
-- If no selected models succeed, stay in Modelling and require retry or return to Configuration.
+- If at least one selected model succeeds, proceed to Review with failed models marked; do not pause for failed-model retries in V1.
+- If no selected models succeed, stay in Modelling and require retry or `Cancel` back to Configuration.
+- If no selected models succeed, show copy: `No models completed successfully. You can retry the run or cancel back to Configuration.`
 
 ### Review Phase
 
@@ -106,14 +116,17 @@ Core rules:
 
 - Desktop layout uses Review Mode chat on the left and Model Review on the right.
 - Summary metrics comparison is open by default.
+- Review pane should include non-chat comparison cues above the default summary metrics:
+  - `Compare model outputs against your selected objective and risk appetite. Green/yellow/red rankings compare these models within this run only.`
+  - `Ranked for: [Treasury objective] · [Risk appetite]`
 - Review Mode AI gives the opening comparison in chat only.
 - Review ranking is prepared before Review starts and does not update based on Review chat in V1.
 - Review chat receives visible output context automatically, but the user does not see context-injection details.
 - Review chat cannot control UI navigation in V1.
 - One Review output section is open at a time.
 - Failed models may appear in red with failure reasons.
-- `Return To Configure` warns that current outputs and Review chat will be replaced.
-- `Start New Model` asks for confirmation.
+- `Return To Configure` requires confirmation copy: `This returns to Configuration and clears the current outputs and Review chat. Download results first if you want to keep them.`
+- `Start New Model` requires confirmation copy: `This clears the current configuration, outputs, and Review chat. Download results first if you want to keep them.`
 
 ## Architecture Components
 
@@ -172,13 +185,14 @@ To decide:
 - The app does not require a separate backend service.
 - CoinGecko market data is cached locally and persists until the user clears local storage files outside the app.
 - Workflow reset must not clear CoinGecko market-data cache.
+- `Reset Configuration` requires confirmation copy: `This clears your selected assets, preferences, constraints, generated plan, chats, and outputs.`
 - The app supports one active set of user inputs and one active set of model outputs.
 - Previous inputs and outputs are recoverable only if the user downloaded them.
 - User inputs export as `.json`.
 - AI modelling plan exports as `.md`.
 - Model tables export as `.csv`.
 - Chart images export as `.png`.
-- Download bundles include every generated artifact, including accepted modelling plan and user input JSON.
+- Download bundles include every generated artifact, including confirmed modelling plan and user input JSON.
 - AI chat transcripts are not exportable in V1.
 - Review UI position does not need to persist; reload defaults to summary metrics and the first model in run order.
 
@@ -299,6 +313,8 @@ Review Mode specifics:
 - Visual style should be clean, academic, dashboard-like, light/dark compatible, and should avoid crypto-themed branding.
 - Configuration and Review use subtle green accent/backlighting for user-led phases.
 - Modelling uses subtle red accent/backlighting for app-led processing.
+- Configuration and Review show a restrained phase header in the right-hand workflow pane: `CONFIGURATION` or `REVIEW`.
+- Modelling shows the phase header `MODELLING` centred in the full screen because it does not use the two-panel layout.
 - When Modelling finishes and Review is ready, the accent changes back to green.
 - The frontend should not include hackathon or sponsor branding.
 - Persistent footer:
@@ -368,4 +384,5 @@ Early implementation tasks should then resolve interface contracts:
 - Multiple open Review sections.
 - Persisting Review open section/selected model across reload.
 - Resuming interrupted modelling runs after reload.
+- Retrying failed individual models before entering Review.
 - AI-controlled Review UI navigation.

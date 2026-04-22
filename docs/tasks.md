@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-22 22:27:16 BST |
+| last_updated | 2026-04-22 23:04:57 BST |
 
 # Task Tracker
 
@@ -50,6 +50,29 @@
 | 032 | TODO | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. |  |
 | 033 | TODO | Product/UX Agent | Complete Design Review 1 using `docs/specs/ux/design-review-1.md` and raise exactly 10 high-priority UX questions before code-producing agents begin. |  |
 | 034 | DONE | Orchestrator Agent | Define strict folder ownership, branch expectations, and cross-agent mini spec rules across agent prompts and `docs/plan.md`. | 2026-04-22 22:27:16 BST |
+| 035 | TODO | Orchestrator Agent | Set up the Orchestrator Agent with `docs/prompts/agents/orchestrator-agent.md` and a dedicated branch for docs coordination. |  |
+| 036 | TODO | Product/UX Agent | Set up the Product/UX Agent with `docs/prompts/agents/product-ux-agent.md` and a dedicated branch. |  |
+| 037 | TODO | Backend/Data Agent | Set up the Backend/Data Agent with `docs/prompts/agents/backend-data-agent.md` and a dedicated branch. |  |
+| 038 | TODO | Modelling Agent | Set up the Modelling Agent with `docs/prompts/agents/modelling-agent.md` and a dedicated branch. |  |
+| 039 | TODO | AI/Perplexity Agent | Set up the AI/Perplexity Agent with `docs/prompts/agents/ai-perplexity-agent.md` and a dedicated branch. |  |
+| 040 | TODO | Frontend Agent | Set up the Frontend Agent with `docs/prompts/agents/frontend-agent.md` and a dedicated branch. |  |
+| 041 | TODO | QA/Validation Agent | Set up the QA/Validation Agent with `docs/prompts/agents/qa-validation-agent.md` and a dedicated branch. |  |
+| 042 | TODO | AI/Perplexity Agent | Implement `docs/specs/ai/ai-model-integration.md`. |  |
+| 043 | TODO | AI/Perplexity Agent | Implement `docs/specs/ai/parameters-agent.md`. |  |
+| 044 | TODO | AI/Perplexity Agent | Implement `docs/specs/ai/review-agent.md`. |  |
+| 045 | TODO | Backend/Data Agent | Implement `docs/specs/app/logging.md` as the shared logging utility and integration pattern. |  |
+| 046 | TODO | Backend/Data Agent | Implement `docs/specs/data-backend/coingecko-api.md`. |  |
+| 047 | TODO | Backend/Data Agent | Implement `docs/specs/data-backend/data-storage.md`. |  |
+| 048 | TODO | Modelling Agent | Implement `docs/specs/data-backend/dataset-building.md`. |  |
+| 049 | TODO | Modelling Agent | Implement `docs/specs/data-backend/riskfolio-lib.md`. |  |
+| 050 | TODO | Backend/Data Agent | Implement `docs/specs/data-backend/session-storage.md`. |  |
+| 051 | TODO | Frontend Agent | Implement `docs/specs/frontend/agent-chat.md`. |  |
+| 052 | TODO | Frontend Agent | Implement `docs/specs/frontend/model-parameters.md`. |  |
+| 053 | TODO | Frontend Agent | Implement `docs/specs/frontend/model-review.md`. |  |
+| 054 | TODO | Frontend Agent | Implement `docs/specs/frontend/modelling-page.md`. |  |
+| 055 | TODO | Frontend Agent | Implement `docs/specs/frontend/ui-design-build.md`. |  |
+| 056 | TODO | Product/UX Agent | Implement `docs/specs/ux/design-review-1.md` by completing the first UX review pass. |  |
+| 057 | TODO | Orchestrator Agent | Prepare a dedicated download/export layer spec that lists every generated output, expected file type, bundle contents, unavailable-artifact states, and implementation ownership; assign follow-up implementation to the appropriate agent. |  |
 
 ## Potential Extensions Beyond V1
 

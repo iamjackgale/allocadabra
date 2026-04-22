@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 14:57:42 BST |
+| last_updated | 2026-04-22 23:09:50 BST |
 
 # Agent Chat Spec
 
@@ -55,7 +55,7 @@ Define the AI chat box component used for Perplexity interactions throughout the
 - Proactively asks only for required missing fields.
 - Stays lightweight for optional constraints and non-required preferences.
 - Can recognize a pasted modelling plan, route it for metadata parsing, and adopt it only after validation.
-- Supports `Generate Plan`, `Regenerate`, and `Accept` plan interactions.
+- Supports `Generate Plan` before plan creation, then only `Run`, `Regenerate`, and `Reconfigure` after a plan is generated.
 - Has access to current incomplete configuration on every message.
 - Should automatically explain what required fields are missing to successfully generate the plan.
 - Can suggest how to use available constraint presets, including when a user expresses a preference such as avoiding too much exposure to specific assets.
@@ -87,7 +87,7 @@ Define the AI chat box component used for Perplexity interactions throughout the
 - Configuration Mode chat context is wiped before Review Mode.
 - The confirmed modelling plan is reinjected into Review Mode.
 - Chat transcripts are not exportable in V1.
-- If Modelling fails before Review, Configuration chat can be restored with the prior configuration and plan.
+- If Modelling fails before Review, Configuration chat can be restored with the prior configuration. The generated plan is retained only while the user remains in Modelling for retry; `Cancel` back to Configuration abandons the generated plan.
 - Chat history persists across browser refresh/local app reload within the active workflow.
 - Configuration chat persists through Configuration and Modelling.
 - Configuration chat is wiped only after review files have loaded and the app transitions fully into Review.

@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-22 21:29:01 BST |
-| last_updated | 2026-04-22 21:59:59 BST |
+| last_updated | 2026-04-22 23:09:50 BST |
 
 # Modelling Page Spec
 
@@ -13,19 +13,22 @@ Define what the frontend presents while the app prepares datasets, runs models, 
 
 - Covers the Modelling Phase screen only.
 - Presents user-facing progress while backend/data and modelling workflows run.
-- Bridges the accepted modelling plan and the Review Phase.
+- Bridges the confirmed modelling plan and the Review Phase.
 - Does not define backend logging internals or `riskfolio-lib` execution details.
 
 ## Layout
 
 - Use a full phase screen rather than the Configuration/Review two-panel layout.
 - Apply the red accent/backlight defined in `/docs/specs/frontend/ui-design-build.md` throughout the active Modelling Phase.
+- Show a restrained centred phase header: `MODELLING`.
 - Primary content should be centred and focused on progress.
-- Show the accepted modelling plan collapsed by default below the progress area.
+- Show the confirmed modelling plan collapsed by default below the progress area.
 - The plan display should be Markdown only, with no structured metadata shown.
 - Do not offer modelling-plan download from this page; downloads belong in Review.
-- Include a clear route back to Configuration at any time.
-- Warn that returning to Configuration while modelling is running cancels or interrupts the current run.
+- Include one active-run escape control: `Cancel`.
+- `Cancel` returns to the Configuration screen with the previous configuration options still selected.
+- After `Cancel`, the right-hand Configuration pane shows the editable configuration component, not the abandoned modelling plan.
+- `Cancel` requires confirmation copy: `This abandons the current modelling run, deletes partial outputs, and returns to Configuration with your previous options selected.`
 
 ## User-Facing Progress
 
@@ -91,10 +94,11 @@ Checkpoint text should be concise and suitable for a non-technical user.
 
 ## User Controls
 
-- User can cancel the modelling run.
-- User can return to Configuration while modelling is active.
+- User can cancel the modelling run with `Cancel`.
+- `Cancel` should abandon the active run and generated plan, delete all partial model outputs, keep cached market data unchanged, preserve previous configuration options, and return to the editable Configuration component.
 - User should see a warning not to close or refresh while modelling is active.
-- If the user refreshes mid-run, show that the previous run was interrupted and offer return to Configuration or restart.
+- If the user refreshes mid-run, show interrupted state copy: `The previous modelling run was interrupted. You can return to Configuration with your previous options selected, or restart the run.`
+- The interrupted state should offer `Return To Configuration` and `Restart Run`.
 - Interrupted-run resume is deferred beyond V1.
 
 ## Failure State
@@ -104,7 +108,8 @@ If modelling fails:
 - Stop automatic retries after one failed retry path.
 - Explain the failure in plain English.
 - Present fix/retry options only when the app can identify a practical next action.
-- Let the user return to Configuration with previous configuration, Configuration chat, and modelling plan preserved.
+- Let the user cancel back to Configuration with previous configuration options and Configuration chat preserved.
+- The abandoned modelling plan should not be shown after cancellation; the user returns to the editable configuration component.
 
 Fixable failures:
 
@@ -119,15 +124,17 @@ Failure handling rules:
 - CoinGecko fetch failures should offer retry without returning to Configuration.
 - Insufficient-history assets should not offer an automatic remove-and-retry action in V1.
 - Invalid constraints should be caught during validation before entering Modelling; they should not normally appear on this page.
-- Solver failure for one model should ask the user whether to continue to Review with partial results.
+- Solver failure for one model should not block Review if at least one selected model succeeds.
 
 If at least one selected model succeeds and another fails:
 
-- The app may proceed to Review with failed models marked in red, according to `/docs/specs/frontend/model-review.md`.
+- The app proceeds directly to Review with failed models marked in red, according to `/docs/specs/frontend/model-review.md`.
+- V2 may add retries for failed individual models before entering Review.
 
 If no selected models succeed:
 
-- Stay in Modelling and require retry or return to Configuration.
+- Stay in Modelling and require retry or `Cancel` back to Configuration.
+- Show copy: `No models completed successfully. You can retry the run or cancel back to Configuration.`
 
 ## Success State
 
