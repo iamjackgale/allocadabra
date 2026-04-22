@@ -1,8 +1,8 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:33:31 BST |
-| last_updated | 2026-04-22 22:27:16 BST |
-| prompt_used | |
+| last_updated | 2026-04-22 22:37:42 BST |
+| prompt_used | 2026-04-22 22:37:42 BST |
 
 # Product/UX Agent Prompt
 
@@ -92,11 +92,3 @@ Further UX review specs will be prepared and assigned later as the product moves
 - Do not expand product scope without framing it as a question or concern.
 - Do not produce final visual assets.
 - Do not take ownership of implementation unless the Orchestrator Agent explicitly assigns it.
-
-## Expected Output
-
-Produce exactly 10 questions. For each question include:
-
-- UX area.
-- Question.
-- Why it matters before implementation.

@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 21:45:53 BST |
+| last_updated | 2026-04-22 23:09:50 BST |
 
 # Session Storage Spec
 
@@ -33,6 +33,7 @@ Lifecycle:
 - Remains editable by the user throughout the preparation flow.
 - Can be exported at the end of the process.
 - Resets to empty/default state when the user chooses to refresh/start again at the end of the workflow.
+- Resets to empty/default state when the user confirms `Reset Configuration` or `Start New Model`.
 
 Recovery:
 
@@ -81,7 +82,9 @@ Storage rules:
 - AI messages are recoverable only for the current active workflow.
 - Chat transcripts are not exportable in V1.
 - Previous AI conversations are unrecoverable.
-- If Modelling fails and the user returns to Configuration, restore Configuration chat with prior configuration and plan state.
+- If Modelling fails or the user cancels during Modelling, restore Configuration chat and prior configuration options.
+- Cancellation abandons the active generated plan, returns to the editable Configuration component rather than the modelling plan preview, and clears any partial model outputs.
+- Confirmed `Reconfigure` abandons the active generated plan, returns to the editable Configuration component, preserves prior configuration options, and preserves Configuration chat.
 - If the app reloads after Review is ready, reopen in Review Mode rather than returning to Modelling or Configuration.
 - Review Mode chat is wiped when the user starts a new model.
 
@@ -98,8 +101,11 @@ Lifecycle:
 - Not accessible throughout earlier workflow stages.
 - Stored until the user explicitly clicks to start a new model.
 - Cleared when the user starts a new model.
+- Cleared if the user cancels during Modelling before review artifacts are complete.
 - If outputs and review artifacts are complete, the active workflow phase should be treated as Review even if the user has not clicked `Review Results`.
-- If a modelling run is interrupted before outputs are complete, the app may show interrupted state and offer return to Configuration or restart.
+- If a modelling run is interrupted before outputs are complete, the app may show interrupted state and offer return to the editable Configuration screen or restart.
+- If the user confirms `Return To Configure` from Review, clear current model outputs and Review chat, then return to the editable Configuration form with prior configuration options selected.
+- If the user confirms `Start New Model`, clear active inputs, generated plan, Review chat, and model outputs, then return to the empty/default Configuration form.
 
 Recovery:
 
@@ -110,7 +116,7 @@ Initial export formats:
 
 - Model output tables should export as `.csv`.
 - Model chart images should export as `.png`.
-- Download bundles should include every generated artifact, including accepted modelling plan and user input JSON.
+- Download bundles should include every generated artifact, including confirmed modelling plan and user input JSON.
 - No `.pdf` export is required.
 
 Review UI state:

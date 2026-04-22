@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 20:23:50 BST |
+| last_updated | 2026-04-22 23:09:50 BST |
 
 # Model Parameters Spec
 
@@ -117,12 +117,13 @@ Do not include benchmark preference or time horizon as user inputs in V1.
 
 - Generated plan is shown as readable Markdown.
 - Generated plan temporarily replaces the configuration form.
-- Users can:
-  - start modelling.
-  - regenerate the plan.
-  - return to configure.
-- After a plan is generated, the form is read-only until the user returns to configure.
-- Returning to configure shows the configuration form again and invalidates the previous generated plan.
+- Users have exactly three generated-plan actions:
+  - `Run`: begin validation and modelling to move past Configuration Phase.
+  - `Regenerate`: generate another plan while staying in the same core workflow.
+  - `Reconfigure`: abandon the current plan and return to the configuration screen with previous items still selected.
+- `Reconfigure` requires confirmation copy: `This abandons the current plan and returns to Configuration with your previous selections still filled in.`
+- After a plan is generated, the form is read-only until the user chooses `Reconfigure`.
+- `Reconfigure` shows the configuration form again and invalidates the previous generated plan.
 - The configuration form should then offer `Generate Plan` as the forward action.
 - Users cannot directly edit the generated modelling plan in V1.
 
@@ -130,8 +131,10 @@ Do not include benchmark preference or time horizon as user inputs in V1.
 
 - Every field should autosave immediately to active local state.
 - Configuration Mode should include a `Reset Configuration` action.
+- `Reset Configuration` requires confirmation copy: `This clears your selected assets, preferences, constraints, generated plan, chats, and outputs.`
+- `Reset Configuration` returns to the empty/default Configuration form and clears generated plan, Configuration chat, Review chat, and model outputs.
 - `Start New Model` belongs to Review Mode.
-- If the user changes inputs after a plan has been generated, the existing plan is invalidated through the return-to-configure flow.
+- If the user changes inputs after a plan has been generated, the existing plan is invalidated through `Reconfigure`.
 
 ## Failure And Validation
 
