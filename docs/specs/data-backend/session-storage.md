@@ -1,5 +1,5 @@
 created: 2026-04-21 08:27:31 BST
-last_updated: 2026-04-21 09:30:05 BST
+last_updated: 2026-04-22 11:09:19 BST
 
 # Session Storage Spec
 
@@ -57,6 +57,27 @@ Initial export format:
 
 - AI modelling plan should export as `.md`.
 
+### AI Chat Sessions
+
+Purpose:
+
+- Store active workflow AI messages for Configuration Mode and Review Mode.
+
+Lifecycle:
+
+- Configuration Mode chat starts during parameter setting.
+- Configuration Mode chat is wiped before entering Review Mode.
+- Review Mode chat starts after model outputs exist.
+- Review Mode receives the confirmed modelling plan from Configuration Mode.
+- Review Mode does not receive the full Configuration Mode transcript by default.
+
+Storage rules:
+
+- Store Configuration Mode and Review Mode as separate sessions inside the single active workflow state.
+- AI messages are recoverable only for the current active workflow.
+- Chat transcripts are not exportable in V1.
+- Previous AI conversations are unrecoverable.
+
 ### Model Outputs
 
 Purpose:
@@ -94,6 +115,7 @@ Initial export formats:
 - `/docs/specs/data-backend/data-storage.md` owns CoinGecko market-data cache rules.
 - `/docs/specs/ai/parameters-agent.md` consumes and updates active user input context during preparation.
 - `/docs/specs/ai/review-agent.md` consumes model outputs during final review.
+- `/docs/specs/ai/ai-model-integration.md` defines Configuration Mode and Review Mode session rules.
 - `/docs/specs/frontend/model-review.md` defines how final outputs are displayed and downloaded.
 
 ## Open Questions

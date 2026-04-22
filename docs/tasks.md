@@ -1,5 +1,5 @@
 created: 2026-04-20 20:06:11 BST
-last_updated: 2026-04-21 13:03:50 BST
+last_updated: 2026-04-22 13:02:38 BST
 
 # Task Tracker
 
@@ -27,15 +27,35 @@ last_updated: 2026-04-21 13:03:50 BST
 | 011 | TODO | Orchestrator Agent | Complete `docs/specs/frontend/agent-chat.md`. |  |
 | 012 | TODO | Orchestrator Agent | Complete `docs/specs/frontend/model-parameters.md`. |  |
 | 013 | TODO | Orchestrator Agent | Complete `docs/specs/frontend/model-review.md`. |  |
-| 014 | TODO | Orchestrator Agent | Complete `docs/specs/ai/ai-model-integration.md`. |  |
-| 015 | TODO | Orchestrator Agent | Complete `docs/specs/ai/parameters-agent.md`. |  |
-| 016 | TODO | Orchestrator Agent | Complete `docs/specs/ai/review-agent.md`. |  |
+| 014 | DONE | Orchestrator Agent | Complete `docs/specs/ai/ai-model-integration.md`. | 2026-04-22 10:37:39 BST |
+| 015 | DONE | Orchestrator Agent | Complete `docs/specs/ai/parameters-agent.md`. | 2026-04-22 10:37:39 BST |
+| 016 | DONE | Orchestrator Agent | Complete `docs/specs/ai/review-agent.md`. | 2026-04-22 10:37:39 BST |
 | 017 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/orchestrator-agent.md`. |  |
 | 018 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/product-ux-agent.md`. |  |
 | 019 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/frontend-agent.md`. |  |
 | 020 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/backend-data-agent.md`. |  |
 | 021 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/modelling-agent.md`. | 2026-04-21 13:03:50 BST |
-| 022 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/ai-perplexity-agent.md`. |  |
+| 022 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/ai-perplexity-agent.md`. | 2026-04-22 13:02:38 BST |
 | 023 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/qa-validation-agent.md`. |  |
 | 024 | TODO | Orchestrator Agent | Decide Python frontend framework and major browser-local app dependencies for inclusion in `plan.md`. |  |
 | 025 | DONE | Orchestrator Agent | Create shared logging spec at `docs/specs/app/logging.md`. | 2026-04-21 10:53:18 BST |
+| 026 | DONE | Orchestrator Agent | Create and maintain the potential extensions beyond V1 sublist in `docs/tasks.md`. | 2026-04-22 12:21:30 BST |
+
+## Potential Extensions Beyond V1
+
+| ID | Status | Extension | Referenced In | Notes |
+|---|---|---|---|---|
+| EXT-001 | CANDIDATE | Add Worst Case model. | `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/specs/ai/parameters-agent.md` | Future-only model; higher parameter complexity and solver/runtime risk. |
+| EXT-002 | CANDIDATE | Add Ordered Weighted Average model. | `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/specs/ai/parameters-agent.md` | Future-only model; needs OWA tail weights and student-friendly parameterization. |
+| EXT-003 | CANDIDATE | Add Hierarchical Equal Risk model. | `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/specs/ai/parameters-agent.md` | Future-only model; likely `HERC`/`HERC2`, best after HRP is stable. |
+| EXT-004 | CANDIDATE | Enable Perplexity web search. | `docs/specs/ai/ai-model-integration.md` | Explicitly off in V1; potential V2 feature. |
+| EXT-005 | CANDIDATE | Support alternate LLM models/providers through Perplexity. | `docs/specs/ai/ai-model-integration.md` | Perplexity Agent API is multi-provider; V1 uses `perplexity/sonar`. |
+| EXT-006 | CANDIDATE | Export AI chat transcripts. | `docs/specs/ai/ai-model-integration.md`; `docs/specs/data-backend/session-storage.md`; `docs/plan.md` | V1 excludes chat transcripts from export. |
+| EXT-007 | CANDIDATE | Give Review Mode access to full Configuration Mode transcript. | `docs/specs/ai/ai-model-integration.md`; `docs/specs/data-backend/session-storage.md`; `docs/specs/ai/review-agent.md` | V1 reinjects only confirmed modelling plan by default. |
+| EXT-008 | CANDIDATE | Add rolling optimization or scheduled rebalancing. | `docs/specs/data-backend/riskfolio-lib.md` | Would make allocation-over-time charts show changing weights rather than repeated static weights. |
+| EXT-009 | CANDIDATE | Define and implement standardized benchmark construction. | `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/specs/frontend/model-parameters.md`; `docs/specs/ai/parameters-agent.md` | V1 should not ask users for benchmark preference; benchmark construction remains undefined. |
+| EXT-010 | CANDIDATE | Add additional export formats and visual artifacts. | `docs/specs/data-backend/session-storage.md`; `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/prompts/agents/backend-data-agent.md` | V1 has `.json`, `.md`, `.csv`; visual artifact export details remain open. |
+| EXT-011 | CANDIDATE | Add cloud/server persistence or future cloud logs. | `docs/specs/app/logging.md`; `docs/specs/data-backend/data-storage.md`; `docs/specs/data-backend/session-storage.md` | V1 is browser-local and has no separate backend persistence. |
+| EXT-012 | CANDIDATE | Expand asset category guidance. | `docs/specs/ai/parameters-agent.md` | Categories are listed for later refinement: blue chips, altcoins, stablecoins, liquid-staking tokens, governance tokens. |
+| EXT-013 | CANDIDATE | Add direct modelling-plan editing. | `docs/specs/ai/parameters-agent.md` | V1 supports regenerate/accept and pasted plan import, not direct plan editing. |
+| EXT-014 | CANDIDATE | Expose additional Risk Parity risk measures. | `docs/specs/data-backend/riskfolio-lib.md` | V1 uses `rm="MV"`; `UCI` or other measures may be course extensions. |

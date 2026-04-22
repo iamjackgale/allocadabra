@@ -1,5 +1,5 @@
 created: 2026-04-20 20:06:11 BST
-last_updated: 2026-04-21 10:53:18 BST
+last_updated: 2026-04-22 11:09:19 BST
 
 # Allocadabra Project Plan
 
@@ -11,20 +11,38 @@ Allocadabra wraps `riskfolio-lib`; it does not modify or fork the library. The p
 
 ## Workflow
 
+Allocadabra has three workflow phases:
+
+1. Configuration Phase.
+2. Modelling Phase.
+3. Review Phase.
+
+Configuration Phase:
+
 1. User starts a new modelling workflow.
 2. System fetches a selection of crypto asset options from the CoinGecko API.
 3. User selects assets from a searchable dropdown.
 4. User provides modelling preferences rather than full manual assumptions.
-5. System sends the user's selected assets and preferences to Perplexity.
+5. Configuration Mode AI helps the user complete required inputs and answer technical app-use questions.
 6. Perplexity generates a natural-language modelling plan for user confirmation.
-7. Perplexity may suggest a subset from a fixed set of supported models.
+7. Perplexity may suggest a subset from the supported model set.
 8. User confirms the modelling plan before any model execution.
-9. System runs the confirmed model subset through `riskfolio-lib`.
-10. System presents comparable result summaries for the different models.
-11. User can explore model results in more detail.
-12. User can ask Perplexity follow-up questions about the results and model trade-offs.
-13. System offers exports of generated outputs.
-14. User can reset or refresh the workflow when they choose.
+
+Modelling Phase:
+
+1. System validates the confirmed configuration and model constraints.
+2. System runs the confirmed model subset through `riskfolio-lib`.
+3. System flags modelling issues and triggers rebuilds or user-facing errors before Review Phase.
+4. System prepares output summaries, metrics, charts, and exportable artifacts.
+
+Review Phase:
+
+1. System presents comparable result summaries for the different models.
+2. Review Mode AI provides a short neutral opening comparison against the user's stated preferences.
+3. User can explore model results in more detail.
+4. User can ask Perplexity follow-up questions about results and model trade-offs.
+5. System offers exports of generated outputs, excluding chat transcripts.
+6. User can reset or refresh the workflow when they choose.
 
 Progress should be cached locally so a user can leave the page and resume mid-query.
 
@@ -47,7 +65,9 @@ Confirmed:
 | Python | Language | Primary implementation language for the app and modelling workflow. |
 | pandas | Python data library | Build canonical price dataframes and model-specific transformed datasets. |
 | `riskfolio-lib` | Python modelling library | Portfolio modelling and strategic asset allocation calculations. |
-| Perplexity | External LLM provider | AI model-plan generation, model subset suggestion, and result reflection. |
+| Perplexity Agent API | Multi-provider LLM API | Shared AI integration for Configuration Mode and Review Mode. |
+| `perplexity/sonar` | Default LLM model | Initial model for app chat/completion through Perplexity. |
+| `perplexityai` | Python SDK | Python client for calling the Perplexity Agent API. |
 | CoinGecko Demo API | Market data API | Token list and token price history source. |
 | Browser-local storage/cache | Local persistence model | Stores CoinGecko cache, active user inputs, and current model outputs on the user's machine. |
 
@@ -78,6 +98,23 @@ To decide:
 - Logging must follow `/docs/specs/app/logging.md`.
 - Production paths should use the shared logging utility and named module loggers.
 - Production paths should not use `print()` for progress reporting.
+
+## AI Interaction Modes
+
+Allocadabra uses two AI interaction modes:
+
+- Configuration Mode: helps users select assets, set preferences, ask technical questions about using the app, generate the modelling plan, and suggest a supported model subset before model execution.
+- Review Mode: helps users interpret model outputs, compare trade-offs, and ask technical follow-up questions after model generation.
+
+Mode rules:
+
+- Configuration Mode receives user inputs and predefined app/course context, but no model outputs.
+- Review Mode receives the confirmed modelling plan and model output summary by default.
+- Review Mode may receive detailed output data only when the user asks about a specific output.
+- Configuration Mode and Review Mode use separate chat sessions within the single active workflow state.
+- The app wipes Configuration Mode chat context before Review Mode and reinjects the confirmed modelling plan into Review Mode.
+- Chat transcripts are not exportable in V1.
+- AI responses must always include the educational/no-advice/no-warranty guardrails defined in `/docs/specs/ai/ai-model-integration.md`.
 
 ## Agent Responsibilities
 
@@ -119,6 +156,8 @@ To decide:
 - CoinGecko market data, active user inputs, and current model outputs are stored locally in the user's browser.
 - The app supports one active set of user inputs and one active set of model outputs; previous inputs/outputs are recoverable only if the user downloaded them.
 - The app should not include an in-app cache-clearing control; browser storage is cleared only through the user's browser.
+- Perplexity uses `PERPLEXITY_API_KEY` from `.env`/environment configuration.
+- Perplexity calls use `perplexity/sonar` through the shared app AI integration by default.
 
 ## Initial Spec Areas
 
