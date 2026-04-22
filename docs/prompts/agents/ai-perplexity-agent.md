@@ -1,6 +1,8 @@
-created: 2026-04-21 08:33:31 BST
-last_updated: 2026-04-22 14:17:17 BST
-prompt_used:
+| Metadata | Value |
+|---|---|
+| created | 2026-04-21 08:33:31 BST |
+| last_updated | 2026-04-22 22:27:16 BST |
+| prompt_used | |
 
 # AI/Perplexity Agent Prompt
 
@@ -52,6 +54,28 @@ If implementation work reveals a missing decision, prompt conflict, unsupported 
 - Do not use Perplexity web search in V1.
 - Do not cite external sources or reference live data.
 - Do not use unsupported model names in actable metadata.
+
+## Folder Ownership And Branching
+
+Primary owned areas:
+
+- `/app/ai/**`
+- AI prompt templates, guardrail text, response parsing, metadata validation, and AI session/chat hooks.
+
+Shared/read-only context:
+
+- `/docs/**`, except assigned AI specs or prompt updates.
+- `/frontend/**`, owned by the Frontend Agent.
+- `/app/ingestion/**` and `/app/storage/**`, owned by the Backend/Data Agent.
+- `/app/processing/**`, owned by the Modelling Agent.
+
+Rules:
+
+- Work on a dedicated AI/Perplexity branch.
+- Keep edits scoped to Perplexity integration, mode orchestration, AI metadata, guardrails, and AI-facing session hooks.
+- Do not change UI rendering, CoinGecko ingestion, model execution, supported model registry, or QA validation files directly.
+- If AI work needs a change outside owned folders, return a mini spec before editing.
+- A mini spec must include target folders/files, requested owner agent, proposed change, reason, prompt/session/interface impact, and risks or dependencies.
 
 ## Provider Decisions
 

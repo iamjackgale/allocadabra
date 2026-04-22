@@ -1,5 +1,7 @@
-created: 2026-04-20 20:06:11 BST
-last_updated: 2026-04-22 22:13:25 BST
+| Metadata | Value |
+|---|---|
+| created | 2026-04-20 20:06:11 BST |
+| last_updated | 2026-04-22 22:27:16 BST |
 
 # Task Tracker
 
@@ -47,6 +49,7 @@ last_updated: 2026-04-22 22:13:25 BST
 | 031 | TODO | Modelling Agent | Define frontend-callable app-layer function names and return shapes for model runs, progress updates, output manifests, failed models, and downloadable artifacts. |  |
 | 032 | TODO | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. |  |
 | 033 | TODO | Product/UX Agent | Complete Design Review 1 using `docs/specs/ux/design-review-1.md` and raise exactly 10 high-priority UX questions before code-producing agents begin. |  |
+| 034 | DONE | Orchestrator Agent | Define strict folder ownership, branch expectations, and cross-agent mini spec rules across agent prompts and `docs/plan.md`. | 2026-04-22 22:27:16 BST |
 
 ## Potential Extensions Beyond V1
 

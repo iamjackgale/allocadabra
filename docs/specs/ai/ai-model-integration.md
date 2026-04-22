@@ -1,5 +1,7 @@
-created: 2026-04-21 08:27:31 BST
-last_updated: 2026-04-22 13:02:38 BST
+| Metadata | Value |
+|---|---|
+| created | 2026-04-21 08:27:31 BST |
+| last_updated | 2026-04-22 13:02:38 BST |
 
 # AI Model Integration Spec
 

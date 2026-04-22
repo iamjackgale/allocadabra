@@ -1,6 +1,8 @@
-created: 2026-04-21 08:33:31 BST
-last_updated: 2026-04-22 21:59:59 BST
-prompt_used:
+| Metadata | Value |
+|---|---|
+| created | 2026-04-21 08:33:31 BST |
+| last_updated | 2026-04-22 22:27:16 BST |
+| prompt_used | |
 
 # Frontend Agent Prompt
 
@@ -58,6 +60,29 @@ If implementation reveals a missing decision, unsupported Streamlit behaviour, s
 - Do not rely on colour alone for meaning.
 - Do not expose raw prompt payloads, API keys, detailed backend logs, or technical metadata to users.
 - Do not write modelling logic, CoinGecko ingestion logic, storage internals, or Perplexity prompt logic unless explicitly assigned.
+
+## Folder Ownership And Branching
+
+Primary owned areas:
+
+- `/frontend/**`
+- Frontend-only UI assets and Streamlit component structure.
+
+Shared/read-only context:
+
+- `/docs/**`, except assigned frontend specs or prompt updates.
+- `/app/ingestion/**` and `/app/storage/**`, owned by the Backend/Data Agent.
+- `/app/processing/**`, owned by the Modelling Agent.
+- `/app/ai/**`, owned by the AI/Perplexity Agent.
+- `/storage/cache/**`, owned by Backend/Data storage contracts and runtime data.
+
+Rules:
+
+- Work on a dedicated Frontend branch.
+- Keep edits scoped to Streamlit screens, components, user-facing state transitions, rendering, downloads, and visible Review context exposure.
+- Do not change backend ingestion/storage, model execution, AI prompt behaviour, or QA validation files directly.
+- If frontend work needs a change outside owned folders, return a mini spec before editing.
+- A mini spec must include target folders/files, requested owner agent, proposed change, reason, UI/interface impact, and risks or dependencies.
 
 ## Assigned Specs
 

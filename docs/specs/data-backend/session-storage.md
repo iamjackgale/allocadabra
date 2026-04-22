@@ -1,5 +1,7 @@
-created: 2026-04-21 08:27:31 BST
-last_updated: 2026-04-22 21:45:53 BST
+| Metadata | Value |
+|---|---|
+| created | 2026-04-21 08:27:31 BST |
+| last_updated | 2026-04-22 21:45:53 BST |
 
 # Session Storage Spec
 

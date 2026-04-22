@@ -1,5 +1,7 @@
-created: 2026-04-21 08:27:31 BST
-last_updated: 2026-04-22 20:23:50 BST
+| Metadata | Value |
+|---|---|
+| created | 2026-04-21 08:27:31 BST |
+| last_updated | 2026-04-22 20:23:50 BST |
 
 # Model Parameters Spec
 

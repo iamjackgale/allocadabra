@@ -1,5 +1,7 @@
-created: 2026-04-21 10:53:18 BST
-last_updated: 2026-04-22 14:17:17 BST
+| Metadata | Value |
+|---|---|
+| created | 2026-04-21 10:53:18 BST |
+| last_updated | 2026-04-22 14:17:17 BST |
 
 # Logging Spec
 

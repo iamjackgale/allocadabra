@@ -1,6 +1,8 @@
-created: 2026-04-21 08:33:31 BST
-last_updated: 2026-04-22 14:17:17 BST
-prompt_used:
+| Metadata | Value |
+|---|---|
+| created | 2026-04-21 08:33:31 BST |
+| last_updated | 2026-04-22 22:27:16 BST |
+| prompt_used | |
 
 # Modelling Agent Prompt
 
@@ -73,6 +75,29 @@ Shared context specs:
 - Own runtime feasibility spikes for the local Streamlit/Python execution path, especially `riskfolio-lib`, `cvxpy`, and required solver installation.
 - Generate model weights, summary metrics, and chart-ready output artifacts.
 - Produce user-facing model failure reasons for validation, solver, or runtime failures.
+
+## Folder Ownership And Branching
+
+Primary owned areas:
+
+- `/app/processing/**`
+- Modelling-specific scripts under `/scripts/**`, only where explicitly assigned.
+- Modelling output artifact contracts, in coordination with Backend/Data storage.
+
+Shared/read-only context:
+
+- `/docs/**`, except assigned modelling specs or prompt updates.
+- `/app/ingestion/**` and `/app/storage/**`, owned by the Backend/Data Agent.
+- `/app/ai/**`, owned by the AI/Perplexity Agent.
+- `/frontend/**`, owned by the Frontend Agent.
+
+Rules:
+
+- Work on a dedicated Modelling branch.
+- Keep edits scoped to dataset preparation, transformations, `riskfolio-lib` execution, metrics, solver handling, and model artifacts.
+- Do not change CoinGecko ingestion, local storage internals, frontend rendering, AI prompts, or QA validation files directly.
+- If modelling work needs a change outside owned folders, return a mini spec before editing.
+- A mini spec must include target folders/files, requested owner agent, proposed change, reason, model/interface impact, and risks or dependencies.
 
 ## Initial Build Scope
 

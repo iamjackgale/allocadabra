@@ -1,5 +1,7 @@
-created: 2026-04-20 20:06:11 BST
-last_updated: 2026-04-22 22:13:25 BST
+| Metadata | Value |
+|---|---|
+| created | 2026-04-20 20:06:11 BST |
+| last_updated | 2026-04-22 22:27:16 BST |
 
 # Allocadabra Project Plan
 
@@ -314,15 +316,26 @@ Review Mode specifics:
 - All implementation agents should fill in `prompt_used` in their prompt file when starting work.
 - All implementation agents should review relevant specs and raise pressing questions before implementation.
 
+## Agent Folder Ownership And Branching
+
+- Each implementation or review agent should work on its own dedicated branch.
+- Each agent must keep changes primarily inside its owned folders and assigned docs.
+- Folders owned by other agents are not free-edit areas.
+- If an agent needs a change outside its owned area, it should stop and return a mini spec instead of editing directly.
+- The mini spec should include target folders/files, requested owner agent, proposed change, reason, interface/contract impact, and risks or dependencies.
+- The Orchestrator Agent routes mini specs to the relevant owner for review, approval, or implementation.
+- Integration happens later through deliberate conflict reviews when agent branches are brought together.
+- `/docs` remains the single source of truth for ownership, specs, tasks, prompts, and cross-agent decisions.
+
 ## Agent Responsibilities
 
-- Orchestrator Agent: owns `/docs`, records project decisions, maintains plan/task/spec consistency, and does not write production code.
-- Product/UX Agent: reviews and directs product/UX quality, starting with Design Review 1 before code-producing agents begin.
-- Backend/Data Agent: owns CoinGecko ingestion, local cache/session storage, frontend-facing data interfaces, export bundling boundaries, and active workflow persistence.
-- Modelling Agent: owns dataset preparation, transformation registry, `riskfolio-lib` integration, solver/runtime feasibility, model execution, metrics, and model output artifacts.
-- AI/Perplexity Agent: owns Perplexity integration, guardrails, prompt templates, Configuration/Review orchestration, response parsing, metadata validation, fixed refusal/error messages, and chat/session hooks.
-- Frontend Agent: owns Streamlit screens/components, phase transitions, chat rendering, parameters UI, modelling progress UI, review UI, downloads, and visible-context exposure.
-- QA/Validation Agent: owns acceptance criteria, contract checks, workflow tests, error coverage, and regression validation.
+- Orchestrator Agent: owns `/docs/**`, records project decisions, maintains plan/task/spec consistency, coordinates branches and cross-agent mini specs, and does not write production code.
+- Product/UX Agent: owns product/UX review work under `/docs/specs/ux/**`, starting with Design Review 1 before code-producing agents begin.
+- Backend/Data Agent: owns `/app/ingestion/**`, `/app/storage/**`, data/cache contracts for `/storage/cache/**`, CoinGecko ingestion, local cache/session storage, frontend-facing data interfaces, export bundling boundaries, and active workflow persistence.
+- Modelling Agent: owns `/app/processing/**`, dataset preparation, transformation registry, `riskfolio-lib` integration, solver/runtime feasibility, model execution, metrics, and model output artifacts.
+- AI/Perplexity Agent: owns `/app/ai/**`, Perplexity integration, guardrails, prompt templates, Configuration/Review orchestration, response parsing, metadata validation, fixed refusal/error messages, and chat/session hooks.
+- Frontend Agent: owns `/frontend/**`, Streamlit screens/components, phase transitions, chat rendering, parameters UI, modelling progress UI, review UI, downloads, and visible-context exposure.
+- QA/Validation Agent: owns `/docs/validation/**` and validation/test strategy, including acceptance criteria, contract checks, workflow tests, error coverage, and regression validation.
 
 ## Implementation Gate
 
