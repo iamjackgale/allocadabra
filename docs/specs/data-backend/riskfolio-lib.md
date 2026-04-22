@@ -1,5 +1,5 @@
 created: 2026-04-21 08:27:31 BST
-last_updated: 2026-04-21 12:29:57 BST
+last_updated: 2026-04-22 21:23:40 BST
 
 # Riskfolio-Lib Spec
 
@@ -251,13 +251,16 @@ Initial model outputs should support:
 
 - Weights dataframe for each model.
 - Comparable summary metrics.
-- Optional pie/composition chart data.
-- Optional allocation-over-time chart data across the 365-day modelling window.
-- Optional efficient frontier data for Mean Variance.
-- Optional risk contribution data for Risk Parity and HRP.
-- Optional dendrogram/cluster data for HRP.
+- Allocation weights chart data.
+- Allocation-over-time chart data across the 365-day modelling window.
+- Cumulative performance chart data.
+- Drawdown chart data.
+- Rolling volatility chart data.
+- Efficient frontier data for Mean Variance where available.
+- Risk contribution data for Risk Parity and HRP where available.
+- Dendrogram/cluster data for HRP where available.
 
-Final export formats will be decided later, but model output tables should be exportable as `.csv` after successful model generation.
+Model output tables should be exportable as `.csv` after successful model generation. Chart images should be exportable as `.png` in V1.
 
 ## Allocation-Over-Time Chart
 
@@ -274,9 +277,9 @@ Important distinction:
 - For models that produce a single static optimized allocation, allocation-over-time can initially be represented as constant weights repeated across the modelling dates.
 - If the app later supports rolling optimization or scheduled rebalancing, allocation-over-time should represent recomputed weights at each rebalance date.
 
-Open decision:
+V1 decision:
 
-- Whether the first implementation should show constant optimized weights across the full period or defer allocation-over-time charts until rolling/rebalanced modelling exists.
+- Show constant optimized weights across the full period for models that produce a single static optimized allocation.
 
 ## Side-By-Side Summary Metrics
 
@@ -285,9 +288,7 @@ Initial result comparison should support the following summary metrics where the
 | Metric | Initial Support | Data Needed | Notes |
 |---|---|---|---|
 | Total Return [%] | Yes | Portfolio cumulative return series | Return over the model window. |
-| Benchmark Return [%] | Conditional | Benchmark cumulative return series | The example "BTC ETH MV Return" requires a defined benchmark construction. |
 | Max Drawdown [%] | Yes | Portfolio cumulative return/drawdown series | Maximum peak-to-trough drawdown. |
-| Max Drawdown Duration | Yes | Drawdown series | Longest drawdown period, likely expressed in days. |
 | Sharpe Ratio | Yes | Daily returns, risk-free rate | Initial `rf` default is `0`. |
 | Calmar Ratio | Yes | Annualized return, max drawdown | Requires max drawdown. |
 | Omega Ratio | Yes | Daily returns, threshold | Initial threshold can default to `0` unless changed later. |
@@ -303,7 +304,7 @@ Initial result comparison should support the following summary metrics where the
 
 Metric notes:
 
-- These metrics are feasible from daily returns, cumulative returns, drawdown series, and benchmark series.
+- These metrics are feasible from daily returns, cumulative returns, and drawdown series.
 - Benchmark metrics should not be implemented until the benchmark construction is explicitly defined.
 - Metrics should be computed consistently for every successful model output so side-by-side comparisons are fair.
 - If a metric cannot be computed for a model, the review output should show a clear missing/unavailable reason rather than silently omitting it.
@@ -315,13 +316,13 @@ Metric notes:
 - Reject model execution if the daily returns dataframe is empty.
 - Reject model execution if required model transformations are unavailable.
 - Report Riskfolio-Lib solver/optimization failures as user-facing model failure messages.
-- If one selected model fails and others succeed, the review UI should be able to show partial results and the failed model reason.
+- If one selected model fails and others succeed, the review UI should show available results and the failed model reason.
 
 ## Runtime Risk
 
-`riskfolio-lib` depends on optimization/scientific packages and solvers. The initial implementation must prove that the selected runtime can execute the initial three models before expanding to later candidates.
+`riskfolio-lib` depends on optimization/scientific packages and solvers. The initial implementation must prove that the local Streamlit/Python runtime can install and execute the initial three models before expanding to later candidates.
 
-Pyodide is the recommended first runtime investigation for a true browser-local Python app, but compatibility is not yet confirmed.
+Pure browser/Pyodide execution is not part of the V1 runtime route unless the Orchestrator Agent changes the architecture.
 
 ## Relationship To Other Specs
 
@@ -332,7 +333,7 @@ Pyodide is the recommended first runtime investigation for a true browser-local 
 
 ## Open Questions
 
-- Whether Pyodide can execute all three initial `riskfolio-lib` model paths.
+- Which local solver dependencies are required to execute all three initial `riskfolio-lib` model paths reliably.
 - Which optional exploration artifacts to prioritize for the hackathon build.
 - Whether Risk Parity should use `rm="MV"` initially or expose `UCI` later as a course extension.
 - Benchmark construction for benchmark-return rows such as "BTC ETH MV Return".

@@ -1,5 +1,5 @@
 created: 2026-04-21 08:27:31 BST
-last_updated: 2026-04-22 13:02:38 BST
+last_updated: 2026-04-22 20:23:50 BST
 
 # Parameters Agent Spec
 
@@ -26,8 +26,8 @@ The Configuration Agent helps collect:
 | Input | Required | Notes |
 |---|---|---|
 | Selected assets | Yes | Selected from CoinGecko-backed dropdown. Minimum 2, maximum 10. |
-| Treasury objective | Yes | Examples: high yield, stable performance, best risk-adjusted returns. |
-| Risk appetite | Yes | Higher, medium, or lower. |
+| Treasury objective | Yes | One of: `Maximize return`, `Stable performance`, `Best risk-adjusted returns`, `Reduce drawdowns`, `Diversify exposure`. |
+| Risk appetite | Yes | One of: `Very low`, `Low`, `Medium`, `High`, `Very high`. |
 | Selected models | Yes | Up to 3 supported models. Default to the first 3 available models if the user does not choose. |
 | Constraints | No | Use only predefined constraints the modelling system can handle. |
 
@@ -39,13 +39,18 @@ Do not collect a time horizon in the initial configuration flow. The modelling w
 
 Constraint collection should remain simple and predefined.
 
-Initial constraint categories may include:
+Supported V1 constraint categories:
 
-- no more/less than `X%` allocated to any asset or cluster.
-- no more/less than `X%` allocated to a specific asset or cluster.
-- no more/less than `X` assets in the portfolio.
+- max allocation per asset.
+- min allocation per asset.
+- max allocation to selected asset.
+- min allocation to selected asset.
+- max number of assets in portfolio.
+- min number of assets in portfolio.
 
 If a requested constraint is not supported by the modelling system, the agent should explain that it cannot be configured in the current app.
+
+The agent may suggest which available constraint preset to use, but it must not directly mutate the configuration form.
 
 ## Minimum Complete Configuration
 
@@ -90,6 +95,7 @@ The agent may:
 
 - Explain asset categories and selection considerations.
 - Reference well-known examples for category explanation only.
+- Explain that stablecoins may be a weaker fit for return-based price models because they are designed for price stability rather than price appreciation, without blocking their use.
 
 Potential categories for later refinement:
 
@@ -134,7 +140,8 @@ Structured metadata:
 ## Model Suggestion Rules
 
 - Suggested model IDs must be from the initial supported set only.
-- The agent may suggest one, two, or three models.
+- In normal chat, the agent may suggest one, two, or three supported models, but the user must manually apply any change in the configuration component.
+- During modelling-plan generation, the agent should respect the models currently selected by the user and should not independently change the subset.
 - If the user requests unsupported models, the agent should softly refuse and adopt the default supported model set unless the user chooses another supported subset.
 - The agent must not suggest future-only models:
   - Worst Case.

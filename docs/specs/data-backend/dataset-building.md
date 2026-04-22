@@ -1,5 +1,5 @@
 created: 2026-04-21 08:27:31 BST
-last_updated: 2026-04-21 12:28:01 BST
+last_updated: 2026-04-22 14:17:17 BST
 
 # Dataset Building Spec
 
@@ -9,16 +9,14 @@ Define how a modelling dataset is prepared after the user confirms the AI-genera
 
 ## Runtime Recommendation
 
-Dataset building should use Python and pandas.
+Dataset building should use Python and pandas inside the Streamlit/local Python app runtime.
 
-For a true browser-local app, the recommended first runtime investigation is Pyodide because it runs Python in the browser and includes common scientific packages such as pandas, NumPy, SciPy, and Matplotlib. This is not yet a confirmed runtime because `riskfolio-lib` depends on optimization/scientific packages and solvers that may require compatibility testing in Pyodide.
-
-If Pyodide cannot support the required `riskfolio-lib` path, the Orchestrator Agent must revisit the runtime architecture before implementation agents proceed.
+The V1 route is a single local Python web app rather than pure in-browser Python execution. Pyodide/browser-only execution is deferred unless the Orchestrator Agent changes the architecture.
 
 ## Inputs
 
 - Selected assets from the active user input state.
-- Normalized CoinGecko price history from browser-local market-data cache.
+- Normalized CoinGecko price history from local market-data cache.
 - Confirmed AI-generated modelling plan.
 - Confirmed model subset.
 
@@ -127,13 +125,13 @@ Export:
 ## Relationship To Other Specs
 
 - `/docs/specs/data-backend/coingecko-api.md` defines normalized source price data.
-- `/docs/specs/data-backend/data-storage.md` defines browser-local cached market data.
+- `/docs/specs/data-backend/data-storage.md` defines locally cached market data.
 - `/docs/specs/data-backend/session-storage.md` defines active user inputs and current model output storage.
 - `/docs/specs/data-backend/riskfolio-lib.md` defines supported models and completes the model transformation matrix.
 - `/docs/prompts/agents/qa-validation-agent.md` should include validation coverage for dataset-building errors.
 
 ## Open Questions
 
-- Whether Pyodide can support the required `riskfolio-lib` execution path.
+- Exact local runtime dependency set for `riskfolio-lib`, solvers, charting, and export.
 - Exact internal metadata schema for dataframe column-to-asset mapping.
 - Exact thresholds for "excessive" missing/forward-filled data beyond the 90 valid price minimum.

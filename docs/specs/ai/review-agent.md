@@ -1,5 +1,5 @@
 created: 2026-04-21 08:27:31 BST
-last_updated: 2026-04-22 13:02:38 BST
+last_updated: 2026-04-22 21:23:40 BST
 
 # Review Agent Spec
 
@@ -19,9 +19,9 @@ Review Mode begins after model outputs exist and helps users interpret model res
 
 ## Phase Boundary
 
-Review Mode starts only after the Modelling Phase completes successfully enough outputs to review.
+Review Mode starts only after the Modelling Phase completes enough outputs to review.
 
-The Modelling Phase is responsible for detecting modelling errors, failed models, and rebuild requirements before Review Mode begins. If a selected model fails, the app should keep the user in the Modelling Phase and ask them to try again rather than entering Review Mode.
+The Modelling Phase is responsible for detecting modelling errors, failed models, and rebuild requirements before Review Mode begins. If at least one selected model succeeds, Review Mode may still open with failed models clearly marked in red. If no selected models succeed, the app should keep the user in the Modelling Phase and ask them to try again rather than entering Review Mode.
 
 ## Context Inputs
 
@@ -31,6 +31,7 @@ Review Mode receives by default:
 - Model output summary.
 - Model names and IDs.
 - Summary metrics.
+- Failed model names, IDs, and failure reasons where applicable.
 - Chart/output summaries for allocations, backtested performance, and other generated review artifacts.
 - Deterministic app-prepared ranking and summary inputs.
 - Relevant user preferences.
@@ -52,11 +53,13 @@ Review Mode does not receive by default:
 
 ## Initial Review Message
 
-On first load, the Review Agent should provide a short neutral opening comparison of key metrics and then wait for user questions.
+On first load, the Review Agent should provide a short neutral opening comparison in chat and then wait for user questions.
 
 The deterministic app prepares ranking and summary inputs. The AI writes the short neutral explanation.
 
 The initial comparison may rank models only against the user's stated preferences from Configuration Mode. It must not declare a universally best portfolio.
+
+The opening comparison should explain which model appears to fit the user's requirements best, why, and what strengths the other selected models have by comparison. If any selected model failed, mention the failure neutrally and do not invent results for it.
 
 In V1, the ranking is generated between the Modelling Phase and the start of Review Mode. User chat during Review Mode should not update or rewrite the ranking.
 
@@ -82,8 +85,11 @@ The AI integration should decide detailed context injection from:
 - specific models mentioned by the user.
 - specific output types mentioned by the user.
 - the model and output currently visible in the Model Review Component.
+- the visible section, selected model, selected metric row, open expander IDs, and visible chart/table data provided by the frontend.
 
 For every referenced or visible model/output pair, inject the relevant detailed data.
+
+The user should not be shown an explicit notice that context was injected.
 
 Do not inject:
 

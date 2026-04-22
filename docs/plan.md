@@ -1,5 +1,5 @@
 created: 2026-04-20 20:06:11 BST
-last_updated: 2026-04-22 11:09:19 BST
+last_updated: 2026-04-22 21:59:59 BST
 
 # Allocadabra Project Plan
 
@@ -44,16 +44,16 @@ Review Phase:
 5. System offers exports of generated outputs, excluding chat transcripts.
 6. User can reset or refresh the workflow when they choose.
 
-Progress should be cached locally so a user can leave the page and resume mid-query.
+Progress should be cached locally so a user can leave the app and resume mid-query.
 
 ## Architecture Components
 
-- Frontend: browser-based workflow for asset search, preference capture, plan confirmation, result comparison, deeper exploration, AI reflection, export, resume, and reset.
-- App/Data Layer: coordinates CoinGecko data access, Perplexity calls, modelling execution, browser-local storage, and exports within a single holistic app.
+- Frontend: Streamlit-based local web workflow for asset search, preference capture, plan confirmation, result comparison, deeper exploration, AI reflection, export, resume, and reset.
+- App/Data Layer: coordinates CoinGecko data access, Perplexity calls, modelling execution, local cache/session storage, and exports within a single holistic app.
 - Asset Data Layer: fetches and normalizes crypto asset options from CoinGecko for searchable selection.
 - LLM Layer: uses Perplexity to generate the natural-language modelling plan, suggest supported model subsets, and support post-result reflection.
 - Modelling Layer: wraps `riskfolio-lib` and runs only confirmed models from the supported model set.
-- Browser-Local Storage: stores cached CoinGecko data, the single active input state, and current model outputs so users can leave and resume.
+- Local App Storage: stores cached CoinGecko data, the single active input state, and current model outputs so users can leave and resume.
 - Export Layer: packages generated outputs for download after modelling and reflection.
 
 ## Tech Stack
@@ -63,28 +63,27 @@ Confirmed:
 | System | Type | Use |
 |---|---|---|
 | Python | Language | Primary implementation language for the app and modelling workflow. |
+| Streamlit | Python UI framework | Single local web app runtime for the three-phase user workflow. |
 | pandas | Python data library | Build canonical price dataframes and model-specific transformed datasets. |
 | `riskfolio-lib` | Python modelling library | Portfolio modelling and strategic asset allocation calculations. |
 | Perplexity Agent API | Multi-provider LLM API | Shared AI integration for Configuration Mode and Review Mode. |
 | `perplexity/sonar` | Default LLM model | Initial model for app chat/completion through Perplexity. |
 | `perplexityai` | Python SDK | Python client for calling the Perplexity Agent API. |
 | CoinGecko Demo API | Market data API | Token list and token price history source. |
-| Browser-local storage/cache | Local persistence model | Stores CoinGecko cache, active user inputs, and current model outputs on the user's machine. |
+| Plotly | Python charting library | V1 charting dependency for Streamlit charts and `.png` chart export where practical. |
+| Local filesystem storage/cache | Local persistence model | Stores CoinGecko cache, active user inputs, and current model outputs under the local app workspace. |
 
 To decide:
 
-- Python frontend/web app framework.
-- Browser-local storage implementation.
-- Charting/visualisation dependencies.
 - Export packaging dependencies.
-- Pyodide feasibility for browser-local Python execution with `riskfolio-lib`.
+- Exact local cache file formats and schema versioning.
 
 ## Repository Layout
 
 - `/app`: core processing functionality for ingestion, storage management, dataset building, modelling, AI/LLM calls, analysis, and export preparation.
 - `/app/ingestion`: CoinGecko data gathering and normalization logic.
 - `/app/processing`: dataset building, model preparation, modelling workflows, and output analysis logic.
-- `/app/storage`: storage management logic for reading and writing browser-local/cache-backed data.
+- `/app/storage`: storage management logic for reading and writing local cache-backed data.
 - `/app/ai`: Perplexity/LLM integration logic and prompt orchestration.
 - `/frontend`: UI/frontend implementation.
 - `/scripts`: command-style entry points that trigger app actions and can later be wired to UI buttons.
@@ -116,11 +115,21 @@ Mode rules:
 - Chat transcripts are not exportable in V1.
 - AI responses must always include the educational/no-advice/no-warranty guardrails defined in `/docs/specs/ai/ai-model-integration.md`.
 
+## User Interface Direction
+
+- Use three phase screens on one base Streamlit app URL: Configuration, Modelling, Review.
+- Configuration and Review use a two-panel desktop layout with AI chat on the left and the active workflow component on the right.
+- Modelling uses a focused progress screen with user-facing checkpoint logs, hidden/expandable detailed logs, and a compact copy of the agreed modelling plan.
+- V1 is not mobile optimized; mobile users should see a holding screen.
+- Visual style should be clean, academic, dashboard-like, light/dark compatible, and should avoid crypto-themed branding.
+- Configuration and Review should use a subtle green accent/backlight to signal user-led phases; Modelling should use a subtle red accent/backlight to signal app-led processing.
+- The frontend should not include hackathon branding.
+
 ## Agent Responsibilities
 
 - Orchestrator Agent: owns `/docs`, records project decisions, maintains plan/task/spec consistency, and does not write production code.
 - Frontend Agent: owns the student-facing web workflow and result exploration experience.
-- Backend/Data Agent: owns app data boundaries, CoinGecko integration, browser-local storage, session state, and export support.
+- Backend/Data Agent: owns app data boundaries, CoinGecko integration, local cache/session storage, session state, and export support.
 - LLM Agent: owns Perplexity prompts, modelling-plan generation, model-subset suggestion, and reflection flow.
 - Modelling Agent: owns `riskfolio-lib` integration and the fixed supported model registry.
 - QA Agent: owns validation strategy, workflow testing, and regression checks.
@@ -134,17 +143,19 @@ Mode rules:
 - The system should support follow-up questions about results and trade-offs.
 - The system should preserve local in-progress state across page exits and reloads.
 - The system should offer exports of generated files/results.
+- V1 should run as one local Streamlit app, not separate frontend/backend processes.
+- V1 should not optimize for mobile beyond a clear holding screen.
 
-## Browser-Local Runtime Constraints
+## Local App Runtime Constraints
 
 - Limit each modelling run to no more than 10 selected assets.
 - Limit each comparison run to no more than 3 models.
 - Limit the initial modelling window to a maximum of 365 daily observations.
 - Avoid continuous background fetching; CoinGecko calls should be page-load, dropdown/search, or model-generation triggered.
-- Reuse browser-cached CoinGecko data wherever possible before making new API calls.
-- Run expensive modelling work asynchronously from the UI thread where practical, so the interface remains responsive.
+- Reuse locally cached CoinGecko data wherever possible before making new API calls.
+- Keep Streamlit UI responsive with clear phase screens, progress states, and user-facing checkpoint logs during model execution.
 - Present result summaries first and load deeper model exploration views only when the user requests them.
-- Keep one active workflow state and one active model-output set; do not maintain a full in-browser history of prior runs.
+- Keep one active workflow state and one active model-output set; do not maintain a full local history of prior runs.
 
 ## External Service Decisions
 
@@ -153,15 +164,15 @@ Mode rules:
 - CoinGecko usage is limited to free public endpoints available with the demo API key.
 - Token-list retrieval supports the asset selection UI and may be triggered on page load, dropdown open, or user-prompted search confirmation.
 - Token-price retrieval is handled entirely by the app data layer and only triggered after the user confirms modelling scope and chooses to generate models.
-- CoinGecko market data, active user inputs, and current model outputs are stored locally in the user's browser.
+- CoinGecko market data, active user inputs, and current model outputs are stored locally under the app workspace.
 - The app supports one active set of user inputs and one active set of model outputs; previous inputs/outputs are recoverable only if the user downloaded them.
-- The app should not include an in-app cache-clearing control; browser storage is cleared only through the user's browser.
+- The app should not include an in-app cache-clearing control; local cache data is cleared only if the user removes local storage/cache files outside the app.
 - Perplexity uses `PERPLEXITY_API_KEY` from `.env`/environment configuration.
 - Perplexity calls use `perplexity/sonar` through the shared app AI integration by default.
 
 ## Initial Spec Areas
 
-Initial spec stubs have been created under `/docs/specs`. These files capture the current areas of concern without yet defining detailed schemas, API contracts, prompts, or implementation rules.
+Initial specs have been created under `/docs/specs`. These files capture current contracts and implementation boundaries while leaving detailed schemas and final dependency choices to the owning implementation agents.
 
 Current spec areas include:
 
@@ -178,4 +189,4 @@ Current spec areas include:
 - Export contract.
 - Shared logging contract.
 
-Detailed specs and contracts are the next planning action.
+Remaining planning work should focus on completing agent prompts, validation criteria, final dependency choices, and implementation handoff.

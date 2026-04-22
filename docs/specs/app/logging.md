@@ -1,5 +1,5 @@
 created: 2026-04-21 10:53:18 BST
-last_updated: 2026-04-21 10:53:18 BST
+last_updated: 2026-04-22 14:17:17 BST
 
 # Logging Spec
 
@@ -112,7 +112,7 @@ def log_dataframe_preview(name: str, df: pd.DataFrame, rows: int = 3) -> None:
 
 Do not use `print()` in production paths.
 
-CLI tools, ingestion jobs, processing builds, model runs, AI calls, and app actions should report progress through the shared logging pattern so local runs, scheduled jobs, browser-local app logs, and future cloud logs remain consistent.
+CLI tools, ingestion jobs, processing builds, model runs, AI calls, and app actions should report progress through the shared logging pattern so local app runs, scheduled jobs, and future cloud logs remain consistent.
 
 ## Agent Guidance
 

@@ -1,5 +1,5 @@
 created: 2026-04-20 20:06:11 BST
-last_updated: 2026-04-22 13:02:38 BST
+last_updated: 2026-04-22 21:59:59 BST
 
 # Task Tracker
 
@@ -16,30 +16,36 @@ last_updated: 2026-04-22 13:02:38 BST
 |---|---|---|---|---|
 | 001 | DONE | Orchestrator Agent | Begin defining specs for key initial components. | 2026-04-21 08:27:31 BST |
 | 002 | DONE | Orchestrator Agent | Prepare initial prompts for the first agents in `docs/prompts/agents` to give context and prepare them for work on part of the spec. | 2026-04-21 08:33:31 BST |
-| 003 | IN_PROGRESS | Orchestrator Agent | Prepare a second tranche of specific project details, expectations, and preferences for inclusion in `plan.md`. |  |
+| 003 | DONE | Orchestrator Agent | Prepare a second tranche of specific project details, expectations, and preferences for inclusion in `plan.md`. | 2026-04-22 14:17:17 BST |
 | 004 | TODO | Orchestrator Agent | Do a second review pass of the draft `plan.md` looking for corrections and improvements. |  |
 | 005 | DONE | Orchestrator Agent | Complete `docs/specs/data-backend/coingecko-api.md`. | 2026-04-21 08:55:31 BST |
 | 006 | DONE | Orchestrator Agent | Complete `docs/specs/data-backend/data-storage.md`. | 2026-04-21 09:30:05 BST |
 | 007 | DONE | Orchestrator Agent | Complete `docs/specs/data-backend/dataset-building.md`. | 2026-04-21 10:01:04 BST |
 | 008 | DONE | Orchestrator Agent | Complete `docs/specs/data-backend/riskfolio-lib.md`. | 2026-04-21 10:17:20 BST |
 | 009 | DONE | Orchestrator Agent | Complete `docs/specs/data-backend/session-storage.md`. | 2026-04-21 09:30:05 BST |
-| 010 | TODO | Orchestrator Agent | Complete `docs/specs/frontend/ui-design-build.md`. |  |
-| 011 | TODO | Orchestrator Agent | Complete `docs/specs/frontend/agent-chat.md`. |  |
-| 012 | TODO | Orchestrator Agent | Complete `docs/specs/frontend/model-parameters.md`. |  |
-| 013 | TODO | Orchestrator Agent | Complete `docs/specs/frontend/model-review.md`. |  |
+| 010 | DONE | Orchestrator Agent | Complete `docs/specs/frontend/ui-design-build.md`. | 2026-04-22 14:17:17 BST |
+| 011 | DONE | Orchestrator Agent | Complete `docs/specs/frontend/agent-chat.md`. | 2026-04-22 14:17:17 BST |
+| 012 | DONE | Orchestrator Agent | Complete `docs/specs/frontend/model-parameters.md`. | 2026-04-22 14:17:17 BST |
+| 013 | DONE | Orchestrator Agent | Complete `docs/specs/frontend/model-review.md`. | 2026-04-22 14:17:17 BST |
 | 014 | DONE | Orchestrator Agent | Complete `docs/specs/ai/ai-model-integration.md`. | 2026-04-22 10:37:39 BST |
 | 015 | DONE | Orchestrator Agent | Complete `docs/specs/ai/parameters-agent.md`. | 2026-04-22 10:37:39 BST |
 | 016 | DONE | Orchestrator Agent | Complete `docs/specs/ai/review-agent.md`. | 2026-04-22 10:37:39 BST |
 | 017 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/orchestrator-agent.md`. |  |
 | 018 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/product-ux-agent.md`. |  |
-| 019 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/frontend-agent.md`. |  |
+| 019 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/frontend-agent.md`. | 2026-04-22 21:54:38 BST |
 | 020 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/backend-data-agent.md`. |  |
 | 021 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/modelling-agent.md`. | 2026-04-21 13:03:50 BST |
 | 022 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/ai-perplexity-agent.md`. | 2026-04-22 13:02:38 BST |
 | 023 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/qa-validation-agent.md`. |  |
-| 024 | TODO | Orchestrator Agent | Decide Python frontend framework and major browser-local app dependencies for inclusion in `plan.md`. |  |
+| 024 | IN_PROGRESS | Orchestrator Agent | Decide remaining major local app dependencies and storage/interface schemas for inclusion in `plan.md`. |  |
 | 025 | DONE | Orchestrator Agent | Create shared logging spec at `docs/specs/app/logging.md`. | 2026-04-21 10:53:18 BST |
 | 026 | DONE | Orchestrator Agent | Create and maintain the potential extensions beyond V1 sublist in `docs/tasks.md`. | 2026-04-22 12:21:30 BST |
+| 027 | DONE | Orchestrator Agent | Create `docs/specs/frontend/modelling-page.md` for the Modelling Phase progress screen. | 2026-04-22 21:29:01 BST |
+| 028 | TODO | Backend/Data Agent | Define exact local cache/session file formats, schemas, and frontend-facing state interfaces. |  |
+| 029 | TODO | Backend/Data Agent | Define frontend-callable app-layer function names and return shapes for CoinGecko token list, deterministic validation, and export bundling. |  |
+| 030 | TODO | AI/Perplexity Agent | Define frontend-callable app-layer function names and return shapes for AI plan generation, chat calls, fixed financial-advice refusal text, and generic safe-error messages. |  |
+| 031 | TODO | Modelling Agent | Define frontend-callable app-layer function names and return shapes for model runs, progress updates, output manifests, failed models, and downloadable artifacts. |  |
+| 032 | TODO | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. |  |
 
 ## Potential Extensions Beyond V1
 
@@ -55,7 +61,14 @@ last_updated: 2026-04-22 13:02:38 BST
 | EXT-008 | CANDIDATE | Add rolling optimization or scheduled rebalancing. | `docs/specs/data-backend/riskfolio-lib.md` | Would make allocation-over-time charts show changing weights rather than repeated static weights. |
 | EXT-009 | CANDIDATE | Define and implement standardized benchmark construction. | `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/specs/frontend/model-parameters.md`; `docs/specs/ai/parameters-agent.md` | V1 should not ask users for benchmark preference; benchmark construction remains undefined. |
 | EXT-010 | CANDIDATE | Add additional export formats and visual artifacts. | `docs/specs/data-backend/session-storage.md`; `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/prompts/agents/backend-data-agent.md` | V1 has `.json`, `.md`, `.csv`; visual artifact export details remain open. |
-| EXT-011 | CANDIDATE | Add cloud/server persistence or future cloud logs. | `docs/specs/app/logging.md`; `docs/specs/data-backend/data-storage.md`; `docs/specs/data-backend/session-storage.md` | V1 is browser-local and has no separate backend persistence. |
+| EXT-011 | CANDIDATE | Add cloud/server persistence or future cloud logs. | `docs/specs/app/logging.md`; `docs/specs/data-backend/data-storage.md`; `docs/specs/data-backend/session-storage.md` | V1 is local app storage and has no remote persistence. |
 | EXT-012 | CANDIDATE | Expand asset category guidance. | `docs/specs/ai/parameters-agent.md` | Categories are listed for later refinement: blue chips, altcoins, stablecoins, liquid-staking tokens, governance tokens. |
 | EXT-013 | CANDIDATE | Add direct modelling-plan editing. | `docs/specs/ai/parameters-agent.md` | V1 supports regenerate/accept and pasted plan import, not direct plan editing. |
 | EXT-014 | CANDIDATE | Expose additional Risk Parity risk measures. | `docs/specs/data-backend/riskfolio-lib.md` | V1 uses `rm="MV"`; `UCI` or other measures may be course extensions. |
+| EXT-015 | CANDIDATE | Revisit pure browser/Pyodide execution. | `docs/plan.md`; `docs/specs/data-backend/dataset-building.md`; `docs/specs/data-backend/riskfolio-lib.md` | V1 uses Streamlit/local Python to keep the hackathon build practical as one local app. |
+| EXT-016 | CANDIDATE | Allow Review chat to control UI navigation. | `docs/specs/frontend/agent-chat.md`; `docs/specs/frontend/model-review.md` | V1 chat can only return responses; it cannot move the UI. |
+| EXT-017 | CANDIDATE | Support ranked or multiple treasury objectives. | `docs/specs/frontend/model-parameters.md`; `docs/specs/ai/parameters-agent.md` | V1 allows one objective only. |
+| EXT-018 | CANDIDATE | Add AI feedback on selected asset risk before modelling. | `docs/specs/frontend/model-parameters.md`; `docs/specs/ai/parameters-agent.md` | Could help users reconcile selected assets with risk appetite before generating a plan. |
+| EXT-019 | CANDIDATE | Allow multiple Model Review output sections open at once. | `docs/specs/frontend/model-review.md` | V1 keeps one section open at a time for screen size and AI context clarity. |
+| EXT-020 | CANDIDATE | Persist Model Review open section and selected model across reload. | `docs/specs/frontend/model-review.md`; `docs/specs/data-backend/session-storage.md` | V1 reloads to summary metrics and first model in run order. |
+| EXT-021 | CANDIDATE | Resume interrupted modelling runs after reload. | `docs/specs/frontend/modelling-page.md`; `docs/specs/data-backend/session-storage.md` | V1 should show interrupted state only. |

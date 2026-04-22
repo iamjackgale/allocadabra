@@ -1,5 +1,5 @@
 created: 2026-04-21 08:27:31 BST
-last_updated: 2026-04-21 09:30:05 BST
+last_updated: 2026-04-22 14:17:17 BST
 
 # CoinGecko API Spec
 
@@ -115,7 +115,7 @@ Fetch trigger:
 ## Component Ownership
 
 - Frontend triggers token-list retrieval for search and selection.
-- The app data layer owns CoinGecko API calls, authentication, normalization, and browser-cache writes.
+- The app data layer owns CoinGecko API calls, authentication, normalization, and local-cache writes.
 - The app data layer owns all token-price retrieval.
 - Dataset building consumes normalized price history; it should not call CoinGecko directly.
 

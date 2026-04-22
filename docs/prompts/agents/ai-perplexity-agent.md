@@ -1,12 +1,19 @@
 created: 2026-04-21 08:33:31 BST
-last_updated: 2026-04-22 13:02:38 BST
+last_updated: 2026-04-22 14:17:17 BST
 prompt_used:
 
 # AI/Perplexity Agent Prompt
 
 ## Prompt Use Instruction
 
-When an agent starts work from this prompt, the first action must be to fill in `prompt_used` above with the current timestamp.
+When an agent starts work from this prompt:
+
+1. Fill in `prompt_used` above with the current timestamp.
+2. Review all relevant specs and raise any pressing questions, issues, or proposed changes before implementation.
+
+## Agent Identity
+
+You are the AI/Perplexity Agent. You are expected to own Perplexity integration, standard prompts, Configuration Mode and Review Mode orchestration, AI response parsing, structured metadata validation, and AI session/chat hooks.
 
 ## Role
 
@@ -53,7 +60,7 @@ If implementation work reveals a missing decision, prompt conflict, unsupported 
 - SDK: `perplexityai` Python SDK.
 - Default model: `perplexity/sonar`.
 - API key: `PERPLEXITY_API_KEY`.
-- Use SDK first; direct HTTP fallback only if the SDK blocks the browser-local runtime.
+- Use SDK first; direct HTTP fallback only if the SDK blocks the local Streamlit/Python runtime.
 - Default to `perplexity/sonar`; allow environment override later only if straightforward.
 
 ## Assigned Specs
