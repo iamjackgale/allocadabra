@@ -1,5 +1,5 @@
 created: 2026-04-20 20:06:11 BST
-last_updated: 2026-04-22 21:59:59 BST
+last_updated: 2026-04-22 22:08:50 BST
 
 # Task Tracker
 
@@ -31,7 +31,7 @@ last_updated: 2026-04-22 21:59:59 BST
 | 015 | DONE | Orchestrator Agent | Complete `docs/specs/ai/parameters-agent.md`. | 2026-04-22 10:37:39 BST |
 | 016 | DONE | Orchestrator Agent | Complete `docs/specs/ai/review-agent.md`. | 2026-04-22 10:37:39 BST |
 | 017 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/orchestrator-agent.md`. |  |
-| 018 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/product-ux-agent.md`. |  |
+| 018 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/product-ux-agent.md`. | 2026-04-22 22:08:50 BST |
 | 019 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/frontend-agent.md`. | 2026-04-22 21:54:38 BST |
 | 020 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/backend-data-agent.md`. |  |
 | 021 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/modelling-agent.md`. | 2026-04-21 13:03:50 BST |
@@ -46,6 +46,7 @@ last_updated: 2026-04-22 21:59:59 BST
 | 030 | TODO | AI/Perplexity Agent | Define frontend-callable app-layer function names and return shapes for AI plan generation, chat calls, fixed financial-advice refusal text, and generic safe-error messages. |  |
 | 031 | TODO | Modelling Agent | Define frontend-callable app-layer function names and return shapes for model runs, progress updates, output manifests, failed models, and downloadable artifacts. |  |
 | 032 | TODO | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. |  |
+| 033 | TODO | Product/UX Agent | Complete Design Review 1 using `docs/specs/ux/design-review-1.md` and raise exactly 10 high-priority UX questions before code-producing agents begin. |  |
 
 ## Potential Extensions Beyond V1
 
