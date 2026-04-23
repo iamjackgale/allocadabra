@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 12:30:52 BST |
+| last_updated | 2026-04-23 20:08:51 BST |
 
 # Task Tracker
 
@@ -102,6 +102,10 @@
 | 084 | DONE | Orchestrator Agent | Review Backend, Modelling, and AI post-scaffold summaries and keep task ownership boundaries consistent before assigning the next work tranche. | 2026-04-23 12:24:54 BST |
 | 085 | DONE | Orchestrator Agent | Create `docs/prompts/briefs/` for top-up refresh prompts and save the first Modelling and AI agent briefs. | 2026-04-23 12:29:28 BST |
 | 086 | DONE | Orchestrator Agent | Save the first Backend/Data Agent brief for task 063 in `docs/prompts/briefs/backend-data-agent-1.md`. | 2026-04-23 12:30:52 BST |
+| 090 | DONE | Orchestrator Agent | Save the Frontend runtime dependency mini spec for adding `streamlit` to shared dependencies in `docs/prompts/briefs/frontend-runtime-dependency-mini-spec-1.md`. | 2026-04-23 20:06:01 BST |
+| 091 | TODO | Orchestrator Agent | Apply the Frontend runtime dependency mini spec by adding `streamlit` to shared dependencies in `pyproject.toml`, regenerating `uv.lock`, and validating the import. |  |
+| 092 | TODO | Backend/Data Agent | Implement deterministic configuration validation for unsupported model IDs and impossible constraint combinations, with stable field-specific issue codes for the Frontend Configuration flow. |  |
+| 093 | TODO | Orchestrator Agent | Merge the Modelling Agent frontend-callable contract tranche into `main` and reconcile tasks `031`, `066`, `067`, and `068` before Frontend wires end-to-end Modelling flow. |  |
 
 ## Potential Extensions Beyond V1
 
