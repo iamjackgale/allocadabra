@@ -157,11 +157,15 @@ Initial backend/data scaffolding exposes workflow-state helpers from `app.storag
 | `abandon_generated_plan()` | Return to editable Configuration while preserving selected inputs and Configuration chat. |
 | `mark_modelling_started()` | Move the active workflow into Modelling and clear partial output manifests. |
 | `mark_modelling_interrupted(error=None)` | Record interrupted Modelling and clear partial output manifests. |
-| `mark_review_ready(manifest)` | Store the current model-output manifest and move the active workflow into Review. |
+| `prepare_review_export_bundle(modelling_artifacts=None, failed_models=None, missing_artifacts=None)` | Create export files, manifest, and Download All zip from stored workflow state and Modelling-produced artifact descriptors, then move the active workflow into Review. |
+| `mark_review_ready(manifest)` | Store the current model-output/export manifest and move the active workflow into Review. |
+| `get_review_export_manifest()` | Return the current export manifest for Review. |
+| `get_review_download_all()` | Return Download All metadata for the Frontend. |
+| `get_review_artifact_download(artifact_id)` | Return individual artifact download metadata for the Frontend. |
 | `return_to_configure_from_review()` | Clear current outputs and Review chat while preserving prior configuration choices. |
 | `reset_configuration()` / `start_new_model()` | Clear active inputs, plan, chats, and outputs without touching CoinGecko cache. |
 
-Export bundle generation interfaces should be added by the Backend/Data Agent while implementing `/docs/specs/app/export-bundling.md`.
+Export bundle generation follows `/docs/specs/app/export-bundling.md`.
 
 ## Relationship To Other Specs
 
