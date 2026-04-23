@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 14:17:17 BST |
+| last_updated | 2026-04-23 12:32:47 BST |
 
 # CoinGecko API Spec
 
@@ -121,6 +121,53 @@ Fetch trigger:
 - The app data layer handles price fetching entirely.
 - The only user action that can trigger token price fetching is confirming the scope and selecting model generation.
 
+## Retry, Timeout, And Rate-Limit Policy
+
+The V1 CoinGecko client uses one shared HTTP policy for:
+
+- `GET /coins/list`
+- `GET /coins/{id}/market_chart`
+
+Current client defaults:
+
+| Setting | Value | Notes |
+|---|---:|---|
+| `timeout_seconds` | `20` | Applies per HTTP request attempt. |
+| `max_retries` | `2` | Allows up to 3 total attempts: the initial attempt plus 2 retries. |
+| `retry_delay_seconds` | `1` | Linear retry delay: 1 second before the first retry, 2 seconds before the second retry. |
+
+Retryable failures:
+
+- HTTP status `408`, `409`, `425`, `429`, `500`, `502`, `503`, and `504`.
+- Network/URL failures surfaced by Python as `URLError`.
+- Request timeouts surfaced as `TimeoutError`.
+- JSON decode failures when the response body cannot be parsed.
+
+Non-retryable failures:
+
+- Other HTTP errors fail immediately and include the CoinGecko response status and response text in the internal exception.
+- Missing `COINGECKO_API_KEY` fails before any live API request.
+- Unexpected response shapes fail during endpoint-specific normalization checks.
+
+Caller behaviour:
+
+- The ingestion client raises `MissingCoinGeckoAPIKeyError` when `COINGECKO_API_KEY` is unavailable.
+- The ingestion client raises `CoinGeckoAPIError` when a CoinGecko request fails or returns an unusable response.
+- The app/storage layer may catch per-asset price-history failures and return user-facing `errors` entries without aborting every other selected asset.
+- Token-list failures should be treated as recoverable setup/API errors for the UI to surface; the app should not expose API keys, raw backend logs, or detailed request payloads to users.
+
+Rate-limit behaviour:
+
+- V1 does not implement proactive request throttling.
+- CoinGecko `429` responses are retried using the shared retry policy above.
+- The app should avoid continuous background polling. Token-list refreshes should remain page-load or user-prompted, and price-history requests should run only when modelling begins or when cached data is insufficient/stale.
+
+Live API validation:
+
+- Live CoinGecko validation requires `COINGECKO_API_KEY` to be configured in `.env` or the process environment.
+- Default validation may use import, compile, fixture, or smoke checks that do not call CoinGecko.
+- Task `064` separately tracks whether the 2-day price-cache freshness tolerance in `/docs/specs/data-backend/data-storage.md` should change after Streamlit/runtime validation.
+
 ## Component Ownership
 
 - Frontend triggers token-list retrieval for search and selection.
@@ -141,4 +188,4 @@ Token search should filter on `symbol` and `name` for user-facing behaviour.
 
 ## Open Questions
 
-- Rate-limit, retry, and timeout policy.
+- None for V1 CoinGecko request configuration. Price-cache freshness tuning remains tracked separately in task `064`.

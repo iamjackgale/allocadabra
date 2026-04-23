@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 12:30:52 BST |
+| last_updated | 2026-04-23 12:45:16 BST |
 
 # Task Tracker
 
@@ -78,7 +78,7 @@
 | 060 | DONE | Modelling Agent | Run the modelling runtime feasibility spike using the approved `pyproject.toml` dependencies and report whether default `cvxpy` solvers are sufficient. | 2026-04-23 09:40:39 BST |
 | 061 | DONE | Orchestrator Agent | Decide `uv.lock` version-control policy, document it, and commit the lockfile for reproducible local installs. | 2026-04-23 09:40:39 BST |
 | 062 | DONE | Backend/Data Agent | Document Backend/Data validation handoff and verification commands in `docs/validation/backend-validation.md` for QA review. | 2026-04-23 12:04:56 BST |
-| 063 | TODO | Backend/Data Agent | Document the V1 CoinGecko retry, timeout, and rate-limit policy in `docs/specs/data-backend/coingecko-api.md` to match the implemented client behaviour. |  |
+| 063 | DONE | Backend/Data Agent | Document the V1 CoinGecko retry, timeout, and rate-limit policy in `docs/specs/data-backend/coingecko-api.md` to match the implemented client behaviour. | 2026-04-23 12:45:16 BST |
 | 064 | TODO | Backend/Data Agent | Revisit the 2-day CoinGecko price-cache freshness tolerance after live Streamlit/runtime integration and tighten it if validation shows stale data risk. |  |
 | 065 | DONE | Modelling Agent | Create `docs/validation/modelling-validation.md` documenting solver/runtime feasibility and modelling export artifact smoke checks. | 2026-04-23 12:05:03 BST |
 | 066 | TODO | Modelling Agent | Define and implement the frontend-callable modelling run interface for active workflow model execution, including return shape for successful models, failed models, artifact metadata, and user-facing errors. |  |
