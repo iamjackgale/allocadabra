@@ -20,6 +20,17 @@ Define how active user workflow state is stored locally and retrieved by the app
 
 ## Stored State Types
 
+## V1 File Formats
+
+V1 active workflow/session storage uses JSON files:
+
+| Data | Format | Path |
+|---|---|---|
+| Active workflow state | JSON | `/storage/cache/user-inputs/active_workflow.json` |
+| Current model-output manifest | JSON | `/storage/cache/model-outputs/manifest.json` |
+
+JSON files must include a `schema_version` and `updated_at` field. Model-output artifacts may be referenced by the manifest, but export bundle construction is deferred until the dedicated export/download spec is complete.
+
 ### Active User Inputs
 
 Purpose:
@@ -131,6 +142,27 @@ Review UI state:
 - Workflow reset clears active user inputs and active model outputs.
 - Workflow reset must not clear CoinGecko market-data cache.
 
+## Initial App Interfaces
+
+Initial backend/data scaffolding exposes workflow-state helpers from `app.storage.data_api` and `app.storage.session_state`:
+
+| Function | Purpose |
+|---|---|
+| `get_active_workflow()` | Return the current active workflow state, creating the default state if missing. |
+| `update_active_inputs(updates)` | Merge user-input updates into the active workflow state. |
+| `validate_active_configuration()` | Run deterministic validation against the current active user-input state. |
+| `save_active_workflow(state)` | Persist an edited active workflow state. |
+| `store_generated_plan(markdown, metadata=None)` | Store the generated, unconfirmed AI modelling plan. |
+| `confirm_generated_plan()` | Mark the current generated modelling plan as confirmed. |
+| `abandon_generated_plan()` | Return to editable Configuration while preserving selected inputs and Configuration chat. |
+| `mark_modelling_started()` | Move the active workflow into Modelling and clear partial output manifests. |
+| `mark_modelling_interrupted(error=None)` | Record interrupted Modelling and clear partial output manifests. |
+| `mark_review_ready(manifest)` | Store the current model-output manifest and move the active workflow into Review. |
+| `return_to_configure_from_review()` | Clear current outputs and Review chat while preserving prior configuration choices. |
+| `reset_configuration()` / `start_new_model()` | Clear active inputs, plan, chats, and outputs without touching CoinGecko cache. |
+
+Export bundle generation is deliberately omitted from this initial interface until the dedicated export/download spec is complete.
+
 ## Relationship To Other Specs
 
 - `/docs/specs/data-backend/data-storage.md` owns CoinGecko market-data cache rules.
@@ -141,6 +173,4 @@ Review UI state:
 
 ## Open Questions
 
-- Exact local storage file format for active workflow state.
-- Exact schema for user inputs, modelling plan metadata, and model output manifests.
-- Exact export bundle structure for mixed `.json`, `.md`, `.csv`, and visual artifacts.
+- Exact export bundle structure for mixed `.json`, `.md`, `.csv`, and visual artifacts. This is deferred to the dedicated export/download spec.

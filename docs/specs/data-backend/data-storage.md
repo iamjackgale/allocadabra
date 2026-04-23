@@ -20,6 +20,18 @@ Define how CoinGecko market data is stored in the local app cache and updated ov
 
 ## Data Types
 
+## V1 File Formats
+
+V1 uses simple local files:
+
+| Data | Format | Path |
+|---|---|---|
+| Token list cache | JSON | `/storage/cache/coingecko/tokens.json` |
+| Insufficient-history suppression cache | JSON | `/storage/cache/coingecko/insufficient_history.json` |
+| Price history cache | CSV, one file per CoinGecko token ID | `/storage/cache/coingecko/prices/{encoded_id}.csv` |
+
+JSON cache files must include a `schema_version`, `updated_at`, and data payload. Price-history CSV files must use the columns `id`, `date`, and `price`, with one row per CoinGecko token ID and UTC date.
+
 ### Token List Cache
 
 Stores normalized token options from CoinGecko.
@@ -96,6 +108,14 @@ Load behaviour:
   - Token list: `id`.
   - Price history: `id` plus `date`.
 
+## Price Cache Sufficiency
+
+Initial sufficiency rule for V1:
+
+- A cached token price series is usable without refresh when it has at least 90 valid daily price rows and the latest cached UTC date is no more than 2 days behind the current UTC date.
+- If either condition fails, the app data layer may refetch the 365-day CoinGecko market-chart window and merge normalized rows into the local CSV cache.
+- Dataset-building still owns final run-level validation and may reject transformed datasets that become unusable after alignment or cleaning.
+
 ## Clear/Reset Behaviour
 
 - In-app workflow reset must not clear CoinGecko cache.
@@ -111,6 +131,4 @@ Load behaviour:
 
 ## Open Questions
 
-- Exact local cache file format: candidates include JSON, CSV, Parquet, or SQLite depending on implementation simplicity and dependency constraints.
-- Exact cache schema and versioning strategy.
-- Exact rule for what counts as sufficient cached price data for a modelling run.
+- Whether the 2-day freshness tolerance should be tightened once live Streamlit runtime behaviour is validated.

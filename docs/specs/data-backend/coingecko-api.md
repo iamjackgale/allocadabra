@@ -19,7 +19,14 @@ Define how Allocadabra ingests raw CoinGecko data for use in the app.
 
 ## Environment
 
-The app must read the CoinGecko demo API key from environment configuration. The expected environment variable name will be finalized in the app data implementation spec, but the key must not be hard-coded or committed.
+The app must read the CoinGecko demo API key from environment configuration.
+
+| Setting | Value |
+|---|---|
+| Environment variable | `COINGECKO_API_KEY` |
+| Example location | `.env.example` |
+
+The key must not be hard-coded or committed. Implementation should check `.env.example` before introducing any new environment variable names.
 
 ## Coins List
 
@@ -121,9 +128,17 @@ Fetch trigger:
 - The app data layer owns all token-price retrieval.
 - Dataset building consumes normalized price history; it should not call CoinGecko directly.
 
+## Initial App Interfaces
+
+Initial backend/data scaffolding exposes frontend-callable functions from `app.storage.data_api`:
+
+| Function | Purpose | Return shape |
+|---|---|---|
+| `list_token_options(search_term=None, force_refresh=False)` | Return cached or freshly fetched token options, optionally filtered by user-facing symbol/name search. | `{ok, tokens, count}` |
+| `fetch_price_history_for_assets(asset_ids, force_refresh=False)` | Fetch/read normalized daily price history for selected CoinGecko IDs. | `{ok, prices, statuses, errors}` |
+
+Token search should filter on `symbol` and `name` for user-facing behaviour.
+
 ## Open Questions
 
-- Final `.env` variable name for the CoinGecko demo API key.
-- Exact app data interface exposed to the UI for token search/list retrieval.
 - Rate-limit, retry, and timeout policy.
-- Whether price history should be cached before or after normalization.

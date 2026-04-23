@@ -1,0 +1,2 @@
+"""Allocadabra application package."""
+

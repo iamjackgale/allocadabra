@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-22 23:04:57 BST |
+| last_updated | 2026-04-23 07:38:02 BST |
 
 # Task Tracker
 
@@ -43,8 +43,8 @@
 | 025 | DONE | Orchestrator Agent | Create shared logging spec at `docs/specs/app/logging.md`. | 2026-04-21 10:53:18 BST |
 | 026 | DONE | Orchestrator Agent | Create and maintain the potential extensions beyond V1 sublist in `docs/tasks.md`. | 2026-04-22 12:21:30 BST |
 | 027 | DONE | Orchestrator Agent | Create `docs/specs/frontend/modelling-page.md` for the Modelling Phase progress screen. | 2026-04-22 21:29:01 BST |
-| 028 | TODO | Backend/Data Agent | Define exact local cache/session file formats, schemas, and frontend-facing state interfaces. |  |
-| 029 | TODO | Backend/Data Agent | Define frontend-callable app-layer function names and return shapes for CoinGecko token list, deterministic validation, and export bundling. |  |
+| 028 | DONE | Backend/Data Agent | Define exact local cache/session file formats, schemas, and frontend-facing state interfaces. | 2026-04-23 07:38:02 BST |
+| 029 | BLOCKED | Backend/Data Agent | Define frontend-callable app-layer function names and return shapes for CoinGecko token list, deterministic validation, and export bundling. CoinGecko and deterministic validation interfaces are defined; export bundling remains blocked on task 057. |  |
 | 030 | TODO | AI/Perplexity Agent | Define frontend-callable app-layer function names and return shapes for AI plan generation, chat calls, fixed financial-advice refusal text, and generic safe-error messages. |  |
 | 031 | TODO | Modelling Agent | Define frontend-callable app-layer function names and return shapes for model runs, progress updates, output manifests, failed models, and downloadable artifacts. |  |
 | 032 | TODO | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. |  |
@@ -52,7 +52,7 @@
 | 034 | DONE | Orchestrator Agent | Define strict folder ownership, branch expectations, and cross-agent mini spec rules across agent prompts and `docs/plan.md`. | 2026-04-22 22:27:16 BST |
 | 035 | TODO | Orchestrator Agent | Set up the Orchestrator Agent with `docs/prompts/agents/orchestrator-agent.md` and a dedicated branch for docs coordination. |  |
 | 036 | TODO | Product/UX Agent | Set up the Product/UX Agent with `docs/prompts/agents/product-ux-agent.md` and a dedicated branch. |  |
-| 037 | TODO | Backend/Data Agent | Set up the Backend/Data Agent with `docs/prompts/agents/backend-data-agent.md` and a dedicated branch. |  |
+| 037 | DONE | Backend/Data Agent | Set up the Backend/Data Agent with `docs/prompts/agents/backend-data-agent.md` and a dedicated branch. | 2026-04-23 07:38:02 BST |
 | 038 | TODO | Modelling Agent | Set up the Modelling Agent with `docs/prompts/agents/modelling-agent.md` and a dedicated branch. |  |
 | 039 | TODO | AI/Perplexity Agent | Set up the AI/Perplexity Agent with `docs/prompts/agents/ai-perplexity-agent.md` and a dedicated branch. |  |
 | 040 | TODO | Frontend Agent | Set up the Frontend Agent with `docs/prompts/agents/frontend-agent.md` and a dedicated branch. |  |
@@ -60,12 +60,12 @@
 | 042 | TODO | AI/Perplexity Agent | Implement `docs/specs/ai/ai-model-integration.md`. |  |
 | 043 | TODO | AI/Perplexity Agent | Implement `docs/specs/ai/parameters-agent.md`. |  |
 | 044 | TODO | AI/Perplexity Agent | Implement `docs/specs/ai/review-agent.md`. |  |
-| 045 | TODO | Backend/Data Agent | Implement `docs/specs/app/logging.md` as the shared logging utility and integration pattern. |  |
-| 046 | TODO | Backend/Data Agent | Implement `docs/specs/data-backend/coingecko-api.md`. |  |
-| 047 | TODO | Backend/Data Agent | Implement `docs/specs/data-backend/data-storage.md`. |  |
+| 045 | DONE | Backend/Data Agent | Implement `docs/specs/app/logging.md` as the shared logging utility and integration pattern. | 2026-04-23 07:38:02 BST |
+| 046 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/coingecko-api.md`. | 2026-04-23 07:38:02 BST |
+| 047 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/data-storage.md`. | 2026-04-23 07:38:02 BST |
 | 048 | TODO | Modelling Agent | Implement `docs/specs/data-backend/dataset-building.md`. |  |
 | 049 | TODO | Modelling Agent | Implement `docs/specs/data-backend/riskfolio-lib.md`. |  |
-| 050 | TODO | Backend/Data Agent | Implement `docs/specs/data-backend/session-storage.md`. |  |
+| 050 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/session-storage.md`. | 2026-04-23 07:38:02 BST |
 | 051 | TODO | Frontend Agent | Implement `docs/specs/frontend/agent-chat.md`. |  |
 | 052 | TODO | Frontend Agent | Implement `docs/specs/frontend/model-parameters.md`. |  |
 | 053 | TODO | Frontend Agent | Implement `docs/specs/frontend/model-review.md`. |  |
@@ -73,6 +73,7 @@
 | 055 | TODO | Frontend Agent | Implement `docs/specs/frontend/ui-design-build.md`. |  |
 | 056 | TODO | Product/UX Agent | Implement `docs/specs/ux/design-review-1.md` by completing the first UX review pass. |  |
 | 057 | TODO | Orchestrator Agent | Prepare a dedicated download/export layer spec that lists every generated output, expected file type, bundle contents, unavailable-artifact states, and implementation ownership; assign follow-up implementation to the appropriate agent. |  |
+| 058 | BLOCKED | Backend/Data Agent | Implement the export work intentionally omitted from initial scaffolding after task 057 defines the dedicated download/export layer spec: export bundle creation, artifact packaging, unavailable-artifact handling, and download bundle manifests. |  |
 
 ## Potential Extensions Beyond V1
 

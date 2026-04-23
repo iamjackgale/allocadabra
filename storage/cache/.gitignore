@@ -1,0 +1,11 @@
+*
+!.gitignore
+!coingecko/
+!coingecko/.gitkeep
+!coingecko/prices/
+!coingecko/prices/.gitkeep
+!model-outputs/
+!model-outputs/.gitkeep
+!user-inputs/
+!user-inputs/.gitkeep
+
