@@ -17,7 +17,13 @@ Mode: Configuration Mode.
 Help with asset selection, treasury objective clarification, risk appetite clarification, supported constraints, technical app-use questions, and modelling-plan preparation.
 Do not receive or discuss model outputs.
 Do not directly mutate app state. Suggest changes the user can apply.
-If the user asks for unsupported models, softly refuse and mention only supported models."""
+Ask only for required missing fields: selected assets, treasury objective, risk appetite, and selected models.
+Do not block progress on optional constraints.
+Supported constraint categories are max/min allocation per asset, max/min allocation to a selected asset, and max/min number of assets.
+If the user asks for unsupported constraints, clearly say that constraint is not configurable in V1 and suggest the closest supported preset only when one exists.
+For asset guidance, explain categories and modelling fit without recommending that the user buy, sell, hold, trade, or choose a specific asset as an investment.
+You may mention stablecoins as examples of assets designed for price stability, which can make them a weaker fit for return-based price models, but do not block them.
+If the user asks for unsupported or future-only models, softly refuse and mention only supported models."""
 
 
 def modelling_plan_instructions() -> str:
@@ -29,9 +35,14 @@ Generate Markdown with exactly these headings: Objective, Risk Appetite, Selecte
 Respect the currently selected model IDs. Do not independently change the selected model subset.
 Use the last 365 daily observations available from CoinGecko as the data window.
 Do not add an Educational Caveats heading in V1.
+If required fields are missing, do not invent them; identify only the missing required fields in metadata.
+Use only supported constraint categories: max/min allocation per asset, max/min allocation to a selected asset, and max/min number of assets.
+If no optional constraints are selected, write "None" under Constraints.
+Selected Assets must reflect the current app state only.
+Selected Models must contain only Mean Variance, Risk Parity, and Hierarchical Risk Parity, matching the current selected model IDs.
 After the visible Markdown, add one fenced metadata block using this format:
 ```allocadabra-metadata
-{{"kind":"modelling_plan","selected_model_ids":["mean_variance"],"missing_required_fields":[]}}
+{{"kind":"modelling_plan","selected_model_ids":["mean_variance"],"missing_required_fields":[],"parsed_plan":{{"objective":"Stable performance","risk_appetite":"Medium","selected_assets":["BTC","ETH"],"constraints":["None"],"selected_model_ids":["mean_variance"],"data_window":"Last 365 daily observations available from CoinGecko"}}}}
 ```
 The metadata block is for the app and must contain valid JSON."""
 
@@ -44,7 +55,12 @@ Mode: Review Mode.
 Explain model outputs, summary metrics, chart artifacts, warnings, failures, and trade-offs neutrally.
 Reference individual assets only to explain model outputs, never as buy/sell/hold advice.
 Do not update or rewrite the V1 ranking.
-Do not trigger model rebuilds; suggest returning to Configuration or Modelling if setup changes are needed."""
+Do not trigger model rebuilds; suggest returning to Configuration or Modelling if setup changes are needed.
+When your answer references specific models, metrics, artifacts, or output tables, add one fenced metadata block after the visible answer:
+```allocadabra-metadata
+{{"kind":"review_response","referenced_model_ids":["mean_variance"],"referenced_metric_names":["Sharpe"],"referenced_artifact_ids":[],"referenced_output_table_names":[],"needs_detailed_context":false}}
+```
+The metadata block is hidden by the app and must contain valid JSON."""
 
 
 def review_opening_instructions() -> str:
@@ -76,6 +92,20 @@ def build_configuration_input(
                 "max_compared_models": 3,
                 "data_window": "last 365 daily observations available from CoinGecko",
                 "minimum_valid_daily_prices": 90,
+                "supported_constraints": [
+                    "max allocation per asset",
+                    "min allocation per asset",
+                    "max allocation to selected asset",
+                    "min allocation to selected asset",
+                    "max number of assets in portfolio",
+                    "min number of assets in portfolio",
+                ],
+                "required_fields": [
+                    "selected_assets",
+                    "treasury_objective",
+                    "risk_appetite",
+                    "selected_models",
+                ],
             },
         }
     )

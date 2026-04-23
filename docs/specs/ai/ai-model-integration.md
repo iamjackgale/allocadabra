@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-23 09:58:39 BST |
+| last_updated | 2026-04-23 12:45:33 BST |
 
 # AI Model Integration Spec
 
@@ -54,6 +54,7 @@ Modelling plan output:
 - Must be stored in human-readable Markdown.
 - Must include structured metadata alongside the Markdown where the app needs to act on the output.
 - Required structured metadata includes selected model IDs when the agent suggests a model subset.
+- Plan metadata is normalized by typed AI helpers before storage.
 - Must be exportable exactly as displayed.
 
 Modelling plan Markdown headings:
@@ -163,6 +164,33 @@ Initial AI scaffolding exposes frontend-callable helpers from `app.ai.data_api`:
 | `get_generic_safe_error()` | Return the generic replacement message for unsafe or invalid AI responses. |
 
 All public helpers return dictionaries with `ok: true` on success. Recoverable failures return `ok: false`, a stable `code`, and user-facing `message`; validation failures may include `issues`. Raw prompts and raw provider responses are not returned to the frontend by default.
+
+## Structured Metadata Validation
+
+The AI layer validates app-actable metadata through typed helpers before storing it in active workflow state.
+
+Modelling-plan metadata must normalize to:
+
+- `kind`.
+- `selected_model_ids`.
+- `missing_required_fields`.
+- `parsed_plan.objective`.
+- `parsed_plan.risk_appetite`.
+- `parsed_plan.selected_assets`.
+- `parsed_plan.constraints`.
+- `parsed_plan.selected_model_ids`.
+- `parsed_plan.data_window`.
+
+Review response metadata may normalize to:
+
+- `kind`.
+- `referenced_model_ids`.
+- `referenced_metric_names`.
+- `referenced_artifact_ids`.
+- `referenced_output_table_names`.
+- `needs_detailed_context`.
+
+If visible text and metadata conflict on app-actable fields, the metadata is rejected. Unsupported or future-only model IDs are rejected in all app-actable metadata. Future-only model names in modelling-plan text are rejected so the displayed plan cannot imply unsupported execution.
 
 ## Supported Model Constraint
 

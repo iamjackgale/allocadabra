@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 20:23:50 BST |
+| last_updated | 2026-04-23 12:45:33 BST |
 
 # Parameters Agent Spec
 
@@ -138,6 +138,8 @@ Structured metadata:
 - Suggested model IDs.
 - Any app-actable configuration decisions.
 - Missing required configuration fields, if any.
+- Parsed modelling-plan fields for objective, risk appetite, selected assets, constraints, selected models, and data window.
+- Metadata must agree with the visible Markdown before it can be adopted.
 
 ## Model Suggestion Rules
 
@@ -163,6 +165,15 @@ The app should still validate:
 - metadata needed to execute the plan.
 
 If the pasted plan is incomplete or invalid, the agent should explain what must be fixed.
+
+The app validates pasted plans by parsing required headings and rejecting:
+
+- unsupported or future-only models.
+- fewer than 2 or more than 10 selected assets.
+- invalid objective or risk appetite values.
+- unsupported constraints.
+- data windows other than the last 365 daily observations available from CoinGecko.
+- conflicts between visible Markdown and supplied structured metadata.
 
 ## Guardrails
 

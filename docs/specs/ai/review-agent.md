@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 22:58:18 BST |
+| last_updated | 2026-04-23 12:45:33 BST |
 
 # Review Agent Spec
 
@@ -82,6 +82,8 @@ Optional metadata:
 - Referenced artifact IDs or output table names.
 - Request for additional detailed context, if needed.
 
+Optional Review metadata is normalized into a typed app-actable shape. Unsupported or future-only model IDs in Review metadata are rejected.
+
 ## Detailed Context Selection
 
 The AI integration should decide detailed context injection from:
@@ -106,6 +108,7 @@ Examples:
 - If the user asks about HRP drawdown, inject HRP drawdown data.
 - If the Model Review Component is showing HRP allocation-over-time, inject HRP allocation-over-time data.
 - If the user asks why Mean Variance and Risk Parity differ, inject summary metrics, weights, and relevant transformation metadata for those models.
+- If a visible metric row, open expander, artifact ID, or output table ID is provided by the frontend, inject only the matching visible detailed context.
 
 ## Guardrails
 

@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 12:45:16 BST |
+| last_updated | 2026-04-23 16:40:22 BST |
 
 # Task Tracker
 
@@ -57,9 +57,9 @@
 | 039 | DONE | AI/Perplexity Agent | Set up the AI/Perplexity Agent with `docs/prompts/agents/ai-perplexity-agent.md` and a dedicated branch. | 2026-04-23 09:51:16 BST |
 | 040 | TODO | Frontend Agent | Set up the Frontend Agent with `docs/prompts/agents/frontend-agent.md` and a dedicated branch. |  |
 | 041 | TODO | QA/Validation Agent | Set up the QA/Validation Agent with `docs/prompts/agents/qa-validation-agent.md` and a dedicated branch. |  |
-| 042 | IN_PROGRESS | AI/Perplexity Agent | Implement `docs/specs/ai/ai-model-integration.md`. Initial shared `app.ai` integration, provider wrapper, guardrails, response parsing, metadata validation, session hooks, and validation handoff are implemented; live Perplexity verification is blocked on `PERPLEXITY_API_KEY`. |  |
-| 043 | IN_PROGRESS | AI/Perplexity Agent | Implement `docs/specs/ai/parameters-agent.md`. Initial Configuration Mode chat, modelling-plan generation/import, supported-model validation, and guardrails are implemented; stronger plan parsing and structured metadata schemas remain. |  |
-| 044 | IN_PROGRESS | AI/Perplexity Agent | Implement `docs/specs/ai/review-agent.md`. Initial Review Mode chat, opening comparison helper, and detailed-context narrowing are implemented; richer referenced metadata extraction and broader context-selection coverage remain. |  |
+| 042 | DONE | AI/Perplexity Agent | Implement `docs/specs/ai/ai-model-integration.md`, including typed metadata normalization/validation and finalized frontend-callable AI helper interfaces. Live Perplexity verification remains tracked by task `076`. | 2026-04-23 16:40:22 BST |
+| 043 | DONE | AI/Perplexity Agent | Implement `docs/specs/ai/parameters-agent.md`, including stronger modelling-plan parsing/validation, structured metadata schemas, and Configuration Mode prompt tightening. | 2026-04-23 16:40:22 BST |
+| 044 | DONE | AI/Perplexity Agent | Implement `docs/specs/ai/review-agent.md`, including Review response metadata validation and expanded detailed-context selection aligned to visible UI context. | 2026-04-23 16:40:22 BST |
 | 045 | DONE | Backend/Data Agent | Implement `docs/specs/app/logging.md` as the shared logging utility and integration pattern. | 2026-04-23 07:38:02 BST |
 | 046 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/coingecko-api.md`. | 2026-04-23 07:38:02 BST |
 | 047 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/data-storage.md`. | 2026-04-23 07:38:02 BST |
@@ -86,16 +86,16 @@
 | 068 | TODO | Modelling Agent | Integrate active workflow and cached price histories with the modelling runner without taking over Backend/Data export bundle ownership. |  |
 | 069 | TODO | Modelling Agent | Harden summary metric unavailable states so non-computable metrics return explicit user-facing unavailable reasons rather than only `NaN` values. |  |
 | 070 | TODO | Modelling Agent | Add repeatable modelling validation tests or smoke scripts for dataset failures, model failures, optional missing artifacts, and metric consistency once the project test pattern is selected. |  |
-| 071 | TODO | AI/Perplexity Agent | Strengthen modelling-plan import parsing and validation for objective, risk appetite, selected assets, constraints, selected models, and data window before adopting pasted plans. |  |
-| 072 | TODO | AI/Perplexity Agent | Add typed structured metadata helpers/schemas for app-actable AI outputs, including modelling plans, configuration suggestions, Review references, invalid metadata, and regeneration/confirmation requirements. |  |
-| 073 | TODO | AI/Perplexity Agent | Expand Review Mode detailed-context selection to cover visible metric rows, open expander IDs, artifact/table IDs, failed-model warnings, multi-model comparisons, summary metrics plus weights, and transformation metadata. |  |
-| 074 | TODO | AI/Perplexity Agent | Extract and validate optional Review response metadata for referenced model IDs, metric names, artifact IDs or output table names, and requests for additional detailed context. |  |
-| 075 | TODO | AI/Perplexity Agent | Extend AI validation coverage for invalid metadata, unsupported model IDs, future-only models, AI text/metadata conflicts, obvious financial-advice replacement, and Review context-selection edge cases. |  |
+| 071 | DONE | AI/Perplexity Agent | Strengthen modelling-plan import parsing and validation for objective, risk appetite, selected assets, constraints, selected models, and data window before adopting pasted plans. | 2026-04-23 16:40:22 BST |
+| 072 | DONE | AI/Perplexity Agent | Add typed structured metadata helpers/schemas for app-actable AI outputs, including modelling plans, configuration suggestions, Review references, invalid metadata, and regeneration/confirmation requirements. | 2026-04-23 16:40:22 BST |
+| 073 | DONE | AI/Perplexity Agent | Expand Review Mode detailed-context selection to cover visible metric rows, open expander IDs, artifact/table IDs, failed-model warnings, multi-model comparisons, summary metrics plus weights, and transformation metadata. | 2026-04-23 16:40:22 BST |
+| 074 | DONE | AI/Perplexity Agent | Extract and validate optional Review response metadata for referenced model IDs, metric names, artifact IDs or output table names, and requests for additional detailed context. | 2026-04-23 16:40:22 BST |
+| 075 | DONE | AI/Perplexity Agent | Extend AI validation coverage for invalid metadata, unsupported model IDs, future-only models, AI text/metadata conflicts, obvious financial-advice replacement, and Review context-selection edge cases. | 2026-04-23 16:40:22 BST |
 | 076 | BLOCKED | AI/Perplexity Agent | Run live Perplexity provider verification for Configuration and Review calls once `PERPLEXITY_API_KEY` is configured. |  |
-| 077 | TODO | AI/Perplexity Agent | Update AI prompt/spec docs if prompt behaviour changes while completing tasks 071-075. |  |
+| 077 | DONE | AI/Perplexity Agent | Update AI prompt/spec docs if prompt behaviour changes while completing tasks 071-075. | 2026-04-23 16:40:22 BST |
 | 078 | DONE | Orchestrator Agent | Approve and save the AI Runtime Dependency mini spec and add `perplexityai` to the shared project dependencies and lockfile. | 2026-04-23 12:18:43 BST |
 | 079 | DONE | Orchestrator Agent | Create `docs/validation/general-validation.md` with repo-level validation checks for merges, dependency updates, and pushes to `main`. | 2026-04-23 12:21:50 BST |
-| 080 | TODO | AI/Perplexity Agent | Strengthen Configuration Mode prompts around unsupported constraints, required missing fields, and asset-guidance boundaries without changing frontend controls or modelling constraints. |  |
+| 080 | DONE | AI/Perplexity Agent | Strengthen Configuration Mode prompts around unsupported constraints, required missing fields, and asset-guidance boundaries without changing frontend controls or modelling constraints. | 2026-04-23 16:40:22 BST |
 | 081 | TODO | AI/Perplexity Agent | Align AI supported-model validation with the Modelling-owned supported-model registry once a stable app-layer registry/export is available; until then keep the fixed V1 model set. |  |
 | 082 | TODO | Backend/Data Agent | Add focused backend validation tests or smoke scripts for cache, session lifecycle, and export bundle behavior once the project test pattern is selected. |  |
 | 083 | TODO | Backend/Data Agent | Support Modelling Agent integration only if the modelling run contract exposes a concrete storage/export adapter gap; Backend remains owner of export packaging and storage interfaces, not model execution. |  |

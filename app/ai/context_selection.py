@@ -10,10 +10,34 @@ from app.ai.models import SUPPORTED_MODELS
 OUTPUT_KEYWORDS = {
     "summary_metrics": ("metric", "metrics", "summary", "return", "volatility", "sharpe"),
     "allocations": ("allocation", "allocations", "weight", "weights", "portfolio"),
+    "allocation_over_time": ("allocation over time", "weights over time"),
     "backtested_performance": ("backtest", "backtested", "performance", "equity curve"),
+    "cumulative_performance": ("cumulative", "cumulative performance"),
     "drawdown": ("drawdown", "downside"),
+    "rolling_volatility": ("rolling volatility", "rolling vol"),
+    "efficient_frontier": ("efficient frontier", "frontier"),
     "risk_contributions": ("risk contribution", "risk contributions", "contribution"),
+    "transformation_metadata": ("transformation", "methodology", "input data", "returns"),
     "warnings": ("warning", "warnings", "failure", "failed", "error"),
+}
+
+OUTPUT_ALIASES = {
+    "allocation": "allocations",
+    "allocation_weights": "allocations",
+    "weights": "allocations",
+    "allocation_over_time": "allocation_over_time",
+    "allocations_over_time": "allocation_over_time",
+    "backtest": "backtested_performance",
+    "performance": "backtested_performance",
+    "cumulative": "cumulative_performance",
+    "risk_contribution": "risk_contributions",
+    "risk_contributions": "risk_contributions",
+    "summary": "summary_metrics",
+    "metrics": "summary_metrics",
+    "metric": "summary_metrics",
+    "failure": "warnings",
+    "failed": "warnings",
+    "warnings": "warnings",
 }
 
 
@@ -48,7 +72,23 @@ def select_review_detailed_context(
             "section",
         )
         if visible_output:
-            output_types.add(str(visible_output))
+            output_types.add(_normalise_output_type(str(visible_output)))
+
+        for key in ("selected_metric_row", "metric_row"):
+            if visible_context.get(key):
+                output_types.add("summary_metrics")
+
+        open_expanders = visible_context.get("open_expander_ids")
+        if isinstance(open_expanders, list):
+            output_types.update(_normalise_output_type(str(item)) for item in open_expanders)
+
+        for key in ("visible_chart_id", "visible_table_id", "artifact_id", "output_table_name"):
+            value = visible_context.get(key)
+            if value:
+                output_types.add(_normalise_output_type(str(value)))
+
+    if len(model_ids) >= 2 and not output_types:
+        output_types.update({"summary_metrics", "allocations", "transformation_metadata"})
 
     if not model_ids and not output_types:
         return {}
@@ -97,6 +137,9 @@ def _filter_context(
     for output_type in output_types:
         if output_type in context:
             selected[output_type] = context[output_type]
+        alias = _normalise_output_type(output_type)
+        if alias in context:
+            selected[alias] = context[alias]
 
     return selected
 
@@ -116,7 +159,7 @@ def _filter_model_map(
             selected_payload = {
                 key: value
                 for key, value in model_payload.items()
-                if key in output_types or _normalise_output_key(key) in output_types
+                if _normalise_output_type(key) in output_types
             }
         else:
             selected_payload = model_payload
@@ -127,6 +170,11 @@ def _filter_model_map(
 
 def _normalise_output_key(key: str) -> str:
     return key.strip().lower().replace("-", "_").replace(" ", "_")
+
+
+def _normalise_output_type(value: str) -> str:
+    normalized = _normalise_output_key(value)
+    return OUTPUT_ALIASES.get(normalized, normalized)
 
 
 def _first_present(payload: dict[str, Any], *keys: str) -> object | None:
