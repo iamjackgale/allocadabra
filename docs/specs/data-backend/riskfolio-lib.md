@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-23 07:35:35 BST |
+| last_updated | 2026-04-23 09:16:09 BST |
 
 # Riskfolio-Lib Spec
 
@@ -335,11 +335,29 @@ Pure browser/Pyodide execution is not part of the V1 runtime route unless the Or
 - The Orchestrator Agent approves and integrates dependency changes into `pyproject.toml`.
 - Start with local Python execution, not Pyodide or pure browser execution.
 - Prefer Python `3.11` for the first feasibility spike unless the Modelling Agent proves a newer version works cleanly with `riskfolio-lib`, `cvxpy`, and required solvers.
+- The initial dependency mini spec is approved at `/docs/specs/app/modelling-runtime-dependency-mini-spec.md`.
+
+Approved initial modelling/runtime dependencies:
+
+- `pandas`
+- `numpy`
+- `riskfolio-lib`
+- `cvxpy`
+- `scipy`
+- `scikit-learn`
+- `plotly`
+
+Solver policy:
+
+- Do not pin a special solver before the first feasibility spike.
+- Test the default solvers installed with `cvxpy`.
+- If solver availability blocks Mean Variance or Risk Parity, propose the smallest additional solver dependency with evidence from the spike.
 
 ## Relationship To Other Specs
 
 - `/docs/specs/data-backend/dataset-building.md` defines canonical price dataframes and transformations.
 - `/docs/specs/data-backend/session-storage.md` defines model output lifecycle.
+- `/docs/specs/app/modelling-runtime-dependency-mini-spec.md` defines the approved initial modelling/runtime dependency update.
 - `/docs/specs/frontend/model-review.md` will define how outputs are explored and downloaded.
 - `/docs/specs/ai/review-agent.md` will define how AI reflects on model trade-offs.
 

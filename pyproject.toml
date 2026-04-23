@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "allocadabra"
+version = "0.1.0"
+description = "AI-assisted crypto treasury modelling application for strategic asset allocation."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+license = { text = "MIT" }
+authors = [
+  { name = "Jack Harry Gale" },
+]
+dependencies = [
+  "pandas",
+  "numpy",
+  "riskfolio-lib",
+  "cvxpy",
+  "scipy",
+  "scikit-learn",
+  "plotly",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]

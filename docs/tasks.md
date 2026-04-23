@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 09:07:26 BST |
+| last_updated | 2026-04-23 09:16:09 BST |
 
 # Task Tracker
 
@@ -74,6 +74,8 @@
 | 056 | DONE | Product/UX Agent | Implement `docs/specs/ux/design-review-1.md` by completing the first UX review pass. | 2026-04-23 07:14:21 BST |
 | 057 | IN_PROGRESS | Orchestrator Agent | Prepare a dedicated download/export layer spec that lists every generated output, expected file type, bundle contents, unavailable-artifact states, and implementation ownership; assign follow-up implementation to the appropriate agent. |  |
 | 058 | BLOCKED | Backend/Data Agent | Implement the export work intentionally omitted from initial scaffolding after task 057 defines the dedicated download/export layer spec: export bundle creation, artifact packaging, unavailable-artifact handling, and download bundle manifests. |  |
+| 059 | DONE | Orchestrator Agent | Approve and save the Modelling Runtime Dependency mini spec and create the root `pyproject.toml` with initial modelling/runtime dependencies. | 2026-04-23 09:16:09 BST |
+| 060 | TODO | Modelling Agent | Run the modelling runtime feasibility spike using the approved `pyproject.toml` dependencies and report whether default `cvxpy` solvers are sufficient. |  |
 
 ## Potential Extensions Beyond V1
 
