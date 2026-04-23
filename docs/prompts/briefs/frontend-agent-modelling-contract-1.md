@@ -218,3 +218,39 @@ Frontend expectation:
 - For chart sections, prefer the `.png` artifact as the visible download target when present.
 - Keep the underlying `.csv` available to Backend/Data for `Download All`.
 - Use `missing_artifacts` or `status != "available"` plus `reason` to disable controls with explicit explanations.
+
+## Current Frontend Mapping Guidance
+
+Suggested first-pass mapping:
+
+- Summary metrics panel:
+  - `category="general"`
+  - `output_type="summary_metrics"`
+- Canonical modelling dataset section:
+  - `output_type="canonical_modelling_dataset"`
+- Per-model sections by `model_id`:
+  - `allocation_weights`
+  - `allocation_over_time`
+  - `cumulative_performance`
+  - `drawdown`
+  - `rolling_volatility`
+  - optional:
+    - `risk_contribution`
+    - `efficient_frontier`
+    - `dendrogram`
+
+## Validation Already Run
+
+Confirmed in `/docs/validation/modelling-validation.md`:
+
+- processing runtime import check: passed
+- storage export import check: passed
+- active modelling smoke test: passed
+- unsupported model smoke test: passed
+
+## Frontend Boundary Notes
+
+- Do not assume Backend/Data has already packaged exports when Modelling returns.
+- Expect Frontend to call Backend/Data export preparation after a successful or partial-success modelling run.
+- Do not invent new model IDs or artifact types.
+- If the UI needs a field not present in this contract, request a new Modelling mini spec rather than reading internal storage files directly.

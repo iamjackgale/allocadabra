@@ -20,6 +20,7 @@ dependencies = [
   "scipy",
   "scikit-learn",
   "plotly",
+  "streamlit",
   "perplexityai>=0.32.1",
 ]
 
