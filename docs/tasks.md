@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 19:17:24 BST |
+| last_updated | 2026-04-23 19:36:15 BST |
 
 # Task Tracker
 
@@ -46,7 +46,7 @@
 | 028 | DONE | Backend/Data Agent | Define exact local cache/session file formats, schemas, and frontend-facing state interfaces. | 2026-04-23 07:38:02 BST |
 | 029 | DONE | Backend/Data Agent | Define frontend-callable app-layer function names and return shapes for CoinGecko token list, deterministic validation, and export bundling. | 2026-04-23 09:52:54 BST |
 | 030 | DONE | AI/Perplexity Agent | Define frontend-callable app-layer function names and return shapes for AI plan generation, chat calls, fixed financial-advice refusal text, and generic safe-error messages. | 2026-04-23 09:58:39 BST |
-| 031 | TODO | Modelling Agent | Define the frontend-callable modelling app-layer contract: function names and return shapes for model runs, progress events, output artifact descriptors, failed models, and user-facing errors. Implementation is tracked by tasks 066-068. |  |
+| 031 | DONE | Modelling Agent | Define the frontend-callable modelling app-layer contract: function names and return shapes for model runs, progress events, output artifact descriptors, failed models, and user-facing errors. | 2026-04-23 19:36:15 BST |
 | 032 | TODO | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. |  |
 | 033 | DONE | Product/UX Agent | Complete Design Review 1 using `docs/specs/ux/design-review-1.md` and raise exactly 10 high-priority UX questions before code-producing agents begin. | 2026-04-23 07:14:21 BST |
 | 034 | DONE | Orchestrator Agent | Define strict folder ownership, branch expectations, and cross-agent mini spec rules across agent prompts and `docs/plan.md`. | 2026-04-22 22:27:16 BST |
@@ -81,9 +81,9 @@
 | 063 | DONE | Backend/Data Agent | Document the V1 CoinGecko retry, timeout, and rate-limit policy in `docs/specs/data-backend/coingecko-api.md` to match the implemented client behaviour. | 2026-04-23 12:45:16 BST |
 | 064 | TODO | Backend/Data Agent | Revisit the 2-day CoinGecko price-cache freshness tolerance after live Streamlit/runtime integration and tighten it if validation shows stale data risk. |  |
 | 065 | DONE | Modelling Agent | Create `docs/validation/modelling-validation.md` documenting solver/runtime feasibility and modelling export artifact smoke checks. | 2026-04-23 12:05:03 BST |
-| 066 | TODO | Modelling Agent | Define and implement the frontend-callable modelling run interface for active workflow model execution, including return shape for successful models, failed models, artifact metadata, and user-facing errors. |  |
-| 067 | TODO | Modelling Agent | Add structured modelling progress callback/event support aligned to Modelling Phase checkpoints: Validation, Ingestion, Datasets, Modelling, Analysis, and Outputs. |  |
-| 068 | TODO | Modelling Agent | Integrate active workflow and cached price histories with the modelling runner without taking over Backend/Data export bundle ownership. |  |
+| 066 | DONE | Modelling Agent | Define and implement the frontend-callable modelling run interface for active workflow model execution, including return shape for successful models, failed models, artifact metadata, and user-facing errors. | 2026-04-23 19:36:15 BST |
+| 067 | DONE | Modelling Agent | Add structured modelling progress callback/event support aligned to Modelling Phase checkpoints: Validation, Ingestion, Datasets, Modelling, Analysis, and Outputs. | 2026-04-23 19:36:15 BST |
+| 068 | DONE | Modelling Agent | Integrate active workflow and cached price histories with the modelling runner without taking over Backend/Data export bundle ownership. | 2026-04-23 19:36:15 BST |
 | 069 | TODO | Modelling Agent | Harden summary metric unavailable states so non-computable metrics return explicit user-facing unavailable reasons rather than only `NaN` values. |  |
 | 070 | TODO | Modelling Agent | Add repeatable modelling validation tests or smoke scripts for dataset failures, model failures, optional missing artifacts, and metric consistency once the project test pattern is selected. |  |
 | 071 | DONE | AI/Perplexity Agent | Strengthen modelling-plan import parsing and validation for objective, risk appetite, selected assets, constraints, selected models, and data window before adopting pasted plans. | 2026-04-23 16:40:22 BST |

@@ -264,6 +264,102 @@ Initial model outputs should support:
 
 Model output tables should be exportable as `.csv` after successful model generation. Chart images should be exportable as `.png` in V1.
 
+## Frontend-Callable Modelling Contract
+
+The Modelling layer should expose one frontend-callable app-layer entrypoint for running the active modelling workflow from confirmed session state.
+
+Initial callable:
+
+```python
+from app.processing import modelling_contract, run_active_modelling
+```
+
+Primary function:
+
+```python
+run_active_modelling(
+    *,
+    progress_callback: ProgressCallback | None = None,
+    force_refresh_prices: bool = False,
+    output_dir: Path = MODEL_OUTPUTS_DIR,
+) -> dict[str, Any]
+```
+
+Purpose:
+
+- Read the active workflow state through Backend/Data callables.
+- Validate the active modelling inputs before running models.
+- Load cached/fetched normalized CoinGecko price histories through Backend/Data callables.
+- Run dataset preparation, model execution, metrics, and model-owned artifact generation.
+- Return a frontend-safe result without taking over export bundle creation, final manifest packaging, or Review state transition.
+
+Backend/Data boundary:
+
+- Modelling must call Backend/Data interfaces for active workflow and cached prices rather than reading session/cache files directly.
+- Backend/Data remains owner of export bundle creation, final manifest storage, download metadata, and moving the workflow into Review.
+- Backend/Data can pass Modelling return fields into:
+  - `prepare_review_export_bundle(modelling_artifacts=..., failed_models=..., missing_artifacts=...)`
+
+Return fields:
+
+| Field | Type | Notes |
+|---|---|---|
+| `ok` | boolean | `True` when at least one selected model succeeds. |
+| `successful_models` | list[string] | Stable model IDs that completed successfully. |
+| `failed_models` | list[object] | Per-model failure records with user-facing reasons. |
+| `artifacts` | list[object] | Available/disabled modelling artifact descriptors intended for Backend/Data export assembly and Frontend display. |
+| `missing_artifacts` | list[object] | Missing optional artifact descriptors with explicit reasons. |
+| `errors` | list[object] | Run-level validation, ingestion, dataset, or runtime errors. |
+| `user_message` | string | Short user-facing status copy suitable for Modelling/Review screens. |
+| `progress_events` | list[object] | Structured emitted progress events for the Modelling screen. |
+| `dataset_metadata` | object | Canonical dataset metadata including date range, row counts, warnings, and source assets. |
+| `output_dir` | string/null | Local path for generated modelling artifacts. |
+
+Error shape:
+
+| Field | Type | Notes |
+|---|---|---|
+| `code` | string | Stable machine-readable code such as `invalid_configuration`, `unsupported_models`, `price_history_unavailable`, `dataset_build_failed`, `model_execution_failed`, or `modelling_failed`. |
+| `message` | string | User-facing explanation suitable for display in the UI. |
+| `field` | string/null | Optional configuration field when validation is field-specific. |
+| `id` | string/null | Optional asset ID for ingestion/cache failures. |
+| `model_ids` | list[string]/null | Optional list of unsupported selected model IDs. |
+| `exception_type` | string/null | Optional exception class name for debugging/local logs. |
+
+Failed model shape:
+
+| Field | Type | Notes |
+|---|---|---|
+| `model_id` | string | Stable model ID. |
+| `label` | string | Student-facing model label. |
+| `stage` | string | Failure stage such as `model_execution`. |
+| `reason` | string | User-facing failure reason. |
+| `exception_type` | string | Exception class name for local debugging/logs. |
+
+Progress event phases:
+
+- `validation`
+- `ingestion`
+- `datasets`
+- `modelling`
+- `analysis`
+- `outputs`
+
+Progress event shape:
+
+| Field | Type | Notes |
+|---|---|---|
+| `phase` | string | One of the six Modelling Phase checkpoints above. |
+| `status` | string | `started`, `completed`, `failed`, or `info`. |
+| `message` | string | Short user-facing progress text. |
+| `created_at` | string | ISO timestamp. |
+
+Supported V1 model IDs:
+
+- `mean_variance`
+- `risk_parity`
+- `hierarchical_risk_parity`
+
 ## Allocation-Over-Time Chart
 
 The review UI should be able to show portfolio allocation over the modelling period where supporting data is available.

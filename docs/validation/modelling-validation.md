@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 12:01:48 BST |
-| last_updated | 2026-04-23 12:01:48 BST |
+| last_updated | 2026-04-23 19:36:15 BST |
 | owner | QA/Validation Agent |
 | source_agent | Modelling Agent |
 
@@ -132,6 +132,28 @@ Conclusion:
 
 ## Export Bundling Verification
 
+### Mainline Integration Validation
+
+Validation run:
+
+- `git pull origin main`: passed.
+- conflict marker scan: passed, no output.
+- `PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall app`: passed.
+- `uv lock --check`: passed.
+- processing runtime import check: passed.
+- storage export import check: passed.
+- active modelling smoke test: passed.
+- unsupported model smoke test: passed.
+
+Purpose:
+
+- Confirms the branch rebased or merged cleanly from `main`.
+- Confirms no unresolved conflict markers remained in the worktree.
+- Confirms the full `/app` package compiled after modelling changes landed.
+- Confirms the committed `uv.lock` remained in sync with `pyproject.toml`.
+- Confirms processing-layer imports and storage/export-facing imports still resolve after modelling work.
+- Confirms the active modelling interface and unsupported-model validation paths still pass after mainline integration.
+
 ### Compile Check
 
 Command:
@@ -151,6 +173,71 @@ Expected result:
 Observed result:
 
 - Passed.
+
+### Full App Compile Check
+
+Command:
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall app
+```
+
+Purpose:
+
+- Confirms every Python file under `/app` parses and compiles after the modelling work and subsequent mainline integration.
+- Uses `/tmp/allocadabra-pycache-main` to avoid writing bytecode to a user cache location during validation.
+
+Observed result:
+
+- Passed.
+
+### Lockfile Check
+
+Command:
+
+```bash
+uv lock --check
+```
+
+Purpose:
+
+- Confirms `uv.lock` is consistent with the approved dependency state in `pyproject.toml`.
+
+Observed result:
+
+- Passed.
+
+### Processing Runtime Import Check
+
+Command:
+
+```bash
+./.venv/bin/python -c 'import app.processing as p; assert callable(p.run_active_modelling); assert callable(p.modelling_contract); print("processing runtime import check: passed")'
+```
+
+Observed result:
+
+- Passed.
+
+Purpose:
+
+- Confirms the processing runtime imports still resolve correctly after the modelling package additions and mainline integration.
+
+### Storage Export Import Check
+
+Command:
+
+```bash
+./.venv/bin/python -c 'from app.storage.data_api import prepare_review_export_bundle, get_review_export_manifest, get_review_artifact_download, get_review_download_all; assert callable(prepare_review_export_bundle); assert callable(get_review_export_manifest); assert callable(get_review_artifact_download); assert callable(get_review_download_all); print("storage export import check: passed")'
+```
+
+Observed result:
+
+- Passed.
+
+Purpose:
+
+- Confirms storage-layer import paths used for export and review handoff still resolve correctly after the modelling changes.
 
 ### Full Synthetic Artifact Smoke Test
 
@@ -222,11 +309,122 @@ Expected result:
 - Successful model artifacts remain available.
 - `failed-models.json` is written with structured failed-model details.
 
+## Active Modelling Interface Verification
+
+### Frontend-Callable Contract
+
+Callable:
+
+```python
+from app.processing import run_active_modelling, modelling_contract
+```
+
+Contract purpose:
+
+- Read active workflow inputs from Backend/Data APIs.
+- Validate the active configuration.
+- Load cached/fetched price histories through Backend/Data APIs.
+- Run Modelling-owned dataset building, model execution, metrics, and artifact generation.
+- Return frontend-safe output descriptors without creating zip bundles or storing the final export manifest.
+
+Return shape:
+
+```text
+ok: bool
+successful_models: list[str]
+failed_models: list[dict]
+artifacts: list[dict]
+missing_artifacts: list[dict]
+errors: list[dict]
+user_message: str
+progress_events: list[dict]
+dataset_metadata: dict
+output_dir: str | null
+```
+
+Progress phases:
+
+```text
+validation
+ingestion
+datasets
+modelling
+analysis
+outputs
+```
+
+Backend/Data handoff:
+
+- Pass `artifacts` as `modelling_artifacts`.
+- Pass `failed_models` as `failed_models`.
+- Pass `missing_artifacts` as `missing_artifacts`.
+- Backend/Data remains owner of `prepare_review_export_bundle(...)`, final manifest storage, and zip creation.
+
+### Active Workflow Smoke Test
+
+Command:
+
+```bash
+uv run python -c '<monkeypatched active workflow and cached price history script calling run_active_modelling(...)>'
+```
+
+Purpose:
+
+- Confirms `run_active_modelling(...)` can consume active workflow-shaped inputs.
+- Confirms price-history loading is delegated through the imported Backend/Data API boundary.
+- Confirms the frontend-safe return shape includes successful models, artifacts, missing artifacts, errors, user message, and progress events.
+- Confirms all six progress checkpoint phases are emitted.
+- Avoids mutating real workflow/session files by monkeypatching the imported Backend/Data functions in the smoke script.
+
+Observed result:
+
+```text
+active modelling smoke ok 24 0 12
+phases ['validation', 'validation', 'ingestion', 'ingestion', 'datasets', 'datasets', 'modelling', 'modelling', 'analysis', 'analysis', 'outputs', 'outputs']
+contract fields ['ok', 'successful_models', 'failed_models', 'artifacts', 'missing_artifacts', 'errors', 'user_message']
+```
+
+Expected result:
+
+- Command exits with status `0`.
+- `ok` is `True`.
+- `successful_models` contains the requested supported model IDs.
+- `errors` is empty.
+- `artifacts` excludes Backend-owned `failed_models` materialization.
+- Progress events include `validation`, `ingestion`, `datasets`, `modelling`, `analysis`, and `outputs`.
+
+### Unsupported Model Smoke Test
+
+Command:
+
+```bash
+uv run python -c '<monkeypatched active workflow script calling run_active_modelling(...) with an unsupported selected model ID>'
+```
+
+Purpose:
+
+- Confirms unsupported model IDs return a frontend-safe validation error.
+- Confirms unsupported IDs are not silently dropped in a way that would default to all supported models.
+
+Observed result:
+
+```text
+unsupported model smoke ok
+```
+
+Expected result:
+
+- Command exits with status `0`.
+- `ok` is `False`.
+- First error code is `unsupported_models`.
+- `successful_models` is empty.
+
 ## Known Validation Gaps
 
 - No live CoinGecko price cache integration was run.
 - No Streamlit/frontend integration was run.
 - No Backend/Data zip bundle creation was run because Backend/Data owns final package construction.
+- Active workflow integration was smoke-tested through monkeypatching rather than real local session state.
 - No automated fixture-based test suite exists yet.
 - No visual review of generated PNG chart aesthetics was performed beyond file creation.
 - Optional artifact missing-state placeholders were implemented but not exhaustively tested against every possible computation failure.

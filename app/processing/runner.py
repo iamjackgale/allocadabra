@@ -20,6 +20,7 @@ from app.processing.models import (
     model_failure_from_exception,
     run_supported_model,
 )
+from app.processing.progress import ProgressCallback, make_progress_event
 from app.processing.transformations import (
     allocation_over_time,
     allocation_weights_table,
@@ -45,6 +46,7 @@ def generate_modelling_outputs(
     price_history_by_id: dict[str, list[dict[str, Any]]],
     selected_models: list[str] | None = None,
     output_dir: Path = MODEL_OUTPUTS_DIR,
+    progress_callback: ProgressCallback | None = None,
 ) -> dict[str, Any]:
     """Generate model-owned Review/export artifacts without zip packaging."""
     model_ids = selected_models or list(SUPPORTED_MODELS)
@@ -52,11 +54,23 @@ def generate_modelling_outputs(
         raise ValueError("Compare no more than 3 models in a single run.")
 
     writer = ArtifactWriter(output_dir)
+    _notify_progress(
+        progress_callback,
+        phase="datasets",
+        status="started",
+        message="Building the canonical modelling dataset.",
+    )
     dataset = build_canonical_price_dataframe(
         selected_assets=selected_assets,
         price_history_by_id=price_history_by_id,
     )
     transformations = build_transformations(dataset.prices)
+    _notify_progress(
+        progress_callback,
+        phase="datasets",
+        status="completed",
+        message="Modelling dataset has been prepared.",
+    )
 
     canonical = dataset.prices.reset_index()
     writer.write_dataframe(
@@ -72,6 +86,12 @@ def generate_modelling_outputs(
     failures: list[ModelFailure] = []
     metric_rows: list[dict[str, float | str]] = []
 
+    _notify_progress(
+        progress_callback,
+        phase="modelling",
+        status="started",
+        message="Running selected portfolio models.",
+    )
     for model_id in model_ids:
         try:
             result = run_supported_model(model_id, transformations.daily_returns)
@@ -93,7 +113,21 @@ def generate_modelling_outputs(
         except Exception as exc:
             logger.warning("Model %s failed: %s", model_id, exc)
             failures.append(model_failure_from_exception(model_id=model_id, exc=exc))
+    _notify_progress(
+        progress_callback,
+        phase="modelling",
+        status="completed" if successes else "failed",
+        message="Selected model runs are complete."
+        if successes
+        else "No selected model completed successfully.",
+    )
 
+    _notify_progress(
+        progress_callback,
+        phase="analysis",
+        status="started",
+        message="Preparing summary metrics and review artifacts.",
+    )
     if successes:
         metrics = summary_metrics_table(metric_rows)
         writer.write_dataframe(
@@ -115,6 +149,26 @@ def generate_modelling_outputs(
             output_type="failed_models",
             individual_download_enabled=True,
         )
+    _notify_progress(
+        progress_callback,
+        phase="analysis",
+        status="completed",
+        message="Metrics and chart data are ready.",
+    )
+    _notify_progress(
+        progress_callback,
+        phase="outputs",
+        status="started",
+        message="Finalizing model output artifacts.",
+    )
+    _notify_progress(
+        progress_callback,
+        phase="outputs",
+        status="completed" if successes else "failed",
+        message="Model output artifacts are ready."
+        if successes
+        else "No models completed successfully.",
+    )
 
     return {
         "schema_version": SCHEMA_VERSION,
@@ -126,6 +180,23 @@ def generate_modelling_outputs(
         "dataset_metadata": dataset.metadata,
         "artifacts": [entry.to_dict() for entry in writer.entries],
     }
+
+
+def _notify_progress(
+    callback: ProgressCallback | None,
+    *,
+    phase: str,
+    status: str,
+    message: str,
+) -> None:
+    if callback is not None:
+        callback(
+            make_progress_event(
+                phase=phase,  # type: ignore[arg-type]
+                status=status,  # type: ignore[arg-type]
+                message=message,
+            )
+        )
 
 
 def _write_model_artifacts(
