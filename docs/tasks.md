@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 19:58:21 BST |
+| last_updated | 2026-04-23 20:02:19 BST |
 
 # Task Tracker
 
@@ -104,6 +104,7 @@
 | 086 | DONE | Orchestrator Agent | Save the first Backend/Data Agent brief for task 063 in `docs/prompts/briefs/backend-data-agent-1.md`. | 2026-04-23 12:30:52 BST |
 | 087 | TODO | AI/Perplexity Agent | Implement the Perplexity `.env` loader mini spec at `docs/specs/app/perplexity-env-loader-mini-spec.md` and then complete live provider verification (task `076`) using `PERPLEXITY_API_KEY`. |  |
 | 088 | DONE | Orchestrator Agent | Merge the Modelling-prepared frontend mini spec for the modelling run contract into `main` at `docs/prompts/briefs/frontend-agent-modelling-contract-1.md`. | 2026-04-23 19:58:21 BST |
+| 089 | DONE | Orchestrator Agent | Merge the Backend/Data-prepared validation mini spec for the Frontend agent into `main` at `docs/prompts/briefs/backend-data-validation-mini-spec-1.md`. | 2026-04-23 20:02:19 BST |
 
 ## Potential Extensions Beyond V1
 
