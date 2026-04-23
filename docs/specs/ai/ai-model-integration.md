@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 13:02:38 BST |
+| last_updated | 2026-04-23 09:58:39 BST |
 
 # AI Model Integration Spec
 
@@ -147,6 +147,22 @@ Outputs:
 - Review Mode does not need the full Configuration Mode transcript by default.
 - If future behaviour requires Configuration Mode transcript access, it must be explicitly added to this spec.
 - AI chat transcripts are not exportable in V1.
+
+## Initial App Interfaces
+
+Initial AI scaffolding exposes frontend-callable helpers from `app.ai.data_api`:
+
+| Function | Purpose |
+|---|---|
+| `send_configuration_chat(user_message, active_inputs=None)` | Send one Configuration Mode chat turn, store the user message, store a safe assistant response, and return `{ok, message, metadata, workflow}` or a recoverable error shape. |
+| `generate_modelling_plan(active_inputs=None, latest_user_message=None)` | Validate current configuration, call Perplexity, parse Markdown plus metadata, reject unsafe or invalid metadata, store the generated unconfirmed plan, and return `{ok, markdown, metadata, workflow}`. |
+| `import_modelling_plan(markdown, metadata=None)` | Parse and validate a pasted modelling plan, reject incomplete or unsupported plans, and store a generated unconfirmed plan when valid. |
+| `send_review_chat(user_message, model_output_summary=None, visible_context=None, detailed_context=None)` | Send one Review Mode chat turn after Review is ready, using summary plus visible context and narrowing any detailed context to referenced or visible models/output types before the prompt is sent. |
+| `generate_review_opening(ranking_summary, model_output_summary)` | Generate the first neutral Review comparison from deterministic ranking inputs and store it in Review chat. |
+| `get_fixed_financial_advice_refusal()` | Return the standard fixed refusal for financial-advice requests. |
+| `get_generic_safe_error()` | Return the generic replacement message for unsafe or invalid AI responses. |
+
+All public helpers return dictionaries with `ok: true` on success. Recoverable failures return `ok: false`, a stable `code`, and user-facing `message`; validation failures may include `issues`. Raw prompts and raw provider responses are not returned to the frontend by default.
 
 ## Supported Model Constraint
 

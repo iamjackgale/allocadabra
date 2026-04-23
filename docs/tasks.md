@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 12:11:05 BST |
+| last_updated | 2026-04-23 12:12:15 BST |
 
 # Task Tracker
 
@@ -45,7 +45,7 @@
 | 027 | DONE | Orchestrator Agent | Create `docs/specs/frontend/modelling-page.md` for the Modelling Phase progress screen. | 2026-04-22 21:29:01 BST |
 | 028 | DONE | Backend/Data Agent | Define exact local cache/session file formats, schemas, and frontend-facing state interfaces. | 2026-04-23 07:38:02 BST |
 | 029 | DONE | Backend/Data Agent | Define frontend-callable app-layer function names and return shapes for CoinGecko token list, deterministic validation, and export bundling. | 2026-04-23 09:52:54 BST |
-| 030 | TODO | AI/Perplexity Agent | Define frontend-callable app-layer function names and return shapes for AI plan generation, chat calls, fixed financial-advice refusal text, and generic safe-error messages. |  |
+| 030 | DONE | AI/Perplexity Agent | Define frontend-callable app-layer function names and return shapes for AI plan generation, chat calls, fixed financial-advice refusal text, and generic safe-error messages. | 2026-04-23 09:58:39 BST |
 | 031 | TODO | Modelling Agent | Define frontend-callable app-layer function names and return shapes for model runs, progress updates, output manifests, failed models, and downloadable artifacts. |  |
 | 032 | TODO | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. |  |
 | 033 | DONE | Product/UX Agent | Complete Design Review 1 using `docs/specs/ux/design-review-1.md` and raise exactly 10 high-priority UX questions before code-producing agents begin. | 2026-04-23 07:14:21 BST |
@@ -54,12 +54,12 @@
 | 036 | DONE | Product/UX Agent | Set up the Product/UX Agent with `docs/prompts/agents/product-ux-agent.md` and a dedicated branch. | 2026-04-23 07:14:21 BST |
 | 037 | DONE | Backend/Data Agent | Set up the Backend/Data Agent with `docs/prompts/agents/backend-data-agent.md` and a dedicated branch. | 2026-04-23 07:12:08 BST |
 | 038 | DONE | Modelling Agent | Set up the Modelling Agent with `docs/prompts/agents/modelling-agent.md` and a dedicated branch. | 2026-04-23 07:13:23 BST |
-| 039 | TODO | AI/Perplexity Agent | Set up the AI/Perplexity Agent with `docs/prompts/agents/ai-perplexity-agent.md` and a dedicated branch. |  |
+| 039 | DONE | AI/Perplexity Agent | Set up the AI/Perplexity Agent with `docs/prompts/agents/ai-perplexity-agent.md` and a dedicated branch. | 2026-04-23 09:51:16 BST |
 | 040 | TODO | Frontend Agent | Set up the Frontend Agent with `docs/prompts/agents/frontend-agent.md` and a dedicated branch. |  |
 | 041 | TODO | QA/Validation Agent | Set up the QA/Validation Agent with `docs/prompts/agents/qa-validation-agent.md` and a dedicated branch. |  |
-| 042 | TODO | AI/Perplexity Agent | Implement `docs/specs/ai/ai-model-integration.md`. |  |
-| 043 | TODO | AI/Perplexity Agent | Implement `docs/specs/ai/parameters-agent.md`. |  |
-| 044 | TODO | AI/Perplexity Agent | Implement `docs/specs/ai/review-agent.md`. |  |
+| 042 | IN_PROGRESS | AI/Perplexity Agent | Implement `docs/specs/ai/ai-model-integration.md`. Initial shared `app.ai` integration, provider wrapper, guardrails, response parsing, metadata validation, session hooks, and validation handoff are implemented; live Perplexity verification is blocked on dependency/API-key setup. |  |
+| 043 | IN_PROGRESS | AI/Perplexity Agent | Implement `docs/specs/ai/parameters-agent.md`. Initial Configuration Mode chat, modelling-plan generation/import, supported-model validation, and guardrails are implemented; stronger plan parsing and structured metadata schemas remain. |  |
+| 044 | IN_PROGRESS | AI/Perplexity Agent | Implement `docs/specs/ai/review-agent.md`. Initial Review Mode chat, opening comparison helper, and detailed-context narrowing are implemented; richer referenced metadata extraction and broader context-selection coverage remain. |  |
 | 045 | DONE | Backend/Data Agent | Implement `docs/specs/app/logging.md` as the shared logging utility and integration pattern. | 2026-04-23 07:38:02 BST |
 | 046 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/coingecko-api.md`. | 2026-04-23 07:38:02 BST |
 | 047 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/data-storage.md`. | 2026-04-23 07:38:02 BST |
@@ -86,6 +86,13 @@
 | 068 | TODO | Modelling Agent | Integrate active workflow and cached price histories with the modelling runner without taking over Backend/Data export bundle ownership. |  |
 | 069 | TODO | Modelling Agent | Harden summary metric unavailable states so non-computable metrics return explicit user-facing unavailable reasons rather than only `NaN` values. |  |
 | 070 | TODO | Modelling Agent | Add repeatable modelling validation tests or smoke scripts for dataset failures, model failures, optional missing artifacts, and metric consistency once the project test pattern is selected. |  |
+| 071 | TODO | AI/Perplexity Agent | Strengthen modelling-plan import parsing and validation for objective, risk appetite, selected assets, constraints, selected models, and data window before adopting pasted plans. |  |
+| 072 | TODO | AI/Perplexity Agent | Add typed structured metadata helpers/schemas for app-actable AI outputs, including modelling plans, configuration suggestions, Review references, invalid metadata, and regeneration/confirmation requirements. |  |
+| 073 | TODO | AI/Perplexity Agent | Expand Review Mode detailed-context selection to cover visible metric rows, open expander IDs, artifact/table IDs, failed-model warnings, multi-model comparisons, summary metrics plus weights, and transformation metadata. |  |
+| 074 | TODO | AI/Perplexity Agent | Extract and validate optional Review response metadata for referenced model IDs, metric names, artifact IDs or output table names, and requests for additional detailed context. |  |
+| 075 | TODO | AI/Perplexity Agent | Extend AI validation coverage for invalid metadata, unsupported model IDs, future-only models, AI text/metadata conflicts, obvious financial-advice replacement, and Review context-selection edge cases. |  |
+| 076 | BLOCKED | AI/Perplexity Agent | Run live Perplexity provider verification for Configuration and Review calls once `perplexityai` is added to dependencies and `PERPLEXITY_API_KEY` is configured. |  |
+| 077 | TODO | AI/Perplexity Agent | Update AI prompt/spec docs if prompt behaviour changes while completing tasks 071-075. |  |
 
 ## Potential Extensions Beyond V1
 
