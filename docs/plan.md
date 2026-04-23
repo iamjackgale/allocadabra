@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 07:35:35 BST |
+| last_updated | 2026-04-23 09:22:30 BST |
 
 # Allocadabra Project Plan
 
@@ -191,10 +191,15 @@ To decide:
 - Previous inputs and outputs are recoverable only if the user downloaded them.
 - User inputs export as `.json`.
 - AI modelling plan exports as `.md`.
+- Canonical modelling dataset exports as `.csv`.
 - Model tables export as `.csv`.
 - Chart images export as `.png`.
-- Download bundles include every generated artifact, including confirmed modelling plan and user input JSON.
+- Download bundles are `.zip` files named `allocadabra-results-YYYYMMDD-HHMM.zip`.
+- Download bundles include every generated user-facing artifact, including confirmed modelling plan, user input JSON, canonical modelling dataset CSV, model outputs, chart PNGs, chart data CSVs, failed model reasons, missing-artifact placeholders, and the artifact manifest.
+- General/comparative outputs live at the bundle root; model-specific outputs live under `models/{model_id}/`.
+- Raw CoinGecko cache data is not exportable in V1.
 - AI chat transcripts are not exportable in V1.
+- Exports are written once after modelling completes and are not regenerated on demand.
 - Review UI position does not need to persist; reload defaults to summary metrics and the first model in run order.
 
 ## CoinGecko Decisions
