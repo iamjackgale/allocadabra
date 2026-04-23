@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 12:12:15 BST |
+| last_updated | 2026-04-23 12:18:43 BST |
 
 # Task Tracker
 
@@ -91,8 +91,9 @@
 | 073 | TODO | AI/Perplexity Agent | Expand Review Mode detailed-context selection to cover visible metric rows, open expander IDs, artifact/table IDs, failed-model warnings, multi-model comparisons, summary metrics plus weights, and transformation metadata. |  |
 | 074 | TODO | AI/Perplexity Agent | Extract and validate optional Review response metadata for referenced model IDs, metric names, artifact IDs or output table names, and requests for additional detailed context. |  |
 | 075 | TODO | AI/Perplexity Agent | Extend AI validation coverage for invalid metadata, unsupported model IDs, future-only models, AI text/metadata conflicts, obvious financial-advice replacement, and Review context-selection edge cases. |  |
-| 076 | BLOCKED | AI/Perplexity Agent | Run live Perplexity provider verification for Configuration and Review calls once `perplexityai` is added to dependencies and `PERPLEXITY_API_KEY` is configured. |  |
+| 076 | BLOCKED | AI/Perplexity Agent | Run live Perplexity provider verification for Configuration and Review calls once `PERPLEXITY_API_KEY` is configured. |  |
 | 077 | TODO | AI/Perplexity Agent | Update AI prompt/spec docs if prompt behaviour changes while completing tasks 071-075. |  |
+| 078 | DONE | Orchestrator Agent | Approve and save the AI Runtime Dependency mini spec and add `perplexityai` to the shared project dependencies and lockfile. | 2026-04-23 12:18:43 BST |
 
 ## Potential Extensions Beyond V1
 

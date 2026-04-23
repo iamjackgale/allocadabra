@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 12:02:46 BST |
-| last_updated | 2026-04-23 12:02:46 BST |
+| last_updated | 2026-04-23 12:18:43 BST |
 | owner | QA/Validation Agent |
 | source_agent | AI/Perplexity Agent |
 
@@ -117,8 +117,8 @@ Expected result:
 
 ## Known Validation Gaps
 
-- No live Perplexity API request was run because that requires `PERPLEXITY_API_KEY` and the `perplexityai` dependency to be installed.
-- The provider wrapper is implemented against the Perplexity SDK, but `pyproject.toml` and `uv.lock` still need a dependency-owner update to add `perplexityai`.
+- No live Perplexity API request was run because that requires `PERPLEXITY_API_KEY`.
+- The provider wrapper is implemented against the Perplexity SDK, and `perplexityai` is now included in `pyproject.toml` and `uv.lock`.
 - No automated test suite or fixture-based unit tests exist yet.
 - No Streamlit/frontend integration checks exist yet.
 - No QA checks exist yet for actual Perplexity response shape drift.
