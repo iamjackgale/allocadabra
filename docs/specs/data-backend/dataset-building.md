@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 14:17:17 BST |
+| last_updated | 2026-04-23 07:30:15 BST |
 
 # Dataset Building Spec
 
@@ -38,9 +38,12 @@ Shape:
 Column collision rule:
 
 - CoinGecko symbols are not guaranteed to be unique.
-- User-facing column labels should use `[SYMBOL]_price`.
+- User-facing column labels should use `[SYMBOL]_price` where unique.
+- If duplicate selected assets share the same CoinGecko symbol, the first selected asset keeps `[SYMBOL]_price`.
+- Later duplicate-symbol assets must use `[SYMBOL]_[COINGECKO_ID]_price`, where `COINGECKO_ID` is the CoinGecko `id`.
+- Example: `BTC_price` for the first `btc` symbol, then `BTC_bitcoin-cash-sv_price` for a later selected asset with the same `btc` symbol and CoinGecko ID `bitcoin-cash-sv`.
 - Internal metadata must map each column to CoinGecko `id`, `symbol`, and `name`.
-- If two selected assets share the same symbol, the internal mapping must preserve uniqueness by CoinGecko `id`; the UI/export layer must avoid ambiguous labels.
+- The UI/export layer must use the same unique column labels and preserve metadata mapping so student-facing labels remain readable without breaking dataframe uniqueness.
 
 Date alignment:
 

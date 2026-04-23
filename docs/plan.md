@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-22 23:09:50 BST |
+| last_updated | 2026-04-23 07:35:35 BST |
 
 # Allocadabra Project Plan
 
@@ -146,7 +146,8 @@ Confirmed:
 
 | System | Type | Use |
 |---|---|---|
-| Python | Language | Primary implementation language for app, data, AI integration, and modelling. |
+| Python | Language | Primary implementation language for app, data, AI integration, and modelling; prefer Python `3.11` for the first modelling feasibility spike. |
+| `pyproject.toml` | Dependency file | Root shared dependency source for the local Python app. |
 | Streamlit | Python UI framework | Single local web app runtime for the three-phase workflow. |
 | pandas | Python data library | Canonical price dataframes and model-specific transformed datasets. |
 | `riskfolio-lib` | Python modelling library | Portfolio modelling and strategic asset allocation calculations. |
@@ -219,7 +220,8 @@ To decide:
 - V1 modelling uses up to 365 daily observations from CoinGecko.
 - Selected assets need at least 90 valid daily prices.
 - Canonical dataset is a pandas price dataframe indexed by UTC date.
-- User-facing price columns use `[SYMBOL]_price`; internal metadata maps symbols back to CoinGecko IDs.
+- User-facing price columns use `[SYMBOL]_price` where unique; duplicate symbols keep the first `[SYMBOL]_price` label and suffix later duplicates with CoinGecko ID, for example `[SYMBOL]_[COINGECKO_ID]_price`.
+- Internal metadata maps dataframe columns back to CoinGecko IDs, symbols, and names.
 - Model-specific datasets are produced through reusable transformation functions.
 - Initial supported models:
   - Mean Variance.
@@ -243,7 +245,9 @@ To decide:
   - dendrogram/cluster data where available.
 - Allocation-over-time initially repeats static optimized weights across the 365-day window.
 - Benchmark rows are deferred beyond V1.
-- The Modelling Agent owns solver/runtime feasibility and dependency questions for `riskfolio-lib`, `cvxpy`, and required solvers.
+- The Modelling Agent owns solver/runtime feasibility for `riskfolio-lib`, `cvxpy`, and required solvers.
+- Dependency additions for modelling must be proposed as a mini spec before editing `pyproject.toml`; the Orchestrator Agent approves and integrates shared dependency changes.
+- V1 starts with local Python execution, not Pyodide or pure browser execution.
 
 ## Review Metrics
 
@@ -265,6 +269,14 @@ V1 side-by-side comparison should include:
 - CDaR.
 
 Metric rows should include one-line tooltips and use green/yellow/red ranking alongside visible numbers. Colour must not be the only meaning carrier.
+
+Approved V1 metric defaults:
+
+- Annualization factor: `365`.
+- Omega threshold: `0`.
+- Sortino target return: `0`.
+- CVaR confidence level: `95%`.
+- CDaR confidence level: `95%`.
 
 ## AI Interaction Modes
 

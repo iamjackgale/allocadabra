@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 07:38:02 BST |
+| last_updated | 2026-04-23 09:07:26 BST |
 
 # Task Tracker
 
@@ -48,12 +48,12 @@
 | 030 | TODO | AI/Perplexity Agent | Define frontend-callable app-layer function names and return shapes for AI plan generation, chat calls, fixed financial-advice refusal text, and generic safe-error messages. |  |
 | 031 | TODO | Modelling Agent | Define frontend-callable app-layer function names and return shapes for model runs, progress updates, output manifests, failed models, and downloadable artifacts. |  |
 | 032 | TODO | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. |  |
-| 033 | TODO | Product/UX Agent | Complete Design Review 1 using `docs/specs/ux/design-review-1.md` and raise exactly 10 high-priority UX questions before code-producing agents begin. |  |
+| 033 | DONE | Product/UX Agent | Complete Design Review 1 using `docs/specs/ux/design-review-1.md` and raise exactly 10 high-priority UX questions before code-producing agents begin. | 2026-04-23 07:14:21 BST |
 | 034 | DONE | Orchestrator Agent | Define strict folder ownership, branch expectations, and cross-agent mini spec rules across agent prompts and `docs/plan.md`. | 2026-04-22 22:27:16 BST |
 | 035 | TODO | Orchestrator Agent | Set up the Orchestrator Agent with `docs/prompts/agents/orchestrator-agent.md` and a dedicated branch for docs coordination. |  |
-| 036 | TODO | Product/UX Agent | Set up the Product/UX Agent with `docs/prompts/agents/product-ux-agent.md` and a dedicated branch. |  |
-| 037 | DONE | Backend/Data Agent | Set up the Backend/Data Agent with `docs/prompts/agents/backend-data-agent.md` and a dedicated branch. | 2026-04-23 07:38:02 BST |
-| 038 | TODO | Modelling Agent | Set up the Modelling Agent with `docs/prompts/agents/modelling-agent.md` and a dedicated branch. |  |
+| 036 | DONE | Product/UX Agent | Set up the Product/UX Agent with `docs/prompts/agents/product-ux-agent.md` and a dedicated branch. | 2026-04-23 07:14:21 BST |
+| 037 | DONE | Backend/Data Agent | Set up the Backend/Data Agent with `docs/prompts/agents/backend-data-agent.md` and a dedicated branch. | 2026-04-23 07:12:08 BST |
+| 038 | DONE | Modelling Agent | Set up the Modelling Agent with `docs/prompts/agents/modelling-agent.md` and a dedicated branch. | 2026-04-23 07:13:23 BST |
 | 039 | TODO | AI/Perplexity Agent | Set up the AI/Perplexity Agent with `docs/prompts/agents/ai-perplexity-agent.md` and a dedicated branch. |  |
 | 040 | TODO | Frontend Agent | Set up the Frontend Agent with `docs/prompts/agents/frontend-agent.md` and a dedicated branch. |  |
 | 041 | TODO | QA/Validation Agent | Set up the QA/Validation Agent with `docs/prompts/agents/qa-validation-agent.md` and a dedicated branch. |  |
@@ -71,8 +71,8 @@
 | 053 | TODO | Frontend Agent | Implement `docs/specs/frontend/model-review.md`. |  |
 | 054 | TODO | Frontend Agent | Implement `docs/specs/frontend/modelling-page.md`. |  |
 | 055 | TODO | Frontend Agent | Implement `docs/specs/frontend/ui-design-build.md`. |  |
-| 056 | TODO | Product/UX Agent | Implement `docs/specs/ux/design-review-1.md` by completing the first UX review pass. |  |
-| 057 | TODO | Orchestrator Agent | Prepare a dedicated download/export layer spec that lists every generated output, expected file type, bundle contents, unavailable-artifact states, and implementation ownership; assign follow-up implementation to the appropriate agent. |  |
+| 056 | DONE | Product/UX Agent | Implement `docs/specs/ux/design-review-1.md` by completing the first UX review pass. | 2026-04-23 07:14:21 BST |
+| 057 | IN_PROGRESS | Orchestrator Agent | Prepare a dedicated download/export layer spec that lists every generated output, expected file type, bundle contents, unavailable-artifact states, and implementation ownership; assign follow-up implementation to the appropriate agent. |  |
 | 058 | BLOCKED | Backend/Data Agent | Implement the export work intentionally omitted from initial scaffolding after task 057 defines the dedicated download/export layer spec: export bundle creation, artifact packaging, unavailable-artifact handling, and download bundle manifests. |  |
 
 ## Potential Extensions Beyond V1
