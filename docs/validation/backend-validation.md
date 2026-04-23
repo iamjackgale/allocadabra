@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 07:34:14 BST |
-| last_updated | 2026-04-23 07:34:14 BST |
+| last_updated | 2026-04-23 12:06:43 BST |
 | owner | QA/Validation Agent |
 | source_agent | Backend/Data Agent |
 
@@ -19,8 +19,17 @@ The checks cover initial scaffolding for:
 - CoinGecko token and market-chart normalization.
 - Local JSON workflow/session state creation and deterministic validation.
 - Public package exports from `app.storage`.
+- Export manifest creation, missing placeholder handling, individual download metadata, zip bundle creation, and export exclusion checks.
 
-The checks do not validate live CoinGecko connectivity, Streamlit integration, modelling integration, export bundle generation, or full workflow acceptance criteria.
+The checks do not validate live CoinGecko connectivity, Streamlit integration, full modelling integration, or full workflow acceptance criteria.
+
+## Verification Passed
+
+The Backend/Data Agent has run and passed these checks:
+
+- `PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache python3 -m compileall app`
+- Export bundle smoke test with a dummy Modelling-produced CSV.
+- Package export smoke test.
 
 ## Verification Commands
 
@@ -82,24 +91,104 @@ Expected result:
 Command:
 
 ```bash
-PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache python3 -c "import app.storage as s; assert callable(s.list_token_options); assert callable(s.return_to_configure_from_review); print('package exports ok')"
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache python3 -c "import app.storage as s; assert callable(s.prepare_review_export_bundle); assert callable(s.get_review_download_all); print('package exports ok')"
 ```
 
 Purpose:
 
-- Confirms public storage package exports include frontend-facing token functions and review-to-configuration lifecycle helpers.
+- Confirms public storage package exports include frontend-facing export bundle and Download All helpers.
 
 Expected result:
 
 - Prints `package exports ok`.
+
+### Export Bundle Smoke Test
+
+Command:
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache python3 - <<'PY'
+from pathlib import Path
+import zipfile
+
+from app.storage.session_state import reset_configuration, store_generated_plan, confirm_generated_plan
+from app.storage.data_api import update_active_inputs, prepare_review_export_bundle, get_review_download_all, get_review_artifact_download
+
+reset_configuration()
+update_active_inputs({
+    'selected_assets': [{'id': 'bitcoin', 'symbol': 'btc', 'name': 'Bitcoin'}, {'id': 'ethereum', 'symbol': 'eth', 'name': 'Ethereum'}],
+    'treasury_objective': 'Best risk-adjusted returns',
+    'risk_appetite': 'Medium',
+    'selected_models': ['mean_variance'],
+})
+store_generated_plan(markdown='# Plan\n\nRun one model.')
+confirm_generated_plan()
+source = Path('/tmp/allocadabra-summary-metrics.csv')
+source.write_text('metric,mean_variance\nreturn,0.1\n', encoding='utf-8')
+result = prepare_review_export_bundle(
+    modelling_artifacts=[{
+        'artifact_id': 'summary_metrics',
+        'label': 'Summary metrics',
+        'category': 'general',
+        'output_type': 'summary_metrics',
+        'format': 'csv',
+        'source_path': str(source),
+        'bundle_path': 'summary-metrics.csv',
+    }],
+    missing_artifacts=[{
+        'artifact_id': 'efficient_frontier_png',
+        'label': 'Efficient frontier chart',
+        'output_type': 'efficient_frontier',
+        'model_id': 'mean_variance',
+        'reason': 'This artifact was not generated for this run.',
+    }],
+)
+assert result['workflow_state']['phase'] == 'review'
+assert result['exports']['download_all_enabled'] is True
+manifest = result['exports']['manifest']
+assert manifest['bundle_filename'].startswith('allocadabra-results-')
+assert any(a['artifact_id'] == 'summary_metrics' and a['path'] == 'summary-metrics.csv' for a in manifest['artifacts'])
+missing = next(a for a in manifest['artifacts'] if a['artifact_id'] == 'efficient_frontier_png')
+assert missing['status'] == 'missing'
+assert missing['individual_download_enabled'] is False
+assert get_review_artifact_download('summary_metrics')['ok'] is True
+assert get_review_artifact_download('efficient_frontier_png')['enabled'] is False
+bundle = get_review_download_all()
+assert bundle['ok'] is True
+with zipfile.ZipFile(bundle['path']) as archive:
+    names = set(archive.namelist())
+assert 'manifest.json' in names
+assert 'user-inputs.json' in names
+assert 'modelling-plan.md' in names
+assert 'summary-metrics.csv' in names
+assert 'missing/efficient_frontier_png.txt' in names
+assert not any(name.startswith('coingecko/') for name in names)
+assert not any('chat' in name for name in names)
+print('export smoke ok')
+PY
+```
+
+Purpose:
+
+- Confirms export bundle creation consumes a Modelling-produced artifact file instead of generating modelling output itself.
+- Confirms Modelling-produced artifact descriptors can use either `source_path` plus `bundle_path`, or a relative `path` under `storage/cache/model-outputs/` for already-generated artifacts.
+- Confirms bundle filename prefix, manifest entries, missing placeholder `.txt` handling, and Review phase transition.
+- Confirms available artifacts are individually downloadable and missing artifacts disable individual download controls.
+- Confirms `Download All` zip includes `manifest.json`, user inputs, modelling plan, copied model output artifacts, and missing placeholders.
+- Confirms raw CoinGecko cache paths and chat transcript artifacts are not included in the zip.
+
+Expected result:
+
+- Prints `export smoke ok`.
+- Runtime export files under `storage/cache/model-outputs/` are intentionally ignored by `storage/cache/.gitignore`.
 
 ## Known Validation Gaps
 
 - No live CoinGecko API request was run because that requires a real `COINGECKO_API_KEY` in `.env`.
 - No automated test suite or fixture-based unit tests exist yet.
 - No Streamlit/frontend integration checks exist yet.
-- No modelling-agent integration checks exist yet for consuming cached price history.
-- Export bundle creation, artifact packaging, unavailable-artifact handling, and download bundle manifests are intentionally deferred until the dedicated export/download spec is complete.
+- No full modelling-agent integration checks exist yet for consuming cached price history or handing off the complete output artifact set.
+- Export checks use a dummy Modelling-produced CSV, not the full final model artifact matrix.
 
 ## Suggested QA Follow-Ups
 
@@ -107,4 +196,5 @@ Expected result:
 - Add fixture tests for token-list normalization, duplicate token IDs, malformed rows, price forward-fill, malformed price points, and empty price responses.
 - Add filesystem tests for JSON schema fields, CSV columns, cache merge behaviour, ignored runtime cache files, and reset behaviour that preserves CoinGecko cache.
 - Add session lifecycle tests for generated plan, confirmed plan, reconfigure, modelling started, interrupted modelling, review-ready reload, return to configure, reset configuration, and start new model.
+- Add export tests for every required artifact type, failed artifact status, disabled bundle state when zip creation fails, model-specific `models/{model_id}/` paths, and exclusion of raw CoinGecko cache/user chat data.
 - Add live API checks behind an opt-in environment flag so CI/local validation can skip them when `COINGECKO_API_KEY` is unavailable.

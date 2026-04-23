@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 09:44:14 BST |
+| last_updated | 2026-04-23 12:04:56 BST |
 
 # Task Tracker
 
@@ -44,7 +44,7 @@
 | 026 | DONE | Orchestrator Agent | Create and maintain the potential extensions beyond V1 sublist in `docs/tasks.md`. | 2026-04-22 12:21:30 BST |
 | 027 | DONE | Orchestrator Agent | Create `docs/specs/frontend/modelling-page.md` for the Modelling Phase progress screen. | 2026-04-22 21:29:01 BST |
 | 028 | DONE | Backend/Data Agent | Define exact local cache/session file formats, schemas, and frontend-facing state interfaces. | 2026-04-23 07:38:02 BST |
-| 029 | TODO | Backend/Data Agent | Define frontend-callable app-layer function names and return shapes for CoinGecko token list, deterministic validation, and export bundling. CoinGecko and deterministic validation interfaces are defined; export bundling can proceed from `docs/specs/app/export-bundling.md`. |  |
+| 029 | DONE | Backend/Data Agent | Define frontend-callable app-layer function names and return shapes for CoinGecko token list, deterministic validation, and export bundling. | 2026-04-23 09:52:54 BST |
 | 030 | TODO | AI/Perplexity Agent | Define frontend-callable app-layer function names and return shapes for AI plan generation, chat calls, fixed financial-advice refusal text, and generic safe-error messages. |  |
 | 031 | TODO | Modelling Agent | Define frontend-callable app-layer function names and return shapes for model runs, progress updates, output manifests, failed models, and downloadable artifacts. |  |
 | 032 | TODO | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. |  |
@@ -73,10 +73,13 @@
 | 055 | TODO | Frontend Agent | Implement `docs/specs/frontend/ui-design-build.md`. |  |
 | 056 | DONE | Product/UX Agent | Implement `docs/specs/ux/design-review-1.md` by completing the first UX review pass. | 2026-04-23 07:14:21 BST |
 | 057 | DONE | Orchestrator Agent | Prepare a dedicated download/export layer spec that lists every generated output, expected file type, bundle contents, unavailable-artifact states, and implementation ownership; assign follow-up implementation to the appropriate agent. | 2026-04-23 09:22:30 BST |
-| 058 | TODO | Backend/Data Agent | Implement the export work intentionally omitted from initial scaffolding after task 057 defines the dedicated download/export layer spec: export bundle creation, artifact packaging, unavailable-artifact handling, and download bundle manifests. |  |
+| 058 | DONE | Backend/Data Agent | Implement the export work intentionally omitted from initial scaffolding after task 057 defines the dedicated download/export layer spec: export bundle creation, artifact packaging, unavailable-artifact handling, and download bundle manifests. | 2026-04-23 09:52:54 BST |
 | 059 | DONE | Orchestrator Agent | Approve and save the Modelling Runtime Dependency mini spec and create the root `pyproject.toml` with initial modelling/runtime dependencies. | 2026-04-23 09:16:09 BST |
 | 060 | DONE | Modelling Agent | Run the modelling runtime feasibility spike using the approved `pyproject.toml` dependencies and report whether default `cvxpy` solvers are sufficient. | 2026-04-23 09:40:39 BST |
 | 061 | DONE | Orchestrator Agent | Decide `uv.lock` version-control policy, document it, and commit the lockfile for reproducible local installs. | 2026-04-23 09:40:39 BST |
+| 062 | DONE | Backend/Data Agent | Document Backend/Data validation handoff and verification commands in `docs/validation/backend-validation.md` for QA review. | 2026-04-23 12:04:56 BST |
+| 063 | TODO | Backend/Data Agent | Document the V1 CoinGecko retry, timeout, and rate-limit policy in `docs/specs/data-backend/coingecko-api.md` to match the implemented client behaviour. |  |
+| 064 | TODO | Backend/Data Agent | Revisit the 2-day CoinGecko price-cache freshness tolerance after live Streamlit/runtime integration and tighten it if validation shows stale data risk. |  |
 
 ## Potential Extensions Beyond V1
 

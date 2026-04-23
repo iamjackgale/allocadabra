@@ -18,6 +18,7 @@ ACTIVE_WORKFLOW_FILE = USER_INPUTS_DIR / "active_workflow.json"
 
 MODEL_OUTPUTS_DIR = STORAGE_ROOT / "model-outputs"
 MODEL_OUTPUT_MANIFEST_FILE = MODEL_OUTPUTS_DIR / "manifest.json"
+MODEL_OUTPUT_MISSING_DIR = MODEL_OUTPUTS_DIR / "missing"
 
 
 def ensure_storage_dirs() -> None:
@@ -27,6 +28,6 @@ def ensure_storage_dirs() -> None:
         COINGECKO_PRICES_DIR,
         USER_INPUTS_DIR,
         MODEL_OUTPUTS_DIR,
+        MODEL_OUTPUT_MISSING_DIR,
     ):
         path.mkdir(parents=True, exist_ok=True)
-

@@ -3,11 +3,17 @@
 from __future__ import annotations
 
 import logging
+import shutil
 from copy import deepcopy
 from typing import Any, Literal
 
 from app.storage.json_files import read_json, write_json
-from app.storage.paths import ACTIVE_WORKFLOW_FILE, MODEL_OUTPUT_MANIFEST_FILE, ensure_storage_dirs
+from app.storage.paths import (
+    ACTIVE_WORKFLOW_FILE,
+    MODEL_OUTPUT_MANIFEST_FILE,
+    MODEL_OUTPUTS_DIR,
+    ensure_storage_dirs,
+)
 from app.storage.schemas import SCHEMA_VERSION, metadata_payload, utc_now_iso
 
 
@@ -155,7 +161,7 @@ def mark_modelling_interrupted(error: str | None = None) -> dict[str, Any]:
 def mark_review_ready(manifest: dict[str, Any]) -> dict[str, Any]:
     """Store output manifest and move active workflow into Review."""
     ensure_storage_dirs()
-    manifest_payload = metadata_payload(**manifest)
+    manifest_payload = manifest if _is_export_manifest(manifest) else metadata_payload(**manifest)
     write_json(MODEL_OUTPUT_MANIFEST_FILE, manifest_payload)
 
     state = get_workflow_state()
@@ -171,9 +177,15 @@ def mark_review_ready(manifest: dict[str, Any]) -> dict[str, Any]:
 
 
 def clear_model_outputs() -> None:
-    """Clear the current model-output manifest without touching market data."""
-    if MODEL_OUTPUT_MANIFEST_FILE.exists():
-        MODEL_OUTPUT_MANIFEST_FILE.unlink()
+    """Clear current model outputs/exports without touching market data."""
+    ensure_storage_dirs()
+    for path in MODEL_OUTPUTS_DIR.iterdir():
+        if path.name == ".gitkeep":
+            continue
+        if path.is_dir():
+            shutil.rmtree(path)
+        else:
+            path.unlink()
 
 
 def return_to_configure_from_review() -> dict[str, Any]:
@@ -221,3 +233,11 @@ def _migrate_or_default(payload: Any) -> dict[str, Any]:
 
     state["schema_version"] = SCHEMA_VERSION
     return state
+
+
+def _is_export_manifest(manifest: dict[str, Any]) -> bool:
+    return (
+        isinstance(manifest.get("created_at"), str)
+        and isinstance(manifest.get("bundle_filename"), str)
+        and isinstance(manifest.get("artifacts"), list)
+    )

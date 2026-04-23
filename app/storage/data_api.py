@@ -6,13 +6,24 @@ import logging
 from dataclasses import asdict
 from typing import Any
 
+from app.storage.export_bundle import (
+    get_download_all_metadata,
+    get_export_manifest,
+    get_individual_download_metadata,
+    prepare_review_exports,
+)
 from app.storage.market_cache import (
     get_price_history,
     get_token_options,
     price_cache_status,
     search_token_options,
 )
-from app.storage.session_state import get_workflow_state, save_workflow_state, update_user_inputs
+from app.storage.session_state import (
+    get_workflow_state,
+    mark_review_ready,
+    save_workflow_state,
+    update_user_inputs,
+)
 from app.storage.validation import validate_configuration_inputs
 
 
@@ -93,3 +104,38 @@ def validate_active_configuration() -> dict[str, Any]:
 def save_active_workflow(state: dict[str, Any]) -> dict[str, Any]:
     """Persist an edited active workflow state."""
     return save_workflow_state(state)
+
+
+def prepare_review_export_bundle(
+    *,
+    modelling_artifacts: list[dict[str, Any]] | None = None,
+    failed_models: list[dict[str, Any]] | None = None,
+    missing_artifacts: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Prepare Review exports and mark the workflow ready for Review."""
+    result = prepare_review_exports(
+        modelling_artifacts=modelling_artifacts,
+        failed_models=failed_models,
+        missing_artifacts=missing_artifacts,
+    )
+    workflow_state = mark_review_ready(result.manifest)
+    return {
+        "ok": result.ok,
+        "exports": result.to_dict(),
+        "workflow_state": workflow_state,
+    }
+
+
+def get_review_export_manifest() -> dict[str, Any] | None:
+    """Return the current Review export manifest."""
+    return get_export_manifest()
+
+
+def get_review_download_all() -> dict[str, Any]:
+    """Return Download All metadata for Frontend."""
+    return get_download_all_metadata()
+
+
+def get_review_artifact_download(artifact_id: str) -> dict[str, Any]:
+    """Return individual artifact download metadata for Frontend."""
+    return get_individual_download_metadata(artifact_id)
