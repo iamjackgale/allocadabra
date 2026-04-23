@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 23:09:50 BST |
+| last_updated | 2026-04-23 09:44:14 BST |
 
 # Session Storage Spec
 
@@ -29,7 +29,7 @@ V1 active workflow/session storage uses JSON files:
 | Active workflow state | JSON | `/storage/cache/user-inputs/active_workflow.json` |
 | Current model-output manifest | JSON | `/storage/cache/model-outputs/manifest.json` |
 
-JSON files must include a `schema_version` and `updated_at` field. Model-output artifacts may be referenced by the manifest, but export bundle construction is deferred until the dedicated export/download spec is complete.
+JSON files must include a `schema_version` and `updated_at` field. Model-output artifacts may be referenced by the manifest. Export bundle construction, artifact paths, missing-artifact handling, and `Download All` behaviour are defined in `/docs/specs/app/export-bundling.md`.
 
 ### Active User Inputs
 
@@ -127,7 +127,7 @@ Initial export formats:
 
 - Model output tables should export as `.csv`.
 - Model chart images should export as `.png`.
-- Download bundles should include every generated artifact, including confirmed modelling plan and user input JSON.
+- Download bundles should follow `/docs/specs/app/export-bundling.md`.
 - No `.pdf` export is required.
 
 Review UI state:
@@ -161,16 +161,13 @@ Initial backend/data scaffolding exposes workflow-state helpers from `app.storag
 | `return_to_configure_from_review()` | Clear current outputs and Review chat while preserving prior configuration choices. |
 | `reset_configuration()` / `start_new_model()` | Clear active inputs, plan, chats, and outputs without touching CoinGecko cache. |
 
-Export bundle generation is deliberately omitted from this initial interface until the dedicated export/download spec is complete.
+Export bundle generation interfaces should be added by the Backend/Data Agent while implementing `/docs/specs/app/export-bundling.md`.
 
 ## Relationship To Other Specs
 
 - `/docs/specs/data-backend/data-storage.md` owns CoinGecko market-data cache rules.
+- `/docs/specs/app/export-bundling.md` defines export bundle structure, artifact manifest shape, missing-artifact handling, individual download behaviour, and `Download All` rules.
 - `/docs/specs/ai/parameters-agent.md` consumes and updates active user input context during preparation.
 - `/docs/specs/ai/review-agent.md` consumes model outputs during final review.
 - `/docs/specs/ai/ai-model-integration.md` defines Configuration Mode and Review Mode session rules.
 - `/docs/specs/frontend/model-review.md` defines how final outputs are displayed and downloaded.
-
-## Open Questions
-
-- Exact export bundle structure for mixed `.json`, `.md`, `.csv`, and visual artifacts. This is deferred to the dedicated export/download spec.
