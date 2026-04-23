@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 09:16:09 BST |
-| last_updated | 2026-04-23 09:16:09 BST |
+| last_updated | 2026-04-23 09:40:39 BST |
 
 # Modelling Runtime Dependency Mini Spec
 
@@ -71,4 +71,8 @@ The Modelling Agent needs these dependencies to implement and validate:
 
 - Approved.
 - Root `pyproject.toml` should be created using the dependencies in this mini spec.
+- `pyproject.toml` is the human-edited dependency source.
+- `uv.lock` should be committed for reproducible local installs.
+- Agents should not manually edit `uv.lock`; it should only change as the result of approved dependency changes and lock regeneration.
+- The base modelling runtime feasibility workflow completed without requiring an additional solver mini spec.
 - Streamlit, Perplexity, and other non-modelling dependencies are outside this mini spec and should be added through their owning agent workflows or a later Orchestrator-approved dependency update.

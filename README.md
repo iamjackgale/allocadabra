@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 07:39:45 BST |
-| last_updated | 2026-04-22 23:19:04 BST |
+| last_updated | 2026-04-23 09:40:39 BST |
 
 # Allocadabra
 
@@ -18,6 +18,9 @@ The contents of this repo are experimental and in development, and should not be
 | System | Use |
 |---|---|
 | Python | Primary implementation language. |
+| uv | Dependency/install tooling for the local Python environment. |
+| pyproject.toml | Human-edited dependency source. |
+| uv.lock | Committed lockfile for reproducible local installs. |
 | Streamlit | Local web app runtime and frontend. |
 | pandas | Dataset construction and transformations. |
 | riskfolio-lib | Portfolio modelling and allocation methods. |

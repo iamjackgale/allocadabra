@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 09:22:30 BST |
+| last_updated | 2026-04-23 09:40:39 BST |
 
 # Allocadabra Project Plan
 
@@ -148,6 +148,8 @@ Confirmed:
 |---|---|---|
 | Python | Language | Primary implementation language for app, data, AI integration, and modelling; prefer Python `3.11` for the first modelling feasibility spike. |
 | `pyproject.toml` | Dependency file | Root shared dependency source for the local Python app. |
+| `uv` | Python dependency/install tooling | Used to resolve and install the local Python environment. |
+| `uv.lock` | Python lockfile | Committed for reproducible local installs; regenerated only after approved dependency updates. |
 | Streamlit | Python UI framework | Single local web app runtime for the three-phase workflow. |
 | pandas | Python data library | Canonical price dataframes and model-specific transformed datasets. |
 | `riskfolio-lib` | Python modelling library | Portfolio modelling and strategic asset allocation calculations. |
@@ -252,6 +254,8 @@ To decide:
 - Benchmark rows are deferred beyond V1.
 - The Modelling Agent owns solver/runtime feasibility for `riskfolio-lib`, `cvxpy`, and required solvers.
 - Dependency additions for modelling must be proposed as a mini spec before editing `pyproject.toml`; the Orchestrator Agent approves and integrates shared dependency changes.
+- `pyproject.toml` is the human-edited dependency source; `uv.lock` is committed for reproducible installs and should not be manually edited.
+- The modelling runtime feasibility spike confirmed no additional solver dependency is required for the base workflow.
 - V1 starts with local Python execution, not Pyodide or pure browser execution.
 
 ## Review Metrics

@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-23 09:16:09 BST |
+| last_updated | 2026-04-23 09:40:39 BST |
 
 # Riskfolio-Lib Spec
 
@@ -336,6 +336,9 @@ Pure browser/Pyodide execution is not part of the V1 runtime route unless the Or
 - Start with local Python execution, not Pyodide or pure browser execution.
 - Prefer Python `3.11` for the first feasibility spike unless the Modelling Agent proves a newer version works cleanly with `riskfolio-lib`, `cvxpy`, and required solvers.
 - The initial dependency mini spec is approved at `/docs/specs/app/modelling-runtime-dependency-mini-spec.md`.
+- `pyproject.toml` is the human-edited dependency source.
+- `uv.lock` is committed for reproducible local installs and should not be manually edited.
+- Lockfile updates should happen only as the result of approved dependency changes and lock regeneration.
 
 Approved initial modelling/runtime dependencies:
 
@@ -353,6 +356,12 @@ Solver policy:
 - Test the default solvers installed with `cvxpy`.
 - If solver availability blocks Mean Variance or Risk Parity, propose the smallest additional solver dependency with evidence from the spike.
 
+Initial feasibility result:
+
+- The base modelling runtime workflow completed without requiring an additional solver mini spec.
+- No extra solver dependency is required at this stage.
+- If future modelling work exposes solver failures, the Modelling Agent should return a new mini spec with evidence and the smallest proposed additional dependency.
+
 ## Relationship To Other Specs
 
 - `/docs/specs/data-backend/dataset-building.md` defines canonical price dataframes and transformations.
@@ -363,7 +372,6 @@ Solver policy:
 
 ## Open Questions
 
-- Which local solver dependencies are required to execute all three initial `riskfolio-lib` model paths reliably.
 - Which optional exploration artifacts to prioritize for the hackathon build.
 - Whether Risk Parity should use `rm="MV"` initially or expose `UCI` later as a course extension.
 - Benchmark construction for benchmark-return rows such as "BTC ETH MV Return".
