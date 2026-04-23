@@ -2,7 +2,7 @@
 |---|---|
 | created | 2026-04-21 08:33:31 BST |
 | last_updated | 2026-04-22 22:27:16 BST |
-| prompt_used | |
+| prompt_used | 2026-04-23 07:13:11 BST |
 
 # Modelling Agent Prompt
 

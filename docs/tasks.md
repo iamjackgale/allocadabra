@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 12:04:56 BST |
+| last_updated | 2026-04-23 12:11:05 BST |
 
 # Task Tracker
 
@@ -63,8 +63,8 @@
 | 045 | DONE | Backend/Data Agent | Implement `docs/specs/app/logging.md` as the shared logging utility and integration pattern. | 2026-04-23 07:38:02 BST |
 | 046 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/coingecko-api.md`. | 2026-04-23 07:38:02 BST |
 | 047 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/data-storage.md`. | 2026-04-23 07:38:02 BST |
-| 048 | TODO | Modelling Agent | Implement `docs/specs/data-backend/dataset-building.md`. |  |
-| 049 | TODO | Modelling Agent | Implement `docs/specs/data-backend/riskfolio-lib.md`. |  |
+| 048 | DONE | Modelling Agent | Implement `docs/specs/data-backend/dataset-building.md`. | 2026-04-23 12:05:03 BST |
+| 049 | DONE | Modelling Agent | Implement `docs/specs/data-backend/riskfolio-lib.md`. | 2026-04-23 12:05:03 BST |
 | 050 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/session-storage.md`. | 2026-04-23 07:38:02 BST |
 | 051 | TODO | Frontend Agent | Implement `docs/specs/frontend/agent-chat.md`. |  |
 | 052 | TODO | Frontend Agent | Implement `docs/specs/frontend/model-parameters.md`. |  |
@@ -80,6 +80,12 @@
 | 062 | DONE | Backend/Data Agent | Document Backend/Data validation handoff and verification commands in `docs/validation/backend-validation.md` for QA review. | 2026-04-23 12:04:56 BST |
 | 063 | TODO | Backend/Data Agent | Document the V1 CoinGecko retry, timeout, and rate-limit policy in `docs/specs/data-backend/coingecko-api.md` to match the implemented client behaviour. |  |
 | 064 | TODO | Backend/Data Agent | Revisit the 2-day CoinGecko price-cache freshness tolerance after live Streamlit/runtime integration and tighten it if validation shows stale data risk. |  |
+| 065 | DONE | Modelling Agent | Create `docs/validation/modelling-validation.md` documenting solver/runtime feasibility and modelling export artifact smoke checks. | 2026-04-23 12:05:03 BST |
+| 066 | TODO | Modelling Agent | Define and implement the frontend-callable modelling run interface for active workflow model execution, including return shape for successful models, failed models, artifact metadata, and user-facing errors. |  |
+| 067 | TODO | Modelling Agent | Add structured modelling progress callback/event support aligned to Modelling Phase checkpoints: Validation, Ingestion, Datasets, Modelling, Analysis, and Outputs. |  |
+| 068 | TODO | Modelling Agent | Integrate active workflow and cached price histories with the modelling runner without taking over Backend/Data export bundle ownership. |  |
+| 069 | TODO | Modelling Agent | Harden summary metric unavailable states so non-computable metrics return explicit user-facing unavailable reasons rather than only `NaN` values. |  |
+| 070 | TODO | Modelling Agent | Add repeatable modelling validation tests or smoke scripts for dataset failures, model failures, optional missing artifacts, and metric consistency once the project test pattern is selected. |  |
 
 ## Potential Extensions Beyond V1
 
