@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 12:21:50 BST |
+| last_updated | 2026-04-23 12:24:54 BST |
 
 # Task Tracker
 
@@ -46,7 +46,7 @@
 | 028 | DONE | Backend/Data Agent | Define exact local cache/session file formats, schemas, and frontend-facing state interfaces. | 2026-04-23 07:38:02 BST |
 | 029 | DONE | Backend/Data Agent | Define frontend-callable app-layer function names and return shapes for CoinGecko token list, deterministic validation, and export bundling. | 2026-04-23 09:52:54 BST |
 | 030 | DONE | AI/Perplexity Agent | Define frontend-callable app-layer function names and return shapes for AI plan generation, chat calls, fixed financial-advice refusal text, and generic safe-error messages. | 2026-04-23 09:58:39 BST |
-| 031 | TODO | Modelling Agent | Define frontend-callable app-layer function names and return shapes for model runs, progress updates, output manifests, failed models, and downloadable artifacts. |  |
+| 031 | TODO | Modelling Agent | Define the frontend-callable modelling app-layer contract: function names and return shapes for model runs, progress events, output artifact descriptors, failed models, and user-facing errors. Implementation is tracked by tasks 066-068. |  |
 | 032 | TODO | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. |  |
 | 033 | DONE | Product/UX Agent | Complete Design Review 1 using `docs/specs/ux/design-review-1.md` and raise exactly 10 high-priority UX questions before code-producing agents begin. | 2026-04-23 07:14:21 BST |
 | 034 | DONE | Orchestrator Agent | Define strict folder ownership, branch expectations, and cross-agent mini spec rules across agent prompts and `docs/plan.md`. | 2026-04-22 22:27:16 BST |
@@ -57,7 +57,7 @@
 | 039 | DONE | AI/Perplexity Agent | Set up the AI/Perplexity Agent with `docs/prompts/agents/ai-perplexity-agent.md` and a dedicated branch. | 2026-04-23 09:51:16 BST |
 | 040 | TODO | Frontend Agent | Set up the Frontend Agent with `docs/prompts/agents/frontend-agent.md` and a dedicated branch. |  |
 | 041 | TODO | QA/Validation Agent | Set up the QA/Validation Agent with `docs/prompts/agents/qa-validation-agent.md` and a dedicated branch. |  |
-| 042 | IN_PROGRESS | AI/Perplexity Agent | Implement `docs/specs/ai/ai-model-integration.md`. Initial shared `app.ai` integration, provider wrapper, guardrails, response parsing, metadata validation, session hooks, and validation handoff are implemented; live Perplexity verification is blocked on dependency/API-key setup. |  |
+| 042 | IN_PROGRESS | AI/Perplexity Agent | Implement `docs/specs/ai/ai-model-integration.md`. Initial shared `app.ai` integration, provider wrapper, guardrails, response parsing, metadata validation, session hooks, and validation handoff are implemented; live Perplexity verification is blocked on `PERPLEXITY_API_KEY`. |  |
 | 043 | IN_PROGRESS | AI/Perplexity Agent | Implement `docs/specs/ai/parameters-agent.md`. Initial Configuration Mode chat, modelling-plan generation/import, supported-model validation, and guardrails are implemented; stronger plan parsing and structured metadata schemas remain. |  |
 | 044 | IN_PROGRESS | AI/Perplexity Agent | Implement `docs/specs/ai/review-agent.md`. Initial Review Mode chat, opening comparison helper, and detailed-context narrowing are implemented; richer referenced metadata extraction and broader context-selection coverage remain. |  |
 | 045 | DONE | Backend/Data Agent | Implement `docs/specs/app/logging.md` as the shared logging utility and integration pattern. | 2026-04-23 07:38:02 BST |
@@ -95,6 +95,11 @@
 | 077 | TODO | AI/Perplexity Agent | Update AI prompt/spec docs if prompt behaviour changes while completing tasks 071-075. |  |
 | 078 | DONE | Orchestrator Agent | Approve and save the AI Runtime Dependency mini spec and add `perplexityai` to the shared project dependencies and lockfile. | 2026-04-23 12:18:43 BST |
 | 079 | DONE | Orchestrator Agent | Create `docs/validation/general-validation.md` with repo-level validation checks for merges, dependency updates, and pushes to `main`. | 2026-04-23 12:21:50 BST |
+| 080 | TODO | AI/Perplexity Agent | Strengthen Configuration Mode prompts around unsupported constraints, required missing fields, and asset-guidance boundaries without changing frontend controls or modelling constraints. |  |
+| 081 | TODO | AI/Perplexity Agent | Align AI supported-model validation with the Modelling-owned supported-model registry once a stable app-layer registry/export is available; until then keep the fixed V1 model set. |  |
+| 082 | TODO | Backend/Data Agent | Add focused backend validation tests or smoke scripts for cache, session lifecycle, and export bundle behavior once the project test pattern is selected. |  |
+| 083 | TODO | Backend/Data Agent | Support Modelling Agent integration only if the modelling run contract exposes a concrete storage/export adapter gap; Backend remains owner of export packaging and storage interfaces, not model execution. |  |
+| 084 | DONE | Orchestrator Agent | Review Backend, Modelling, and AI post-scaffold summaries and keep task ownership boundaries consistent before assigning the next work tranche. | 2026-04-23 12:24:54 BST |
 
 ## Potential Extensions Beyond V1
 
