@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 09:44:14 BST |
+| last_updated | 2026-04-23 12:05:03 BST |
 
 # Task Tracker
 
@@ -63,8 +63,8 @@
 | 045 | DONE | Backend/Data Agent | Implement `docs/specs/app/logging.md` as the shared logging utility and integration pattern. | 2026-04-23 07:38:02 BST |
 | 046 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/coingecko-api.md`. | 2026-04-23 07:38:02 BST |
 | 047 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/data-storage.md`. | 2026-04-23 07:38:02 BST |
-| 048 | TODO | Modelling Agent | Implement `docs/specs/data-backend/dataset-building.md`. |  |
-| 049 | TODO | Modelling Agent | Implement `docs/specs/data-backend/riskfolio-lib.md`. |  |
+| 048 | DONE | Modelling Agent | Implement `docs/specs/data-backend/dataset-building.md`. | 2026-04-23 12:05:03 BST |
+| 049 | DONE | Modelling Agent | Implement `docs/specs/data-backend/riskfolio-lib.md`. | 2026-04-23 12:05:03 BST |
 | 050 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/session-storage.md`. | 2026-04-23 07:38:02 BST |
 | 051 | TODO | Frontend Agent | Implement `docs/specs/frontend/agent-chat.md`. |  |
 | 052 | TODO | Frontend Agent | Implement `docs/specs/frontend/model-parameters.md`. |  |
@@ -77,6 +77,12 @@
 | 059 | DONE | Orchestrator Agent | Approve and save the Modelling Runtime Dependency mini spec and create the root `pyproject.toml` with initial modelling/runtime dependencies. | 2026-04-23 09:16:09 BST |
 | 060 | DONE | Modelling Agent | Run the modelling runtime feasibility spike using the approved `pyproject.toml` dependencies and report whether default `cvxpy` solvers are sufficient. | 2026-04-23 09:40:39 BST |
 | 061 | DONE | Orchestrator Agent | Decide `uv.lock` version-control policy, document it, and commit the lockfile for reproducible local installs. | 2026-04-23 09:40:39 BST |
+| 062 | DONE | Modelling Agent | Create `docs/validation/modelling-validation.md` documenting solver/runtime feasibility and modelling export artifact smoke checks. | 2026-04-23 12:05:03 BST |
+| 063 | TODO | Modelling Agent | Define and implement the frontend-callable modelling run interface for active workflow model execution, including return shape for successful models, failed models, artifact metadata, and user-facing errors. |  |
+| 064 | TODO | Modelling Agent | Add structured modelling progress callback/event support aligned to Modelling Phase checkpoints: Validation, Ingestion, Datasets, Modelling, Analysis, and Outputs. |  |
+| 065 | TODO | Modelling Agent | Integrate active workflow and cached price histories with the modelling runner without taking over Backend/Data export bundle ownership. |  |
+| 066 | TODO | Modelling Agent | Harden summary metric unavailable states so non-computable metrics return explicit user-facing unavailable reasons rather than only `NaN` values. |  |
+| 067 | TODO | Modelling Agent | Add repeatable modelling validation tests or smoke scripts for dataset failures, model failures, optional missing artifacts, and metric consistency once the project test pattern is selected. |  |
 
 ## Potential Extensions Beyond V1
 
