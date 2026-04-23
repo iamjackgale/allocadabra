@@ -1,5 +1,7 @@
-created: 2026-04-21 07:39:45 BST
-last_updated: 2026-04-22 22:21:08 BST
+| Metadata | Value |
+|---|---|
+| created | 2026-04-21 07:39:45 BST |
+| last_updated | 2026-04-22 23:19:04 BST |
 
 # Allocadabra
 
