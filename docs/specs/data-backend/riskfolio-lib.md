@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-22 21:23:40 BST |
+| last_updated | 2026-04-23 07:35:35 BST |
 
 # Riskfolio-Lib Spec
 
@@ -293,20 +293,21 @@ Initial result comparison should support the following summary metrics where the
 | Max Drawdown [%] | Yes | Portfolio cumulative return/drawdown series | Maximum peak-to-trough drawdown. |
 | Sharpe Ratio | Yes | Daily returns, risk-free rate | Initial `rf` default is `0`. |
 | Calmar Ratio | Yes | Annualized return, max drawdown | Requires max drawdown. |
-| Omega Ratio | Yes | Daily returns, threshold | Initial threshold can default to `0` unless changed later. |
-| Sortino Ratio | Yes | Daily returns, downside deviation, risk-free/target return | Initial target can default to `0` unless changed later. |
-| Annualized Return % | Yes | Daily returns or cumulative return series | Use daily data annualized with a standard trading-day factor decided in implementation. |
-| Annualized Volatility % | Yes | Daily returns | Use daily data annualized with the same factor as annualized return. |
+| Omega Ratio | Yes | Daily returns, threshold | Initial threshold is `0`. |
+| Sortino Ratio | Yes | Daily returns, downside deviation, risk-free/target return | Initial target return is `0`. |
+| Annualized Return % | Yes | Daily returns or cumulative return series | Annualize daily crypto data with factor `365`. |
+| Annualized Volatility % | Yes | Daily returns | Annualize daily crypto data with factor `365`. |
 | 30d Volatility % | Yes | Daily returns | Rolling 30-day volatility. |
 | Avg Drawdown % | Yes | Drawdown series | Average drawdown over drawdown periods. |
 | Kurtosis | Yes | Daily returns | Distribution shape metric. |
 | Skewness | Yes | Daily returns | Distribution asymmetry metric. |
-| CVaR % | Yes | Daily returns, confidence level | Initial confidence level should be decided with the modelling/review specs. |
-| CDaR % | Yes | Drawdown series, confidence level | Initial confidence level should be decided with the modelling/review specs. |
+| CVaR % | Yes | Daily returns, confidence level | Initial confidence level is `95%`. |
+| CDaR % | Yes | Drawdown series, confidence level | Initial confidence level is `95%`. |
 
 Metric notes:
 
 - These metrics are feasible from daily returns, cumulative returns, and drawdown series.
+- Approved V1 metric defaults: annualization factor `365`, Omega threshold `0`, Sortino target return `0`, CVaR confidence level `95%`, and CDaR confidence level `95%`.
 - Benchmark metrics should not be implemented until the benchmark construction is explicitly defined.
 - Metrics should be computed consistently for every successful model output so side-by-side comparisons are fair.
 - If a metric cannot be computed for a model, the review output should show a clear missing/unavailable reason rather than silently omitting it.
@@ -326,6 +327,15 @@ Metric notes:
 
 Pure browser/Pyodide execution is not part of the V1 runtime route unless the Orchestrator Agent changes the architecture.
 
+## Dependency And Solver Ownership
+
+- Use one root `pyproject.toml` as the shared project dependency source.
+- The Modelling Agent owns the `riskfolio-lib`, `cvxpy`, and solver feasibility spike.
+- The Modelling Agent should propose dependency additions as a mini spec before editing `pyproject.toml`, because the root dependency file is cross-agent shared territory.
+- The Orchestrator Agent approves and integrates dependency changes into `pyproject.toml`.
+- Start with local Python execution, not Pyodide or pure browser execution.
+- Prefer Python `3.11` for the first feasibility spike unless the Modelling Agent proves a newer version works cleanly with `riskfolio-lib`, `cvxpy`, and required solvers.
+
 ## Relationship To Other Specs
 
 - `/docs/specs/data-backend/dataset-building.md` defines canonical price dataframes and transformations.
@@ -339,4 +349,3 @@ Pure browser/Pyodide execution is not part of the V1 runtime route unless the Or
 - Which optional exploration artifacts to prioritize for the hackathon build.
 - Whether Risk Parity should use `rm="MV"` initially or expose `UCI` later as a course extension.
 - Benchmark construction for benchmark-return rows such as "BTC ETH MV Return".
-- Annualization factor, Omega threshold, Sortino target, and CVaR/CDaR confidence levels.
