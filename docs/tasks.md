@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 12:18:43 BST |
+| last_updated | 2026-04-23 12:21:50 BST |
 
 # Task Tracker
 
@@ -94,6 +94,7 @@
 | 076 | BLOCKED | AI/Perplexity Agent | Run live Perplexity provider verification for Configuration and Review calls once `PERPLEXITY_API_KEY` is configured. |  |
 | 077 | TODO | AI/Perplexity Agent | Update AI prompt/spec docs if prompt behaviour changes while completing tasks 071-075. |  |
 | 078 | DONE | Orchestrator Agent | Approve and save the AI Runtime Dependency mini spec and add `perplexityai` to the shared project dependencies and lockfile. | 2026-04-23 12:18:43 BST |
+| 079 | DONE | Orchestrator Agent | Create `docs/validation/general-validation.md` with repo-level validation checks for merges, dependency updates, and pushes to `main`. | 2026-04-23 12:21:50 BST |
 
 ## Potential Extensions Beyond V1
 
