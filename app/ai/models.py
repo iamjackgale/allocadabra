@@ -22,11 +22,23 @@ SUPPORTED_MODELS: tuple[SupportedModel, ...] = (
 SUPPORTED_MODEL_IDS = tuple(model.model_id for model in SUPPORTED_MODELS)
 DEFAULT_MODEL_IDS = SUPPORTED_MODEL_IDS
 SUPPORTED_MODEL_NAMES = {model.display_name: model.model_id for model in SUPPORTED_MODELS}
+SUPPORTED_MODEL_NAME_LOOKUP = {
+    model.display_name.lower(): model.model_id for model in SUPPORTED_MODELS
+}
+SUPPORTED_MODEL_ID_LOOKUP = {
+    model.model_id.lower(): model.model_id for model in SUPPORTED_MODELS
+}
 
 FUTURE_ONLY_MODEL_NAMES = (
     "Worst Case",
     "Ordered Weighted Average",
     "Hierarchical Equal Risk",
+)
+
+FUTURE_ONLY_MODEL_IDS = (
+    "worst_case",
+    "ordered_weighted_average",
+    "hierarchical_equal_risk",
 )
 
 
@@ -56,3 +68,10 @@ def display_name_for_model_id(model_id: str) -> str:
         if model.model_id == model_id:
             return model.display_name
     return model_id
+
+
+def model_id_from_text(value: str) -> str | None:
+    """Return a supported model ID from a display name or ID-like string."""
+    normalized = value.strip().lower()
+    normalized_id = normalized.replace(" ", "_").replace("-", "_")
+    return SUPPORTED_MODEL_ID_LOOKUP.get(normalized_id) or SUPPORTED_MODEL_NAME_LOOKUP.get(normalized)

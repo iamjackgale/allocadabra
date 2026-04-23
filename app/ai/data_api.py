@@ -30,6 +30,7 @@ from app.ai.session_hooks import append_chat_message, get_chat_messages
 from app.ai.validation import (
     looks_like_financial_advice,
     validate_modelling_plan,
+    validate_review_metadata,
     validate_suggested_model_metadata,
 )
 from app.storage.session_state import get_workflow_state, store_generated_plan
@@ -301,7 +302,11 @@ def _complete_chat_turn(
         message = FIXED_FINANCIAL_ADVICE_REFUSAL
         metadata = {}
 
-    validation = validate_suggested_model_metadata(metadata)
+    validation = (
+        validate_review_metadata(metadata)
+        if mode == "review"
+        else validate_suggested_model_metadata(metadata)
+    )
     if not validation.valid:
         append_chat_message(mode, "assistant", message)
         return {
