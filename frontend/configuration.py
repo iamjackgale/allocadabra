@@ -64,6 +64,7 @@ def render_configuration_form(workflow: dict[str, Any]) -> None:
 
     _render_asset_selector(selected_assets)
     _render_selected_assets(selected_assets)
+    _render_field_issues(issues, "selected_assets")
 
     st.markdown("##### Treasury objective")
     objective = _render_single_choice_cards(
@@ -72,6 +73,7 @@ def render_configuration_form(workflow: dict[str, Any]) -> None:
         selected_value=objective,
         help_lookup=TREASURY_OBJECTIVE_HELP,
     )
+    _render_field_issues(issues, "treasury_objective")
 
     st.markdown("##### Risk appetite")
     risk_appetite = _render_single_choice_cards(
@@ -80,14 +82,16 @@ def render_configuration_form(workflow: dict[str, Any]) -> None:
         selected_value=risk_appetite,
         help_lookup=RISK_APPETITE_HELP,
     )
+    _render_field_issues(issues, "risk_appetite")
 
     st.markdown("##### Selected models")
     selected_models = _render_model_cards(selected_models)
     if selected_models != inputs.get("selected_models"):
         update_active_inputs({"selected_models": selected_models})
+    _render_field_issues(issues, "selected_models")
 
     with st.expander("Optional constraints"):
-        constraints = _render_constraints(selected_assets, constraints)
+        constraints = _render_constraints(selected_assets, constraints, issues)
 
     updated_inputs = {
         "selected_assets": selected_assets,
@@ -312,6 +316,7 @@ def _render_model_cards(selected_models: list[str]) -> list[str]:
 def _render_constraints(
     selected_assets: list[dict[str, Any]],
     constraints: dict[str, Any],
+    issues: dict[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
     asset_options = {f"{_chip_symbol(asset)} · {_chip_name(asset, selected_assets)}": asset["id"] for asset in selected_assets}
 
@@ -325,6 +330,7 @@ def _render_constraints(
             step=1,
             key="constraint_global_min",
         )
+        _render_field_issues(issues, "constraints.global_min_allocation_percent")
     with global_cols[1]:
         global_max = st.number_input(
             "Max allocation per asset (%)",
@@ -334,6 +340,7 @@ def _render_constraints(
             step=1,
             key="constraint_global_max",
         )
+        _render_field_issues(issues, "constraints.global_max_allocation_percent")
 
     selected_min_assets = st.multiselect(
         "Assets for selected-asset minimum",
@@ -345,6 +352,7 @@ def _render_constraints(
         ],
         key="constraint_selected_min_assets",
     )
+    _render_field_issues(issues, "constraints.selected_asset_min_allocation.asset_ids")
     selected_min_percent = st.number_input(
         "Min allocation to selected asset (%)",
         min_value=0,
@@ -353,6 +361,7 @@ def _render_constraints(
         step=1,
         key="constraint_selected_min_percent",
     )
+    _render_field_issues(issues, "constraints.selected_asset_min_allocation.percent")
 
     selected_max_assets = st.multiselect(
         "Assets for selected-asset maximum",
@@ -364,6 +373,7 @@ def _render_constraints(
         ],
         key="constraint_selected_max_assets",
     )
+    _render_field_issues(issues, "constraints.selected_asset_max_allocation.asset_ids")
     selected_max_percent = st.number_input(
         "Max allocation to selected asset (%)",
         min_value=0,
@@ -372,6 +382,7 @@ def _render_constraints(
         step=1,
         key="constraint_selected_max_percent",
     )
+    _render_field_issues(issues, "constraints.selected_asset_max_allocation.percent")
 
     count_cols = st.columns(2)
     with count_cols[0]:
@@ -383,6 +394,7 @@ def _render_constraints(
             step=1,
             key="constraint_min_assets",
         )
+        _render_field_issues(issues, "constraints.min_assets_in_portfolio")
     with count_cols[1]:
         max_assets = st.number_input(
             "Max number of assets in portfolio",
@@ -392,6 +404,9 @@ def _render_constraints(
             step=1,
             key="constraint_max_assets",
         )
+        _render_field_issues(issues, "constraints.max_assets_in_portfolio")
+
+    _render_field_issues(issues, "constraints")
 
     return {
         "global_min_allocation_percent": global_min,
@@ -454,7 +469,16 @@ def _issues_by_field(issues: list[dict[str, Any]]) -> dict[str, list[dict[str, A
 def _render_issue_summary(grouped: dict[str, list[dict[str, Any]]]) -> None:
     for rows in grouped.values():
         for issue in rows:
-            st.caption(f"- {issue.get('message', 'Configuration issue')}")
+            st.caption(f"- {_issue_message(issue)}")
+
+
+def _render_field_issues(grouped: dict[str, list[dict[str, Any]]], field: str) -> None:
+    for issue in grouped.get(field, []):
+        st.caption(f":red[{_issue_message(issue)}]")
+
+
+def _issue_message(issue: dict[str, Any]) -> str:
+    return str(issue.get("message", "Configuration issue"))
 
 
 def _asset_option_label(token: dict[str, str], selected_assets: list[dict[str, Any]]) -> str:

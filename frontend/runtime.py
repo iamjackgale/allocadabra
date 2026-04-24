@@ -42,6 +42,7 @@ def init_ui_state() -> dict[str, Any]:
                 "status": "idle",
                 "thread": None,
                 "queue": None,
+                "cancel_event": None,
                 "progress_events": [],
                 "result": None,
                 "output_dir": None,
@@ -177,12 +178,14 @@ def start_modelling_run(*, force_refresh_prices: bool = False) -> None:
 
     output_dir = Path(tempfile.mkdtemp(prefix="allocadabra-run-", dir="/tmp"))
     event_queue: queue.Queue[dict[str, Any]] = queue.Queue()
+    cancel_event = threading.Event()
     thread = threading.Thread(
         target=_modelling_worker,
         kwargs={
             "event_queue": event_queue,
             "output_dir": output_dir,
             "force_refresh_prices": force_refresh_prices,
+            "cancel_event": cancel_event,
         },
         daemon=True,
         name="allocadabra-modelling-run",
@@ -194,6 +197,7 @@ def start_modelling_run(*, force_refresh_prices: bool = False) -> None:
             "status": "running",
             "thread": thread,
             "queue": event_queue,
+            "cancel_event": cancel_event,
             "progress_events": [],
             "result": None,
             "output_dir": str(output_dir),
@@ -228,7 +232,7 @@ def drain_modelling_updates() -> None:
 
         if kind == "result" and isinstance(payload, dict):
             state["result"] = payload
-            if state.get("cancel_requested"):
+            if state.get("cancel_requested") or _is_cancelled_result(payload):
                 state["status"] = "cancelled"
                 _cleanup_temp_output_dir(state.get("output_dir"))
                 _reset_run_tracking(keep_result=False)
@@ -259,6 +263,9 @@ def cancel_modelling_run() -> None:
     state = modelling_state()
     state["cancel_requested"] = True
     state["status"] = "cancel_requested"
+    cancel_event = state.get("cancel_event")
+    if isinstance(cancel_event, threading.Event):
+        cancel_event.set()
     abandon_generated_plan()
     set_review_gate_pending(False)
 
@@ -327,9 +334,11 @@ def _modelling_worker(
     event_queue: queue.Queue[dict[str, Any]],
     output_dir: Path,
     force_refresh_prices: bool,
+    cancel_event: threading.Event,
 ) -> None:
     result = run_active_modelling(
         progress_callback=lambda event: event_queue.put({"kind": "progress", "payload": event}),
+        cancel_check=cancel_event.is_set,
         force_refresh_prices=force_refresh_prices,
         output_dir=output_dir,
     )
@@ -358,6 +367,15 @@ def _cleanup_temp_output_dir(path_value: str | None) -> None:
         shutil.rmtree(path, ignore_errors=True)
 
 
+def _is_cancelled_result(result: dict[str, Any]) -> bool:
+    if result.get("cancelled") is True:
+        return True
+    for error in result.get("errors", []):
+        if isinstance(error, dict) and error.get("code") == "modelling_cancelled":
+            return True
+    return False
+
+
 def _reset_run_tracking(*, keep_result: bool) -> None:
     state = modelling_state()
     result = state.get("result") if keep_result else None
@@ -366,6 +384,7 @@ def _reset_run_tracking(*, keep_result: bool) -> None:
             "status": "idle",
             "thread": None,
             "queue": None,
+            "cancel_event": None,
             "progress_events": [],
             "result": result,
             "output_dir": None,
