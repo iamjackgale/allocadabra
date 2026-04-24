@@ -2,11 +2,19 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import streamlit as st
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 from app.storage import get_active_workflow
 from frontend.chat import render_chat_panel
 from frontend.configuration import render_configuration_panel
+from frontend.dev_tools import apply_dev_validation_hooks
 from frontend.modelling import render_modelling_page
 from frontend.review import render_review_page
 from frontend.runtime import drain_modelling_updates, ensure_interrupted_state, init_ui_state, modelling_state, review_gate_pending
@@ -23,6 +31,7 @@ def main() -> None:
     )
 
     init_ui_state()
+    apply_dev_validation_hooks()
     drain_modelling_updates()
     workflow = get_active_workflow()
     st.session_state["allocadabra_workflow_snapshot"] = workflow

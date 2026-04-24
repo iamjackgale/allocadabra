@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-24 07:15:35 BST |
-| last_updated | 2026-04-24 08:06:48 BST |
+| last_updated | 2026-04-24 13:15:53 BST |
 | owner | QA/Validation Agent |
 | source_agent | Frontend Agent |
 
@@ -26,6 +26,21 @@ The checks cover initial frontend work for:
 The checks do not validate live CoinGecko token loading, live Perplexity responses, full model execution with real market data, browser interaction coverage, or full end-to-end workflow acceptance criteria.
 
 ## Latest Validation Run
+
+Synthetic Review fixture implementation validation:
+
+- `git pull origin main`: already up to date.
+- `PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall frontend app`: passed.
+- `rg -n '(<{7}|={7}|>{7})' .`: no conflict markers.
+- `uv lock --check`: passed.
+- `uv run streamlit run frontend/app.py --server.headless true --server.port 8501`: started at `http://localhost:8501`.
+- Open `http://localhost:8501/?alloca_dev_review_fixture=1` to materialize the fixed synthetic Review fixture and enter Review Mode without CoinGecko ingestion or modelling. This path runs the normal Review opening call when AI credentials are available.
+- For frontend-only verification without a live Perplexity call, open `http://localhost:8501/?alloca_dev_review_fixture=frontend-check&alloca_dev_no_ai_env=1`.
+- Observed fixture result: Review pane opened with `REVIEW`, `Ranked for: Stable performance · Medium risk appetite`, Summary/Allocation controls, Risk Parity selected, and synthetic model outputs available for Mean Variance and Risk Parity.
+- For Review Mode AI tests `RM-1`, `RM-2`, and `RM-3`, keep the app on `?alloca_dev_review_fixture=1`, use the Review chat, and select or keep the allocation weights context when asking the Risk Parity allocation question.
+- Open `http://localhost:8501/?alloca_dev_no_ai_env=1` in a separate app process or clean browser session to suppress AI `.env` loading for that process. Send any Configuration Mode chat message and confirm the UI shows a recoverable missing-key error with retry available, without a Python traceback and without clearing active inputs.
+- Observed missing-key result: Configuration Mode showed `Perplexity is not configured...`, displayed `Retry last message`, and preserved active inputs.
+- The missing-key hook removes `PERPLEXITY_API_KEY` only from the current Streamlit process environment and monkeypatches dotenv loading in memory. It does not edit or delete `.env` and does not print secrets.
 
 Task `120` revalidation after pulling latest `main`:
 
