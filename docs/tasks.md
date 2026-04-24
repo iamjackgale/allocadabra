@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-24 07:29:06 BST |
+| last_updated | 2026-04-24 07:54:20 BST |
 
 # Task Tracker
 
@@ -47,7 +47,7 @@
 | 029 | DONE | Backend/Data Agent | Define frontend-callable app-layer function names and return shapes for CoinGecko token list, deterministic validation, and export bundling. | 2026-04-23 09:52:54 BST |
 | 030 | DONE | AI/Perplexity Agent | Define frontend-callable app-layer function names and return shapes for AI plan generation, chat calls, fixed financial-advice refusal text, and generic safe-error messages. | 2026-04-23 09:58:39 BST |
 | 031 | DONE | Modelling Agent | Define the frontend-callable modelling app-layer contract: function names and return shapes for model runs, progress events, output artifact descriptors, failed models, and user-facing errors. | 2026-04-23 19:36:15 BST |
-| 032 | TODO | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. |  |
+| 032 | DONE | Frontend Agent | Decide implementation pattern for one-open-section behaviour in the Streamlit Model Review component. | 2026-04-24 07:54:20 BST |
 | 033 | DONE | Product/UX Agent | Complete Design Review 1 using `docs/specs/ux/design-review-1.md` and raise exactly 10 high-priority UX questions before code-producing agents begin. | 2026-04-23 07:14:21 BST |
 | 034 | DONE | Orchestrator Agent | Define strict folder ownership, branch expectations, and cross-agent mini spec rules across agent prompts and `docs/plan.md`. | 2026-04-22 22:27:16 BST |
 | 035 | TODO | Orchestrator Agent | Set up the Orchestrator Agent with `docs/prompts/agents/orchestrator-agent.md` and a dedicated branch for docs coordination. |  |
@@ -66,11 +66,11 @@
 | 048 | DONE | Modelling Agent | Implement `docs/specs/data-backend/dataset-building.md`. | 2026-04-23 12:05:03 BST |
 | 049 | DONE | Modelling Agent | Implement `docs/specs/data-backend/riskfolio-lib.md`. | 2026-04-23 12:05:03 BST |
 | 050 | DONE | Backend/Data Agent | Implement `docs/specs/data-backend/session-storage.md`. | 2026-04-23 07:38:02 BST |
-| 051 | TODO | Frontend Agent | Implement `docs/specs/frontend/agent-chat.md`. |  |
-| 052 | TODO | Frontend Agent | Implement `docs/specs/frontend/model-parameters.md`. |  |
-| 053 | TODO | Frontend Agent | Implement `docs/specs/frontend/model-review.md`. |  |
-| 054 | TODO | Frontend Agent | Implement `docs/specs/frontend/modelling-page.md`. |  |
-| 055 | TODO | Frontend Agent | Implement `docs/specs/frontend/ui-design-build.md`. |  |
+| 051 | DONE | Frontend Agent | Implement `docs/specs/frontend/agent-chat.md`. | 2026-04-24 07:54:20 BST |
+| 052 | DONE | Frontend Agent | Implement `docs/specs/frontend/model-parameters.md`. | 2026-04-24 07:54:20 BST |
+| 053 | DONE | Frontend Agent | Implement `docs/specs/frontend/model-review.md`. | 2026-04-24 07:54:20 BST |
+| 054 | DONE | Frontend Agent | Implement `docs/specs/frontend/modelling-page.md`. | 2026-04-24 07:54:20 BST |
+| 055 | DONE | Frontend Agent | Implement `docs/specs/frontend/ui-design-build.md`. | 2026-04-24 07:54:20 BST |
 | 056 | DONE | Product/UX Agent | Implement `docs/specs/ux/design-review-1.md` by completing the first UX review pass. | 2026-04-23 07:14:21 BST |
 | 057 | DONE | Orchestrator Agent | Prepare a dedicated download/export layer spec that lists every generated output, expected file type, bundle contents, unavailable-artifact states, and implementation ownership; assign follow-up implementation to the appropriate agent. | 2026-04-23 09:22:30 BST |
 | 058 | DONE | Backend/Data Agent | Implement the export work intentionally omitted from initial scaffolding after task 057 defines the dedicated download/export layer spec: export bundle creation, artifact packaging, unavailable-artifact handling, and download bundle manifests. | 2026-04-23 09:52:54 BST |
@@ -111,13 +111,13 @@
 | 093 | DONE | Orchestrator Agent | Merge the Modelling Agent frontend-callable contract tranche into `main` and reconcile tasks `031`, `066`, `067`, and `068` before Frontend wires end-to-end Modelling flow. | 2026-04-23 20:20:07 BST |
 | 094 | DONE | Orchestrator Agent | Save the second Backend/Data Agent brief for task `092` in `docs/prompts/briefs/backend-data-agent-2.md`. | 2026-04-24 07:20:53 BST |
 | 095 | DONE | Orchestrator Agent | Save the first Frontend Agent brief for core implementation in `docs/prompts/briefs/frontend-agent-1.md`. | 2026-04-23 20:26:05 BST |
-| 096 | TODO | Orchestrator Agent | Create a Frontend/Backend/Modelling integration spec covering end-to-end phase flow, interface handoffs, state transitions, retries, partial failures, and export readiness. |  |
+| 096 | DONE | Orchestrator Agent | Create a Frontend/Backend/Modelling integration spec covering end-to-end phase flow, interface handoffs, state transitions, retries, partial failures, and export readiness. | 2026-04-24 07:42:52 BST |
 | 097 | TODO | Orchestrator Agent | Create an AI live integration spec covering Configuration Mode, Review Mode, guardrails, context injection, live-provider verification, and prompt-quality review. |  |
-| 098 | TODO | Frontend Agent | Implement end-to-end phase routing for `Configuration -> Modelling -> Review` using the current app-layer callables. |  |
-| 099 | TODO | Frontend Agent | Wire Configuration submission to deterministic validation, AI plan generation, plan confirmation, and transition into Modelling. |  |
-| 100 | TODO | Frontend Agent | Wire the Modelling screen to `run_active_modelling(...)`, including live progress-event rendering, success state, partial-success state, and failure state. |  |
-| 101 | TODO | Frontend Agent | Wire the Review screen to modelling artifacts and Backend/Data export manifest and download callables. |  |
-| 102 | TODO | Frontend Agent | Implement user navigation rules across phases, including `Return to Configure`, `Review Results`, and `Start New Model`. |  |
+| 098 | DONE | Frontend Agent | Implement end-to-end phase routing for `Configuration -> Modelling -> Review` using the current app-layer callables. | 2026-04-24 07:54:20 BST |
+| 099 | DONE | Frontend Agent | Wire Configuration submission to deterministic validation, AI plan generation, plan confirmation, and transition into Modelling. | 2026-04-24 07:54:20 BST |
+| 100 | DONE | Frontend Agent | Wire the Modelling screen to `run_active_modelling(...)`, including live progress-event rendering, success state, partial-success state, and failure state. | 2026-04-24 07:54:20 BST |
+| 101 | DONE | Frontend Agent | Wire the Review screen to modelling artifacts and Backend/Data export manifest and download callables. | 2026-04-24 07:54:20 BST |
+| 102 | DONE | Frontend Agent | Implement user navigation rules across phases, including `Return to Configure`, `Review Results`, and `Start New Model`. | 2026-04-24 07:54:20 BST |
 | 103 | TODO | Backend/Data Agent | Verify export handoff compatibility between Modelling outputs and Backend/Data bundle and manifest preparation in a real end-to-end app flow. |  |
 | 104 | TODO | Modelling Agent | Support Frontend integration of modelling progress, result shapes, partial failures, and user-facing error handling if callable gaps appear. |  |
 | 105 | TODO | Frontend Agent | Run an end-to-end local smoke test covering happy path, validation failure, modelling failure, partial model success, and export/download availability. |  |
@@ -131,6 +131,11 @@
 | 113 | TODO | Frontend Agent | Verify visible Review context is correctly passed into Review Mode without exposing internal context payloads to the user. |  |
 | 114 | TODO | AI/Perplexity Agent | Run a live transcript-quality review for Configuration and Review modes and identify any prompt or spec updates required. |  |
 | 115 | TODO | Orchestrator Agent | Review live AI behaviour against specs and decide whether prompt or spec changes become follow-up implementation tasks before QA and demo prep. |  |
+| 116 | DONE | Modelling Agent | Implement cooperative cancellation support for active modelling runs using a `cancel_check` callback and `modelling_cancelled` result shape. | 2026-04-24 07:54:20 BST |
+| 117 | TODO | QA/Validation Agent | Convert `docs/validation/frontend-validation.md` into repeatable frontend smoke checks once the project test pattern is selected. |  |
+| 118 | TODO | QA/Validation Agent | Add fixture-backed Review rendering validation using stored manifest and artifact samples. |  |
+| 119 | TODO | Frontend Agent | Run full live end-to-end Streamlit validation once `COINGECKO_API_KEY` and `PERPLEXITY_API_KEY` are configured. |  |
+| 120 | TODO | Frontend Agent | Pull latest `main`, adopt Backend task `092` validation issue codes, adopt Modelling cooperative cancellation, and report any remaining UI integration gaps. |  |
 
 ## Potential Extensions Beyond V1
 
