@@ -7,7 +7,13 @@ from pathlib import Path
 from typing import Any
 
 from app.processing.models import SUPPORTED_MODELS
-from app.processing.progress import ProgressCallback, emit_progress
+from app.processing.progress import (
+    CancelCheck,
+    ModellingCancelled,
+    ProgressCallback,
+    emit_progress,
+    raise_if_cancelled,
+)
 from app.processing.runner import generate_modelling_outputs
 from app.storage.data_api import (
     fetch_price_history_for_assets,
@@ -25,6 +31,7 @@ DEFAULT_USER_ERROR = "Modelling could not be completed. Check the configuration 
 def run_active_modelling(
     *,
     progress_callback: ProgressCallback | None = None,
+    cancel_check: CancelCheck | None = None,
     force_refresh_prices: bool = False,
     output_dir: Path = MODEL_OUTPUTS_DIR,
 ) -> dict[str, Any]:
@@ -47,6 +54,7 @@ def run_active_modelling(
     progress_events: list[dict[str, object]] = []
 
     try:
+        raise_if_cancelled(cancel_check, phase="validation")
         emit_progress(
             progress_callback,
             progress_events,
@@ -55,7 +63,9 @@ def run_active_modelling(
             message="Validating configuration.",
         )
         workflow = get_active_workflow()
+        raise_if_cancelled(cancel_check, phase="validation")
         validation = validate_active_configuration()
+        raise_if_cancelled(cancel_check, phase="validation")
         if not validation.get("valid"):
             errors = _validation_errors(validation.get("issues", []))
             emit_progress(
@@ -125,6 +135,7 @@ def run_active_modelling(
             message="Configuration is ready for modelling.",
         )
 
+        raise_if_cancelled(cancel_check, phase="ingestion")
         emit_progress(
             progress_callback,
             progress_events,
@@ -136,6 +147,7 @@ def run_active_modelling(
             [_asset_id(asset) for asset in selected_assets],
             force_refresh=force_refresh_prices,
         )
+        raise_if_cancelled(cancel_check, phase="ingestion")
         if not price_response.get("ok"):
             errors = _storage_errors(price_response.get("errors", []))
             emit_progress(
@@ -164,6 +176,7 @@ def run_active_modelling(
             price_history_by_id=price_response.get("prices", {}),
             selected_models=selected_models,
             output_dir=output_dir,
+            cancel_check=cancel_check,
             progress_callback=lambda event: _relay_progress(
                 progress_callback,
                 progress_events,
@@ -171,9 +184,11 @@ def run_active_modelling(
             ),
         )
 
+        raise_if_cancelled(cancel_check, phase="outputs")
         artifacts, missing_artifacts = _split_artifacts(generated.get("artifacts", []))
         failed_models = list(generated.get("failed_models", []))
         successful_models = list(generated.get("successful_models", []))
+        raise_if_cancelled(cancel_check, phase="outputs")
         return _result(
             ok=bool(generated.get("ok")),
             successful_models=successful_models,
@@ -184,6 +199,25 @@ def run_active_modelling(
             progress_events=progress_events,
             dataset_metadata=generated.get("dataset_metadata", {}),
             output_dir=generated.get("output_dir"),
+        )
+    except ModellingCancelled as exc:
+        emit_progress(
+            progress_callback,
+            progress_events,
+            phase=exc.phase,
+            status="failed",
+            message="Modelling was cancelled.",
+        )
+        return _result(
+            ok=False,
+            errors=[
+                {
+                    "code": "modelling_cancelled",
+                    "message": "Modelling was cancelled.",
+                }
+            ],
+            user_message="Modelling was cancelled.",
+            progress_events=progress_events,
         )
     except Exception as exc:
         logger.exception("Active modelling run failed")
@@ -207,6 +241,12 @@ def modelling_contract() -> dict[str, Any]:
     return {
         "function": "app.processing.run_active_modelling",
         "supported_model_ids": list(SUPPORTED_MODELS),
+        "supports_cancellation": True,
+        "cancellation": {
+            "callback": "cancel_check",
+            "error_code": "modelling_cancelled",
+            "returns_frontend_safe_result": True,
+        },
         "progress_phases": [
             "validation",
             "ingestion",

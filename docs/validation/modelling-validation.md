@@ -419,12 +419,54 @@ Expected result:
 - First error code is `unsupported_models`.
 - `successful_models` is empty.
 
+### Cooperative Cancellation Smoke Test
+
+Commands:
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall app/processing
+uv run python -c '<monkeypatched active workflow and cached price history script calling run_active_modelling(...) with cancel_check>'
+uv run python -c '<processing import script checking modelling_contract cancellation fields>'
+uv run python -c '<monkeypatched active workflow script checking the non-cancelled success contract still returns ok=True>'
+```
+
+Purpose:
+
+- Confirms the updated `run_active_modelling(...)` callable accepts `cancel_check`.
+- Confirms cancellation is observed cooperatively after validation and ingestion and during dataset/model output generation checkpoints.
+- Confirms cancellation returns a frontend-safe result rather than raising an uncaught exception.
+- Confirms the cancellation result returns `ok=False`, no successful models, no artifact descriptors, and an error code of `modelling_cancelled`.
+- Confirms the final progress event marks the phase where cancellation was observed as `failed`.
+- Confirms `modelling_contract()` advertises `supports_cancellation=True` and the stable cancellation error code.
+- Confirms a non-cancelled active modelling call still returns the existing success shape.
+
+Observed result:
+
+```text
+Listing 'app/processing'...
+Compiling 'app/processing/data_api.py'...
+Compiling 'app/processing/progress.py'...
+Compiling 'app/processing/runner.py'...
+cooperative cancellation smoke ok 7 {'phase': 'datasets', 'status': 'failed', 'message': 'Modelling was cancelled.', 'created_at': '2026-04-24T06:28:57+00:00'}
+processing cancellation import check ok
+active modelling success contract smoke ok
+```
+
+Expected result:
+
+- Compile command exits with status `0`.
+- Cancellation smoke exits with status `0`.
+- Import contract check exits with status `0`.
+- Non-cancelled success contract smoke exits with status `0`.
+- Returned cancellation shape is stable for Frontend handling.
+
 ## Known Validation Gaps
 
 - No live CoinGecko price cache integration was run.
 - No Streamlit/frontend integration was run.
 - No Backend/Data zip bundle creation was run because Backend/Data owns final package construction.
 - Active workflow integration was smoke-tested through monkeypatching rather than real local session state.
+- Cooperative cancellation was smoke-tested at a dataset-phase checkpoint; it was not exercised inside every solver call because solver interruption remains cooperative between model calls, not thread termination inside cvxpy/riskfolio-lib.
 - No automated fixture-based test suite exists yet.
 - No visual review of generated PNG chart aesthetics was performed beyond file creation.
 - Optional artifact missing-state placeholders were implemented but not exhaustively tested against every possible computation failure.

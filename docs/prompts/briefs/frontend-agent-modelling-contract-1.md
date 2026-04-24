@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 19:54:01 BST |
-| last_updated | 2026-04-23 19:54:01 BST |
+| last_updated | 2026-04-24 07:15:35 BST |
 | prompt_used | |
 
 # Frontend Mini Spec: Modelling Run Contract 1
@@ -34,6 +34,7 @@ from app.processing import modelling_contract, run_active_modelling
 run_active_modelling(
     *,
     progress_callback: ProgressCallback | None = None,
+    cancel_check: CancelCheck | None = None,
     force_refresh_prices: bool = False,
     output_dir: Path = MODEL_OUTPUTS_DIR,
 ) -> dict[str, Any]
@@ -46,6 +47,7 @@ Purpose:
 - Load cached price histories through Backend/Data callables.
 - Run dataset preparation, model execution, metrics, and artifact generation.
 - Return a frontend-safe result.
+- Stop cooperatively when `cancel_check` returns `True`.
 
 Non-goals:
 
@@ -80,6 +82,50 @@ Frontend expectation:
 - Do not assume percentage progress.
 - A phase may emit both `started` and `completed`.
 - Failure can occur before `outputs`.
+
+## Cooperative Cancellation
+
+`run_active_modelling(...)` accepts:
+
+```python
+CancelCheck = Callable[[], bool]
+```
+
+Frontend can pass `cancel_check` during an active run. When it returns `True`, the Modelling layer stops at the next cooperative checkpoint and returns a normal frontend-safe result:
+
+```text
+ok: False
+successful_models: []
+failed_models: []
+artifacts: []
+missing_artifacts: []
+errors: [{"code": "modelling_cancelled", "message": "Modelling was cancelled."}]
+user_message: "Modelling was cancelled."
+progress_events: includes a failed event for the phase where cancellation was observed
+```
+
+Cancellation checkpoints are placed:
+
+- before and after validation call boundaries
+- before and after price-history ingestion
+- before and after dataset construction
+- before and after each selected model execution
+- before and after per-model artifact generation
+- before summary/failure artifact writes
+- before final output descriptor handling and success return
+
+Frontend handling:
+
+- Treat `modelling_cancelled` as user-initiated, not a runtime failure.
+- Return to Configuration with prior options selected.
+- Ignore any in-flight result that arrives after the UI has moved on.
+- Do not assume Modelling persisted cancellation state.
+
+Backend/Data boundary:
+
+- Modelling does not create zip bundles or final manifests on cancellation.
+- Modelling does not persist cancellation state.
+- If partial-output file deletion is required beyond ignoring descriptors, Backend/Data owns that storage/session behavior.
 
 ## Result Shape
 
@@ -148,6 +194,7 @@ Examples already emitted:
 - `unsupported_models`
 - `modelling_plan_not_confirmed`
 - `price_history_unavailable`
+- `modelling_cancelled`
 - `dataset_build_failed`
 - `model_execution_failed`
 - `modelling_failed`
@@ -177,6 +224,10 @@ Treat these as configuration-fix-required, not immediate retry:
 - `invalid_configuration`
 - `unsupported_models`
 - `modelling_plan_not_confirmed`
+
+Treat this as user-initiated cancellation, not a retryable error:
+
+- `modelling_cancelled`
 
 This is a UI handling rule for now; there is not yet a separate `retryable: bool` field in the contract.
 
@@ -247,6 +298,8 @@ Confirmed in `/docs/validation/modelling-validation.md`:
 - storage export import check: passed
 - active modelling smoke test: passed
 - unsupported model smoke test: passed
+- cooperative cancellation smoke test: passed
+- processing cancellation import check: passed
 
 ## Frontend Boundary Notes
 

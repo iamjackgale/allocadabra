@@ -280,6 +280,7 @@ Primary function:
 run_active_modelling(
     *,
     progress_callback: ProgressCallback | None = None,
+    cancel_check: CancelCheck | None = None,
     force_refresh_prices: bool = False,
     output_dir: Path = MODEL_OUTPUTS_DIR,
 ) -> dict[str, Any]
@@ -292,6 +293,16 @@ Purpose:
 - Load cached/fetched normalized CoinGecko price histories through Backend/Data callables.
 - Run dataset preparation, model execution, metrics, and model-owned artifact generation.
 - Return a frontend-safe result without taking over export bundle creation, final manifest packaging, or Review state transition.
+- Stop cooperatively when `cancel_check` returns `True`, returning a frontend-safe cancellation result instead of raising an uncaught exception.
+
+Cancellation contract:
+
+- `CancelCheck = Callable[[], bool]`.
+- `cancel_check` is optional. If omitted, modelling runs normally.
+- When provided, Modelling checks it between major phases and before/after each selected model execution.
+- Modelling also checks before final artifact descriptor handling and before returning success.
+- A cancellation result returns `ok=False`, no successful models, no artifact descriptors, and a run-level error with `code="modelling_cancelled"`.
+- Cancellation is not persisted by Modelling. If persisted cancellation state or partial-output deletion is required, Backend/Data owns the storage/session behavior.
 
 Backend/Data boundary:
 
@@ -325,6 +336,15 @@ Error shape:
 | `id` | string/null | Optional asset ID for ingestion/cache failures. |
 | `model_ids` | list[string]/null | Optional list of unsupported selected model IDs. |
 | `exception_type` | string/null | Optional exception class name for debugging/local logs. |
+
+Cancellation error:
+
+```text
+code: modelling_cancelled
+message: Modelling was cancelled.
+```
+
+Frontend should treat this as a user-initiated terminal state, not as a retryable runtime failure.
 
 Failed model shape:
 
