@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 12:02:46 BST |
-| last_updated | 2026-04-23 19:38:40 BST |
+| last_updated | 2026-04-24 13:18:28 BST |
 | owner | QA/Validation Agent |
 | source_agent | AI/Perplexity Agent |
 
@@ -24,6 +24,7 @@ The checks cover initial scaffolding for:
 - Fixed financial-advice detection used before safe refusal replacement.
 - Review Mode detailed-context narrowing by referenced or visible model/output type.
 - Review response metadata validation for referenced models, metrics, artifacts, output tables, and detailed-context requests.
+- Supported-model alignment with the Modelling-owned contract, with one documented AI-owned fallback for runtimes where Modelling imports are unavailable.
 
 The checks do not validate live Perplexity connectivity, Streamlit integration, frontend rendering, model execution, or full workflow acceptance criteria.
 
@@ -221,6 +222,41 @@ Expected result:
 
 - Prints `dotenv loader ok`.
 
+### Supported-Model Registry Smoke Check
+
+Command:
+
+```bash
+uv run python -c "from app.ai.model_registry import load_supported_models; from app.ai.models import SUPPORTED_MODEL_IDS; from app.ai.validation import validate_modelling_plan, validate_review_metadata; from app.processing.data_api import modelling_contract; loaded = tuple(model.model_id for model in load_supported_models()); contract_ids = tuple(modelling_contract()['supported_model_ids']); assert loaded == contract_ids == SUPPORTED_MODEL_IDS; md='## Objective\nStable performance\n## Risk Appetite\nMedium\n## Selected Assets\nBTC, ETH\n## Constraints\nNone\n## Selected Models\nMean Variance\n## Data Window\nLast 365 daily observations'; assert validate_modelling_plan(md, {'selected_model_ids':['mean_variance']}).valid; assert validate_modelling_plan(md, {'selected_model_ids':['black_litterman']}).valid is False; assert validate_modelling_plan(md, {'selected_model_ids':['worst_case']}).valid is False; assert validate_review_metadata({'referenced_model_ids':['mean_variance']}).valid; assert validate_review_metadata({'referenced_model_ids':['black_litterman']}).valid is False; assert validate_review_metadata({'referenced_model_ids':['hierarchical_equal_risk']}).valid is False; print('supported model registry smoke ok')"
+```
+
+Purpose:
+
+- Confirms the AI layer reads supported model IDs from the Modelling-owned contract in the project runtime.
+- Confirms Configuration and Review metadata validation both use the same supported-model source.
+- Confirms supported IDs are accepted while unsupported and future-only IDs are rejected.
+
+Expected result:
+
+- Prints `supported model registry smoke ok`.
+
+### Supported-Model Fallback Smoke Check
+
+Command:
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -c "from app.ai.model_registry import load_supported_models; ids = tuple(model.model_id for model in load_supported_models()); assert ids == ('mean_variance', 'risk_parity', 'hierarchical_risk_parity'); print('supported model fallback ok')"
+```
+
+Purpose:
+
+- Confirms the single AI-owned fallback helper returns the fixed V1 supported model set when the Modelling contract cannot be imported in the plain system Python runtime.
+- Documents the fallback path explicitly rather than leaving it implicit.
+
+Expected result:
+
+- Prints `supported model fallback ok`.
+
 ### Review Detailed-Context Smoke Test
 
 Command:
@@ -350,6 +386,7 @@ Expected result:
 
 - Live Perplexity provider verification now succeeds when `PERPLEXITY_API_KEY` is configured in local `.env`.
 - The provider wrapper is implemented against the Perplexity SDK, `perplexityai` is included in `pyproject.toml` and `uv.lock`, and the SDK import path has been validated through `uv run`.
+- Supported-model alignment now prefers the Modelling-owned contract in the project runtime and falls back to one fixed V1 AI helper only when Modelling imports are unavailable.
 - No automated test suite or fixture-based unit tests exist yet.
 - No Streamlit/frontend integration checks exist yet.
 - No QA checks exist yet for actual Perplexity response shape drift.
