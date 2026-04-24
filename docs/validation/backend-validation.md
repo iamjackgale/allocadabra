@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 07:34:14 BST |
-| last_updated | 2026-04-23 12:44:17 BST |
+| last_updated | 2026-04-24 07:29:06 BST |
 | owner | QA/Validation Agent |
 | source_agent | Backend/Data Agent |
 
@@ -37,6 +37,15 @@ For task `063`, the Backend/Data Agent also completed these documentation-only v
 - Ran `git status --short --branch`.
 - Ran conflict-marker scan with `rg -n '(<{7}|={7}|>{7})' .`; no conflict markers were found.
 - Did not run a compile check because task `063` changed documentation only and no production code changed.
+
+For task `092`, the Backend/Data Agent also completed deterministic configuration validation checks for:
+
+- Unsupported model IDs.
+- Duplicate model IDs.
+- Impossible allocation sums.
+- Contradictory min/max percentage constraints.
+- Impossible min/max asset-count constraints.
+- Selected-asset constraints that reference assets outside the current selection.
 
 ## Verification Commands
 
@@ -108,6 +117,79 @@ Purpose:
 Expected result:
 
 - Prints `package exports ok`.
+
+### Configuration Validation Smoke Test
+
+Command:
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 - <<'PY'
+from dataclasses import asdict
+from app.storage.validation import validate_configuration_inputs
+
+assets = [
+    {'id': 'bitcoin', 'symbol': 'btc', 'name': 'Bitcoin'},
+    {'id': 'ethereum', 'symbol': 'eth', 'name': 'Ethereum'},
+    {'id': 'solana', 'symbol': 'sol', 'name': 'Solana'},
+]
+base = {
+    'selected_assets': assets,
+    'treasury_objective': 'Best risk-adjusted returns',
+    'risk_appetite': 'Medium',
+    'selected_models': ['mean_variance'],
+}
+
+def codes(inputs):
+    return [asdict(issue) for issue in validate_configuration_inputs(inputs).issues]
+
+unsupported = codes({**base, 'selected_models': ['mean_variance', 'future_model']})
+assert any(issue['code'] == 'unsupported_model_id' and issue['context']['model_id'] == 'future_model' for issue in unsupported)
+
+duplicate = codes({**base, 'selected_models': ['mean_variance', 'mean_variance']})
+assert any(issue['code'] == 'duplicate_model_ids' and issue['field'] == 'selected_models' for issue in duplicate)
+
+unknown_key = codes({**base, 'constraints': {'unsupported_constraint': 1}})
+assert any(issue['code'] == 'unknown_constraint_key' and issue['field'] == 'constraints' for issue in unknown_key)
+
+bad_percent = codes({**base, 'constraints': {'global_min_allocation_percent': 101}})
+assert any(issue['code'] == 'constraint_percent_invalid' and issue['field'] == 'constraints.global_min_allocation_percent' for issue in bad_percent)
+
+impossible_min = codes({**base, 'selected_assets': assets * 2, 'constraints': {'global_min_allocation_percent': 20}})
+assert any(issue['code'] == 'global_min_allocation_sum_exceeds_100' and issue['field'] == 'constraints.global_min_allocation_percent' for issue in impossible_min)
+
+impossible_max = codes({**base, 'constraints': {'global_max_allocation_percent': 30}})
+assert any(issue['code'] == 'global_max_allocation_sum_below_100' and issue['field'] == 'constraints.global_max_allocation_percent' for issue in impossible_max)
+
+contradictory = codes({**base, 'constraints': {'global_min_allocation_percent': 60, 'global_max_allocation_percent': 50}})
+assert any(issue['code'] == 'constraint_min_greater_than_max' for issue in contradictory)
+
+asset_count = codes({**base, 'constraints': {'min_assets_in_portfolio': 4, 'max_assets_in_portfolio': 2}})
+assert any(issue['code'] == 'min_assets_constraint_exceeds_selected_assets' for issue in asset_count)
+assert any(issue['code'] == 'min_assets_constraint_greater_than_max_assets_constraint' for issue in asset_count)
+
+frontend_defaults = codes({**base, 'constraints': {'global_min_allocation_percent': 0, 'global_max_allocation_percent': 100, 'min_assets_in_portfolio': 0, 'max_assets_in_portfolio': 3}})
+assert not frontend_defaults, frontend_defaults
+
+loose_max = codes({**base, 'selected_assets': assets[:2], 'constraints': {'max_assets_in_portfolio': 3}})
+assert not any(issue['field'] == 'constraints.max_assets_in_portfolio' for issue in loose_max)
+
+unknown_asset = codes({**base, 'constraints': {'selected_asset_min_allocation': {'asset_ids': ['dogecoin'], 'percent': 10}}})
+assert any(issue['code'] == 'constraint_asset_id_not_selected' and issue['context']['asset_id'] == 'dogecoin' for issue in unknown_asset)
+
+print('configuration validation smoke ok')
+PY
+```
+
+Purpose:
+
+- Confirms `validate_configuration_inputs()` returns stable machine-readable issues for unsupported model IDs, duplicate model IDs, unknown constraint keys, invalid percentage values, impossible allocation sums, contradictory min/max constraints, impossible asset-count constraints, and selected-asset constraints referencing unknown assets.
+- Confirms frontend default constraint values of global min `0`, global max `100`, min asset count `0`, and max asset count equal to selected asset count do not create blocking validation issues.
+- Confirms a loose maximum asset-count value above the current selected count does not block validation by itself.
+- Confirms each issue includes the stable `field`, `code`, `message`, and optional `context` shape used by `validate_active_configuration()`.
+
+Expected result:
+
+- Prints `configuration validation smoke ok`.
 
 ### Export Bundle Smoke Test
 

@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-23 09:44:14 BST |
+| last_updated | 2026-04-24 07:29:06 BST |
 
 # Session Storage Spec
 
@@ -166,6 +166,57 @@ Initial backend/data scaffolding exposes workflow-state helpers from `app.storag
 | `reset_configuration()` / `start_new_model()` | Clear active inputs, plan, chats, and outputs without touching CoinGecko cache. |
 
 Export bundle generation follows `/docs/specs/app/export-bundling.md`.
+
+### Deterministic Validation Issue Shape
+
+`validate_active_configuration()` returns the existing validation envelope:
+
+```python
+{
+    "valid": bool,
+    "issues": [
+        {
+            "field": str,
+            "code": str,
+            "message": str,
+            "context": dict | None,
+        }
+    ],
+}
+```
+
+`field` is a stable dotted app-state path for frontend mapping. `code` is the stable machine-readable issue type. `message` is user-facing copy and may be revised without changing frontend control mapping. `context` is optional structured metadata for the issue, such as `model_id`, `constraint_id`, `asset_id`, `min_value`, `max_value`, or `selected_asset_count`.
+
+Task `092` extends deterministic validation to reject unsupported or duplicate model IDs and impossible V1 constraint combinations before AI plan generation or Modelling starts. Model and constraint issue codes follow `/docs/prompts/briefs/backend-data-validation-mini-spec-1.md`, including:
+
+- `unsupported_model_id`
+- `duplicate_model_ids`
+- `constraints_invalid_type`
+- `unknown_constraint_key`
+- `constraint_percent_invalid`
+- `constraint_asset_count_invalid`
+- `constraint_asset_ids_invalid`
+- `constraint_asset_id_not_selected`
+- `constraint_min_greater_than_max`
+- `global_min_allocation_sum_exceeds_100`
+- `global_max_allocation_sum_below_100`
+- `selected_asset_min_allocation_sum_exceeds_100`
+- `selected_asset_max_allocation_sum_below_100`
+- `min_assets_constraint_exceeds_selected_assets`
+- `min_assets_constraint_greater_than_max_assets_constraint`
+
+Frontend may emit `min_assets_in_portfolio=0` to mean unset. Backend/Data treats that as no minimum asset-count constraint. A `max_assets_in_portfolio` value greater than the current selected asset count is treated as a loose upper bound and does not block validation by itself; impossible asset-count validation is reserved for minimum counts that exceed the selected assets and min/max contradictions.
+
+V1 constraint fields validated by Backend/Data are:
+
+- `constraints.global_min_allocation_percent`
+- `constraints.global_max_allocation_percent`
+- `constraints.selected_asset_min_allocation.asset_ids`
+- `constraints.selected_asset_min_allocation.percent`
+- `constraints.selected_asset_max_allocation.asset_ids`
+- `constraints.selected_asset_max_allocation.percent`
+- `constraints.min_assets_in_portfolio`
+- `constraints.max_assets_in_portfolio`
 
 ## Relationship To Other Specs
 

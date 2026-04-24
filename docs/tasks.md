@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 20:20:07 BST |
+| last_updated | 2026-04-24 07:29:06 BST |
 
 # Task Tracker
 
@@ -107,7 +107,7 @@
 | 089 | DONE | Orchestrator Agent | Merge the Backend/Data-prepared validation mini spec for the Frontend agent into `main` at `docs/prompts/briefs/backend-data-validation-mini-spec-1.md`. | 2026-04-23 20:02:19 BST |
 | 090 | DONE | Orchestrator Agent | Save the Frontend runtime dependency mini spec for adding `streamlit` to shared dependencies in `docs/prompts/briefs/frontend-runtime-dependency-mini-spec-1.md`. | 2026-04-23 20:06:01 BST |
 | 091 | DONE | Orchestrator Agent | Apply the Frontend runtime dependency mini spec by adding `streamlit` to shared dependencies in `pyproject.toml`, regenerating `uv.lock`, and validating the import. | 2026-04-23 20:20:07 BST |
-| 092 | TODO | Backend/Data Agent | Implement deterministic configuration validation for unsupported model IDs and impossible constraint combinations, with stable field-specific issue codes for the Frontend Configuration flow. |  |
+| 092 | DONE | Backend/Data Agent | Implement deterministic configuration validation for unsupported model IDs and impossible constraint combinations, with stable field-specific issue codes for the Frontend Configuration flow. | 2026-04-24 07:29:06 BST |
 | 093 | DONE | Orchestrator Agent | Merge the Modelling Agent frontend-callable contract tranche into `main` and reconcile tasks `031`, `066`, `067`, and `068` before Frontend wires end-to-end Modelling flow. | 2026-04-23 20:20:07 BST |
 
 ## Potential Extensions Beyond V1
