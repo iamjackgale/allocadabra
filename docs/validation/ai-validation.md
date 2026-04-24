@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 12:02:46 BST |
-| last_updated | 2026-04-23 12:49:33 BST |
+| last_updated | 2026-04-23 19:38:40 BST |
 | owner | QA/Validation Agent |
 | source_agent | AI/Perplexity Agent |
 
@@ -204,6 +204,23 @@ Expected result:
 
 - Prints `perplexity sdk import ok`.
 
+### `.env` Loader Smoke Check
+
+Command:
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -c "import os; os.environ.pop('PERPLEXITY_API_KEY', None); from app.ai.provider import PerplexityProvider; provider = PerplexityProvider(); assert provider.api_key; print('dotenv loader ok')"
+```
+
+Purpose:
+
+- Confirms `app.ai.provider.PerplexityProvider` loads `PERPLEXITY_API_KEY` from the local repo `.env` when the key is not already present in the process environment.
+- Confirms AI runtime setup does not require a separate dotenv dependency.
+
+Expected result:
+
+- Prints `dotenv loader ok`.
+
 ### Review Detailed-Context Smoke Test
 
 Command:
@@ -331,12 +348,85 @@ Expected result:
 
 ## Known Validation Gaps
 
-- No live Perplexity API request was run because that requires `PERPLEXITY_API_KEY`.
+- Live Perplexity provider verification now succeeds when `PERPLEXITY_API_KEY` is configured in local `.env`.
 - The provider wrapper is implemented against the Perplexity SDK, `perplexityai` is included in `pyproject.toml` and `uv.lock`, and the SDK import path has been validated through `uv run`.
 - No automated test suite or fixture-based unit tests exist yet.
 - No Streamlit/frontend integration checks exist yet.
 - No QA checks exist yet for actual Perplexity response shape drift.
 - No end-to-end checks exist yet for generated plan confirmation, modelling handoff, Review opening generation, or chat lifecycle across phase transitions.
+
+## Optional Live Provider Check
+
+Command pattern used for task `076`:
+
+```bash
+uv run python - <<'PY'
+from app.ai.provider import PerplexityProvider
+from app.ai.prompts import configuration_chat_instructions, review_opening_instructions
+
+provider = PerplexityProvider()
+
+config = provider.complete(
+    instructions=configuration_chat_instructions(),
+    input_text=str({
+        "latest_user_message": "What information do I still need before generating a modelling plan?",
+        "active_user_inputs": {
+            "selected_assets": [
+                {"id": "bitcoin", "symbol": "btc", "name": "Bitcoin"},
+                {"id": "ethereum", "symbol": "eth", "name": "Ethereum"},
+            ],
+            "treasury_objective": "Stable performance",
+            "risk_appetite": "Medium",
+            "constraints": {},
+            "selected_models": ["mean_variance", "risk_parity"],
+        },
+    }),
+    max_output_tokens=200,
+)
+
+review = provider.complete(
+    instructions=review_opening_instructions(),
+    input_text=str({
+        "confirmed_modelling_plan": {
+            "status": "confirmed",
+            "markdown": "## Objective\nStable performance\n## Risk Appetite\nMedium\n## Selected Assets\nBitcoin, Ethereum\n## Constraints\nNone\n## Selected Models\nMean Variance, Risk Parity\n## Data Window\nLast 365 daily observations available from CoinGecko",
+        },
+        "user_preferences": {
+            "treasury_objective": "Stable performance",
+            "risk_appetite": "Medium",
+        },
+        "deterministic_ranking_summary": {
+            "best_model_id": "risk_parity",
+            "reason": "lower realized volatility in this run",
+        },
+        "model_output_summary": {
+            "successful_models": [
+                {"model_id": "mean_variance", "display_name": "Mean Variance"},
+                {"model_id": "risk_parity", "display_name": "Risk Parity"},
+            ],
+            "failed_models": [],
+        },
+    }),
+    max_output_tokens=220,
+)
+
+print("config ok")
+print(config.text[:400].replace("\n", " "))
+print("review ok")
+print(review.text[:400].replace("\n", " "))
+PY
+```
+
+Purpose:
+
+- Confirms the live Perplexity provider path works through the project environment once `PERPLEXITY_API_KEY` is configured.
+- Confirms both Configuration-style and Review-style prompts can complete against the live provider.
+
+Observed result:
+
+- Printed `config ok`.
+- Printed `review ok`.
+- Configuration and Review responses both returned non-empty text.
 
 ## Suggested QA Follow-Ups
 
