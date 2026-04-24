@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-23 09:40:39 BST |
+| last_updated | 2026-04-24 08:12:47 BST |
 
 # Riskfolio-Lib Spec
 
@@ -253,6 +253,7 @@ Initial model outputs should support:
 
 - Weights dataframe for each model.
 - Comparable summary metrics.
+- Companion unavailable-reason metadata for non-computable summary metrics.
 - Allocation weights chart data.
 - Allocation-over-time chart data across the 365-day modelling window.
 - Cumulative performance chart data.
@@ -427,6 +428,28 @@ Metric notes:
 - Benchmark metrics should not be implemented until the benchmark construction is explicitly defined.
 - Metrics should be computed consistently for every successful model output so side-by-side comparisons are fair.
 - If a metric cannot be computed for a model, the review output should show a clear missing/unavailable reason rather than silently omitting it.
+- `summary-metrics.csv` should remain numeric-friendly. Non-computable cells should be blank rather than string-filled where possible.
+- `summary-metric-unavailable-reasons.csv` is the companion metadata artifact for unavailable summary metrics.
+
+Unavailable summary metric reason shape:
+
+| Field | Type | Notes |
+|---|---|---|
+| `model_id` | string | Stable model ID for the successful model whose metric is unavailable. |
+| `metric` | string | Stable summary metric column name, such as `sharpe_ratio` or `30d_volatility_pct`. |
+| `reason_code` | string | Stable reason code for Frontend and Review Mode AI context. |
+| `message` | string | Short user-facing explanation. |
+
+Initial unavailable reason codes:
+
+| Code | Meaning |
+|---|---|
+| `insufficient_returns` | Not enough return observations are available to compute the metric. |
+| `zero_volatility` | A ratio denominator based on volatility is zero. |
+| `zero_drawdown` | A ratio or drawdown statistic is undefined because no drawdown was observed. |
+| `no_negative_returns` | Downside or loss observations below the configured target/threshold are absent. |
+| `tail_sample_unavailable` | Required tail sample data is unavailable. |
+| `calculation_failed` | Metric calculation raised unexpectedly. |
 
 ## Validation And Failure Rules
 

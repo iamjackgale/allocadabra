@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from typing import Callable
 
 import numpy as np
 import pandas as pd
@@ -14,6 +15,15 @@ ROLLING_VOL_WINDOW = 30
 OMEGA_THRESHOLD = 0.0
 SORTINO_TARGET = 0.0
 TAIL_CONFIDENCE_LEVEL = 0.95
+
+UNAVAILABLE_MESSAGES = {
+    "insufficient_returns": "Not enough return observations are available to compute this metric.",
+    "zero_volatility": "Portfolio volatility is zero, so this ratio is not defined.",
+    "zero_drawdown": "No drawdown was observed, so this ratio is not defined.",
+    "no_negative_returns": "No returns below the target threshold were observed.",
+    "tail_sample_unavailable": "The required tail sample is unavailable for this metric.",
+    "calculation_failed": "The metric could not be calculated for this model output.",
+}
 
 
 @dataclass(frozen=True)
@@ -26,6 +36,27 @@ class TransformationSet:
     covariance_matrix: pd.DataFrame
     correlation_matrix: pd.DataFrame
     normalized_price_index: pd.DataFrame
+
+
+@dataclass(frozen=True)
+class MetricUnavailableReason:
+    """Stable user-facing reason for a non-computable summary metric."""
+
+    model_id: str
+    metric: str
+    reason_code: str
+    message: str
+
+    def to_dict(self) -> dict[str, str]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class SummaryMetricsResult:
+    """Summary metric values plus unavailable metadata."""
+
+    values: dict[str, float | str]
+    unavailable_reasons: list[MetricUnavailableReason]
 
 
 def build_transformations(prices: pd.DataFrame) -> TransformationSet:
@@ -114,6 +145,15 @@ def summary_metrics_for_model(
     returns: pd.Series,
 ) -> dict[str, float | str]:
     """Compute side-by-side metrics for one successful model."""
+    return summary_metrics_for_model_with_reasons(model_id=model_id, returns=returns).values
+
+
+def summary_metrics_for_model_with_reasons(
+    *,
+    model_id: str,
+    returns: pd.Series,
+) -> SummaryMetricsResult:
+    """Compute side-by-side metrics and explicit unavailable reasons."""
     clean_returns = returns.dropna().astype(float)
     if clean_returns.empty:
         raise ValueError("Portfolio returns are empty.")
@@ -124,32 +164,106 @@ def summary_metrics_for_model(
     max_drawdown = float(drawdown.min())
     annual_return = _annualized_return(total_return, len(clean_returns))
     annual_volatility = float(clean_returns.std() * math.sqrt(ANNUALIZATION_FACTOR))
-    thirty_day_volatility = float(rolling_volatility(clean_returns).dropna().iloc[-1])
     downside = clean_returns[clean_returns < SORTINO_TARGET] - SORTINO_TARGET
     downside_deviation = float(downside.std() * math.sqrt(ANNUALIZATION_FACTOR))
 
-    return {
+    reasons: list[MetricUnavailableReason] = []
+    values: dict[str, float | str] = {
         "model_id": model_id,
         "total_return_pct": _pct(total_return),
         "max_drawdown_pct": _pct(max_drawdown),
-        "sharpe_ratio": _safe_ratio(annual_return, annual_volatility),
-        "calmar_ratio": _safe_ratio(annual_return, abs(max_drawdown)),
-        "omega_ratio": _omega_ratio(clean_returns),
-        "sortino_ratio": _safe_ratio(annual_return, downside_deviation),
         "annualized_return_pct": _pct(annual_return),
         "annualized_volatility_pct": _pct(annual_volatility),
-        "30d_volatility_pct": _pct(thirty_day_volatility),
-        "avg_drawdown_pct": _pct(float(drawdown[drawdown < 0].mean())),
-        "kurtosis": float(clean_returns.kurtosis()),
-        "skewness": float(clean_returns.skew()),
-        "cvar_pct": _pct(_tail_mean(clean_returns, lower=True)),
-        "cdar_pct": _pct(_tail_mean(drawdown, lower=True)),
     }
+    values["sharpe_ratio"] = _metric_value(
+        model_id=model_id,
+        metric="sharpe_ratio",
+        reason_code="zero_volatility",
+        reasons=reasons,
+        compute=lambda: _safe_ratio_or_nan(annual_return, annual_volatility),
+    )
+    values["calmar_ratio"] = _metric_value(
+        model_id=model_id,
+        metric="calmar_ratio",
+        reason_code="zero_drawdown",
+        reasons=reasons,
+        compute=lambda: _safe_ratio_or_nan(annual_return, abs(max_drawdown)),
+    )
+    values["omega_ratio"] = _metric_value(
+        model_id=model_id,
+        metric="omega_ratio",
+        reason_code="no_negative_returns",
+        reasons=reasons,
+        compute=lambda: _omega_ratio(clean_returns),
+    )
+    values["sortino_ratio"] = _metric_value(
+        model_id=model_id,
+        metric="sortino_ratio",
+        reason_code="no_negative_returns",
+        reasons=reasons,
+        compute=lambda: _safe_ratio_or_nan(annual_return, downside_deviation),
+    )
+    values["30d_volatility_pct"] = _metric_value(
+        model_id=model_id,
+        metric="30d_volatility_pct",
+        reason_code="insufficient_returns",
+        reasons=reasons,
+        compute=lambda: _pct(_latest_rolling_volatility(clean_returns)),
+    )
+    values["avg_drawdown_pct"] = _metric_value(
+        model_id=model_id,
+        metric="avg_drawdown_pct",
+        reason_code="zero_drawdown",
+        reasons=reasons,
+        compute=lambda: _pct(float(drawdown[drawdown < 0].mean())),
+    )
+    values["kurtosis"] = _metric_value(
+        model_id=model_id,
+        metric="kurtosis",
+        reason_code="insufficient_returns",
+        reasons=reasons,
+        compute=lambda: float(clean_returns.kurtosis()),
+    )
+    values["skewness"] = _metric_value(
+        model_id=model_id,
+        metric="skewness",
+        reason_code="insufficient_returns",
+        reasons=reasons,
+        compute=lambda: float(clean_returns.skew()),
+    )
+    values["cvar_pct"] = _metric_value(
+        model_id=model_id,
+        metric="cvar_pct",
+        reason_code="tail_sample_unavailable",
+        reasons=reasons,
+        compute=lambda: _pct(_tail_mean(clean_returns, lower=True)),
+    )
+    values["cdar_pct"] = _metric_value(
+        model_id=model_id,
+        metric="cdar_pct",
+        reason_code="tail_sample_unavailable",
+        reasons=reasons,
+        compute=lambda: _pct(_tail_mean(drawdown, lower=True)),
+    )
+    return SummaryMetricsResult(values=values, unavailable_reasons=reasons)
 
 
 def summary_metrics_table(rows: list[dict[str, float | str]]) -> pd.DataFrame:
     """Build the comparison metrics CSV."""
-    return pd.DataFrame(rows)
+    frame = pd.DataFrame(rows)
+    for column in frame.columns:
+        if column == "model_id":
+            continue
+        frame[column] = pd.to_numeric(frame[column], errors="coerce")
+    return frame.replace([np.inf, -np.inf], np.nan).where(pd.notna(frame), None)
+
+
+def summary_metric_unavailable_table(
+    rows: list[MetricUnavailableReason],
+) -> pd.DataFrame:
+    """Build the companion CSV explaining unavailable summary metrics."""
+    columns = ["model_id", "metric", "reason_code", "message"]
+    return pd.DataFrame([row.to_dict() for row in rows], columns=columns)
 
 
 def risk_contribution_table(weights: pd.Series, covariance: pd.DataFrame) -> pd.DataFrame:
@@ -186,7 +300,7 @@ def _omega_ratio(returns: pd.Series) -> float:
     excess = returns - OMEGA_THRESHOLD
     gains = excess[excess > 0].sum()
     losses = abs(excess[excess < 0].sum())
-    return _safe_ratio(float(gains), float(losses))
+    return _safe_ratio_or_nan(float(gains), float(losses))
 
 
 def _tail_mean(series: pd.Series, *, lower: bool) -> float:
@@ -199,7 +313,46 @@ def _tail_mean(series: pd.Series, *, lower: bool) -> float:
     return float(tail.mean())
 
 
-def _safe_ratio(numerator: float, denominator: float) -> float:
+def _metric_value(
+    *,
+    model_id: str,
+    metric: str,
+    reason_code: str,
+    reasons: list[MetricUnavailableReason],
+    compute: Callable[[], float],
+) -> float:
+    try:
+        value = float(compute())
+    except Exception:
+        reasons.append(_unavailable_reason(model_id, metric, "calculation_failed"))
+        return float("nan")
+    if np.isfinite(value):
+        return value
+    reasons.append(_unavailable_reason(model_id, metric, reason_code))
+    return float("nan")
+
+
+def _unavailable_reason(
+    model_id: str,
+    metric: str,
+    reason_code: str,
+) -> MetricUnavailableReason:
+    return MetricUnavailableReason(
+        model_id=model_id,
+        metric=metric,
+        reason_code=reason_code,
+        message=UNAVAILABLE_MESSAGES.get(reason_code, UNAVAILABLE_MESSAGES["calculation_failed"]),
+    )
+
+
+def _latest_rolling_volatility(returns: pd.Series) -> float:
+    rolling = rolling_volatility(returns).dropna()
+    if rolling.empty:
+        return float("nan")
+    return float(rolling.iloc[-1])
+
+
+def _safe_ratio_or_nan(numerator: float, denominator: float) -> float:
     if not np.isfinite(numerator) or not np.isfinite(denominator) or denominator == 0:
         return float("nan")
     return float(numerator / denominator)

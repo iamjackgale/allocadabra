@@ -31,10 +31,12 @@ from app.processing.transformations import (
     allocation_over_time,
     allocation_weights_table,
     build_transformations,
+    MetricUnavailableReason,
     portfolio_path_tables,
     portfolio_returns,
     risk_contribution_table,
-    summary_metrics_for_model,
+    summary_metrics_for_model_with_reasons,
+    summary_metric_unavailable_table,
     summary_metrics_table,
 )
 from app.storage.paths import MODEL_OUTPUTS_DIR
@@ -96,6 +98,7 @@ def generate_modelling_outputs(
     successes: list[ModelResult] = []
     failures: list[ModelFailure] = []
     metric_rows: list[dict[str, float | str]] = []
+    metric_unavailable_rows: list[MetricUnavailableReason] = []
 
     _notify_progress(
         progress_callback,
@@ -109,12 +112,12 @@ def generate_modelling_outputs(
             result = run_supported_model(model_id, transformations.daily_returns)
             raise_if_cancelled(cancel_check, phase="modelling")
             successes.append(result)
-            metric_rows.append(
-                summary_metrics_for_model(
-                    model_id=model_id,
-                    returns=portfolio_returns(transformations.daily_returns, result.weights),
-                )
+            summary_metrics = summary_metrics_for_model_with_reasons(
+                model_id=model_id,
+                returns=portfolio_returns(transformations.daily_returns, result.weights),
             )
+            metric_rows.append(summary_metrics.values)
+            metric_unavailable_rows.extend(summary_metrics.unavailable_reasons)
             raise_if_cancelled(cancel_check, phase="analysis")
             _write_model_artifacts(
                 writer=writer,
@@ -149,6 +152,7 @@ def generate_modelling_outputs(
     raise_if_cancelled(cancel_check, phase="analysis")
     if successes:
         metrics = summary_metrics_table(metric_rows)
+        metric_unavailable = summary_metric_unavailable_table(metric_unavailable_rows)
         raise_if_cancelled(cancel_check, phase="analysis")
         writer.write_dataframe(
             df=metrics,
@@ -157,6 +161,14 @@ def generate_modelling_outputs(
             label="Summary metrics",
             category="general",
             output_type="summary_metrics",
+        )
+        writer.write_dataframe(
+            df=metric_unavailable,
+            relative_path="summary-metric-unavailable-reasons.csv",
+            artifact_id="summary_metric_unavailable_reasons_csv",
+            label="Summary metric unavailable reasons",
+            category="general",
+            output_type="summary_metric_unavailable_reasons",
         )
 
     raise_if_cancelled(cancel_check, phase="analysis")

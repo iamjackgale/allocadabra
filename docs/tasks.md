@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-24 08:04:58 BST |
+| last_updated | 2026-04-24 08:12:47 BST |
 
 # Task Tracker
 
@@ -84,8 +84,8 @@
 | 066 | DONE | Modelling Agent | Define and implement the frontend-callable modelling run interface for active workflow model execution, including return shape for successful models, failed models, artifact metadata, and user-facing errors. | 2026-04-23 19:36:15 BST |
 | 067 | DONE | Modelling Agent | Add structured modelling progress callback/event support aligned to Modelling Phase checkpoints: Validation, Ingestion, Datasets, Modelling, Analysis, and Outputs. | 2026-04-23 19:36:15 BST |
 | 068 | DONE | Modelling Agent | Integrate active workflow and cached price histories with the modelling runner without taking over Backend/Data export bundle ownership. | 2026-04-23 19:36:15 BST |
-| 069 | TODO | Modelling Agent | Harden summary metric unavailable states so non-computable metrics return explicit user-facing unavailable reasons rather than only `NaN` values. |  |
-| 070 | TODO | Modelling Agent | Add repeatable modelling validation tests or smoke scripts for dataset failures, model failures, optional missing artifacts, and metric consistency once the project test pattern is selected. |  |
+| 069 | DONE | Modelling Agent | Harden summary metric unavailable states so non-computable metrics return explicit user-facing unavailable reasons rather than only `NaN` values. | 2026-04-24 08:12:47 BST |
+| 070 | DONE | Modelling Agent | Add repeatable modelling validation tests or smoke scripts for dataset failures, model failures, optional missing artifacts, and metric consistency once the project test pattern is selected. | 2026-04-24 08:12:47 BST |
 | 071 | DONE | AI/Perplexity Agent | Strengthen modelling-plan import parsing and validation for objective, risk appetite, selected assets, constraints, selected models, and data window before adopting pasted plans. | 2026-04-23 16:40:22 BST |
 | 072 | DONE | AI/Perplexity Agent | Add typed structured metadata helpers/schemas for app-actable AI outputs, including modelling plans, configuration suggestions, Review references, invalid metadata, and regeneration/confirmation requirements. | 2026-04-23 16:40:22 BST |
 | 073 | DONE | AI/Perplexity Agent | Expand Review Mode detailed-context selection to cover visible metric rows, open expander IDs, artifact/table IDs, failed-model warnings, multi-model comparisons, summary metrics plus weights, and transformation metadata. | 2026-04-23 16:40:22 BST |

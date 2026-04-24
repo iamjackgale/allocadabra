@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 12:01:48 BST |
-| last_updated | 2026-04-23 19:36:15 BST |
+| last_updated | 2026-04-24 08:12:47 BST |
 | owner | QA/Validation Agent |
 | source_agent | Modelling Agent |
 
@@ -265,10 +265,23 @@ png_count 16
 missing_count 0
 ```
 
+Current observed result after task `069` added the summary metric unavailable companion artifact:
+
+```text
+ok True
+successful ['mean_variance', 'risk_parity', 'hierarchical_risk_parity']
+failed []
+artifact_count 38
+png_count 16
+missing_count 0
+unavailable_artifact True
+```
+
 Additional observed file checks:
 
 - `canonical-modelling-dataset.csv` existed and was non-empty.
 - `summary-metrics.csv` existed and was non-empty.
+- `summary-metric-unavailable-reasons.csv` existed as the companion metadata artifact.
 - `models/mean_variance/allocation-weights.csv` existed and was non-empty.
 - `models/risk_parity/risk-contribution.csv` existed and was non-empty.
 - `models/hierarchical_risk_parity/dendrogram.csv` existed and was non-empty.
@@ -280,6 +293,7 @@ Expected result:
 - All three supported model IDs appear in `successful_models`.
 - No failed model reasons are produced.
 - Chart PNGs are paired with underlying CSV data.
+- Summary metric unavailable reasons are exported as companion CSV metadata.
 
 ### Partial-Success Failure Artifact Smoke Test
 
@@ -460,6 +474,68 @@ Expected result:
 - Non-cancelled success contract smoke exits with status `0`.
 - Returned cancellation shape is stable for Frontend handling.
 
+## Summary Metric Unavailable Verification
+
+Command:
+
+```bash
+uv run python -c '<synthetic monotonic price history script generating summary-metrics.csv and summary-metric-unavailable-reasons.csv>'
+```
+
+Purpose:
+
+- Confirms `summary-metrics.csv` remains numeric-friendly.
+- Confirms unavailable metrics are represented by blank CSV cells rather than bare `NaN` strings.
+- Confirms `summary-metric-unavailable-reasons.csv` is written with stable columns.
+- Confirms the artifact descriptor uses `output_type="summary_metric_unavailable_reasons"`.
+- Confirms user-facing reason metadata is generated for an edge case with no negative returns and no drawdown.
+
+Observed result:
+
+```text
+summary metric unavailable artifact smoke ok 4
+```
+
+Expected result:
+
+- Command exits with status `0`.
+- `summary-metrics.csv` contains no literal `nan` values.
+- `summary-metric-unavailable-reasons.csv` includes `model_id`, `metric`, `reason_code`, and `message`.
+- At least one unavailable reason is generated for the deterministic edge case.
+
+## Repeatable Modelling Smoke Script
+
+Command:
+
+```bash
+uv run python scripts/modelling_smoke.py
+```
+
+Purpose:
+
+- Covers dataset failure for too few assets.
+- Covers dataset failure for insufficient price history.
+- Covers unsupported model selection through the frontend-callable active modelling API.
+- Covers partial model failure shape and `failed-models.json` output.
+- Covers optional missing artifact descriptor shape.
+- Covers deterministic summary metric consistency.
+- Covers unavailable metric reason output.
+- Re-runs the cooperative cancellation smoke path after task `069`.
+
+Observed result:
+
+```text
+Model unsupported_model failed: Unsupported model: unsupported_model.
+You must convert self.cov to a positive definite matrix
+modelling smoke checks passed
+```
+
+Expected result:
+
+- Command exits with status `0`.
+- Final line prints `modelling smoke checks passed`.
+- Warning lines from the intentionally unsupported model and synthetic covariance edge case are acceptable for this smoke run.
+
 ## Known Validation Gaps
 
 - No live CoinGecko price cache integration was run.
@@ -467,15 +543,15 @@ Expected result:
 - No Backend/Data zip bundle creation was run because Backend/Data owns final package construction.
 - Active workflow integration was smoke-tested through monkeypatching rather than real local session state.
 - Cooperative cancellation was smoke-tested at a dataset-phase checkpoint; it was not exercised inside every solver call because solver interruption remains cooperative between model calls, not thread termination inside cvxpy/riskfolio-lib.
-- No automated fixture-based test suite exists yet.
+- No formal test framework exists yet; the repeatable modelling coverage is currently a lightweight smoke script.
 - No visual review of generated PNG chart aesthetics was performed beyond file creation.
 - Optional artifact missing-state placeholders were implemented but not exhaustively tested against every possible computation failure.
 
 ## Suggested QA Follow-Ups
 
-- Convert the synthetic model and artifact smoke checks into repeatable tests once the project test framework is chosen.
+- Convert `scripts/modelling_smoke.py` into fixture-backed tests once the project test framework is chosen.
 - Add fixture tests for duplicate CoinGecko symbols, insufficient price history, missing price cache entries, empty returns, and more than 10 selected assets.
 - Add fixture tests for more than 3 selected models and unsupported model IDs.
-- Add metric consistency tests for total return, drawdown, volatility, Sharpe, Sortino, Omega, CVaR, and CDaR.
+- Broaden metric consistency tests for volatility, Sharpe, Sortino, Omega, CVaR, and CDaR beyond the current deterministic smoke coverage.
 - Add artifact contract tests for required filenames, model IDs, manifest-ready fields, missing optional artifact `.txt` placeholders, and no raw CoinGecko cache leakage.
 - Add PNG-generation tests that can gracefully skip or expect missing placeholders if the local renderer is unavailable.
