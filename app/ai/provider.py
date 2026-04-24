@@ -12,6 +12,7 @@ from app.ai.constants import (
     MISSING_API_KEY_ERROR,
     PERPLEXITY_API_KEY_ENV,
 )
+from app.ai.env import load_dotenv_if_present
 from app.ai.errors import MissingAPIKeyError, ProviderUnavailableError
 
 
@@ -36,6 +37,7 @@ class PerplexityProvider:
         api_key: str | None = None,
         model: str = DEFAULT_PERPLEXITY_MODEL,
     ) -> None:
+        load_dotenv_if_present()
         self.api_key = api_key or os.getenv(PERPLEXITY_API_KEY_ENV, "")
         self.model = model
 
