@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-24 07:15:35 BST |
-| last_updated | 2026-04-24 07:15:35 BST |
+| last_updated | 2026-04-24 08:06:48 BST |
 | owner | QA/Validation Agent |
 | source_agent | Frontend Agent |
 
@@ -24,6 +24,19 @@ The checks cover initial frontend work for:
 - Frontend package importability and basic Streamlit runtime startup.
 
 The checks do not validate live CoinGecko token loading, live Perplexity responses, full model execution with real market data, browser interaction coverage, or full end-to-end workflow acceptance criteria.
+
+## Latest Validation Run
+
+Task `120` revalidation after pulling latest `main`:
+
+- `git pull origin main`: already up to date.
+- `PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall frontend`: passed.
+- `PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall frontend app`: passed.
+- `PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall app`: passed.
+- `rg -n '(<{7}|={7}|>{7})' .`: no conflict markers.
+- `uv lock --check`: passed.
+- `uv run python -c "import streamlit; print(streamlit.__version__)"`: `1.56.0`.
+- `uv run streamlit run frontend/app.py --server.headless true --server.port 8501`: started at `http://localhost:8501`; forced stop produced a Streamlit shutdown traceback after startup.
 
 ## Verification Commands
 
@@ -263,4 +276,3 @@ Then verify:
 - Add a fixture or stub mode for token-list loading so Configuration UI can be validated without live CoinGecko credentials.
 - Add a fixture or stub mode for AI calls so chat rendering and plan flow can be validated without live Perplexity credentials.
 - Add an end-to-end local smoke once Backend/Data task `092`, Modelling task `069`, and cooperative cancellation follow-up work have landed.
-
