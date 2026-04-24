@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-24 07:54:20 BST |
+| last_updated | 2026-04-24 07:59:39 BST |
 
 # Task Tracker
 
@@ -91,7 +91,7 @@
 | 073 | DONE | AI/Perplexity Agent | Expand Review Mode detailed-context selection to cover visible metric rows, open expander IDs, artifact/table IDs, failed-model warnings, multi-model comparisons, summary metrics plus weights, and transformation metadata. | 2026-04-23 16:40:22 BST |
 | 074 | DONE | AI/Perplexity Agent | Extract and validate optional Review response metadata for referenced model IDs, metric names, artifact IDs or output table names, and requests for additional detailed context. | 2026-04-23 16:40:22 BST |
 | 075 | DONE | AI/Perplexity Agent | Extend AI validation coverage for invalid metadata, unsupported model IDs, future-only models, AI text/metadata conflicts, obvious financial-advice replacement, and Review context-selection edge cases. | 2026-04-23 16:40:22 BST |
-| 076 | BLOCKED | AI/Perplexity Agent | Run live Perplexity provider verification for Configuration and Review calls once `PERPLEXITY_API_KEY` is configured. |  |
+| 076 | DONE | AI/Perplexity Agent | Run live Perplexity provider verification for Configuration and Review calls once `PERPLEXITY_API_KEY` is configured. | 2026-04-24 07:59:39 BST |
 | 077 | DONE | AI/Perplexity Agent | Update AI prompt/spec docs if prompt behaviour changes while completing tasks 071-075. | 2026-04-23 16:40:22 BST |
 | 078 | DONE | Orchestrator Agent | Approve and save the AI Runtime Dependency mini spec and add `perplexityai` to the shared project dependencies and lockfile. | 2026-04-23 12:18:43 BST |
 | 079 | DONE | Orchestrator Agent | Create `docs/validation/general-validation.md` with repo-level validation checks for merges, dependency updates, and pushes to `main`. | 2026-04-23 12:21:50 BST |
@@ -102,7 +102,7 @@
 | 084 | DONE | Orchestrator Agent | Review Backend, Modelling, and AI post-scaffold summaries and keep task ownership boundaries consistent before assigning the next work tranche. | 2026-04-23 12:24:54 BST |
 | 085 | DONE | Orchestrator Agent | Create `docs/prompts/briefs/` for top-up refresh prompts and save the first Modelling and AI agent briefs. | 2026-04-23 12:29:28 BST |
 | 086 | DONE | Orchestrator Agent | Save the first Backend/Data Agent brief for task 063 in `docs/prompts/briefs/backend-data-agent-1.md`. | 2026-04-23 12:30:52 BST |
-| 087 | TODO | AI/Perplexity Agent | Implement the Perplexity `.env` loader mini spec at `docs/specs/app/perplexity-env-loader-mini-spec.md` and then complete live provider verification (task `076`) using `PERPLEXITY_API_KEY`. |  |
+| 087 | DONE | AI/Perplexity Agent | Implement the Perplexity `.env` loader mini spec at `docs/specs/app/perplexity-env-loader-mini-spec.md` and then complete live provider verification (task `076`) using `PERPLEXITY_API_KEY`. | 2026-04-24 07:59:39 BST |
 | 088 | DONE | Orchestrator Agent | Merge the Modelling-prepared frontend mini spec for the modelling run contract into `main` at `docs/prompts/briefs/frontend-agent-modelling-contract-1.md`. | 2026-04-23 19:58:21 BST |
 | 089 | DONE | Orchestrator Agent | Merge the Backend/Data-prepared validation mini spec for the Frontend agent into `main` at `docs/prompts/briefs/backend-data-validation-mini-spec-1.md`. | 2026-04-23 20:02:19 BST |
 | 090 | DONE | Orchestrator Agent | Save the Frontend runtime dependency mini spec for adding `streamlit` to shared dependencies in `docs/prompts/briefs/frontend-runtime-dependency-mini-spec-1.md`. | 2026-04-23 20:06:01 BST |
