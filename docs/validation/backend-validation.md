@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 07:34:14 BST |
-| last_updated | 2026-04-24 07:29:06 BST |
+| last_updated | 2026-04-24 13:14:43 BST |
 | owner | QA/Validation Agent |
 | source_agent | Backend/Data Agent |
 
@@ -46,6 +46,19 @@ For task `092`, the Backend/Data Agent also completed deterministic configuratio
 - Contradictory min/max percentage constraints.
 - Impossible min/max asset-count constraints.
 - Selected-asset constraints that reference assets outside the current selection.
+
+For task `082`, the Backend/Data Agent added and passed a repeatable deterministic smoke script:
+
+- `PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 scripts/backend_smoke.py`
+- The default smoke path uses local fixture data only and does not require `COINGECKO_API_KEY`.
+- The script restores the prior `storage/cache` tree after it runs.
+
+Task `082` validation commands run:
+
+- `PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall app/storage app/ingestion scripts/backend_smoke.py`: passed.
+- `PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 scripts/backend_smoke.py`: printed `backend smoke ok`.
+- `uv lock --check`: passed after sandbox escalation so `uv` could read its local cache.
+- `rg -n '(<{7}|={7}|>{7})' .`: no conflict markers were found.
 
 ## Verification Commands
 
@@ -191,6 +204,30 @@ Expected result:
 
 - Prints `configuration validation smoke ok`.
 
+### Backend/Data Repeatable Smoke Script
+
+Command:
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 scripts/backend_smoke.py
+```
+
+Purpose:
+
+- Confirms CoinGecko token cache/list read path from local cached JSON without a live API call.
+- Confirms CoinGecko price cache read/status path from local CSV fixture data without a live API call.
+- Confirms active workflow/session lifecycle for default state, input updates, generated-plan storage, plan confirmation, Review readiness through export preparation, and start-new-model reset.
+- Confirms deterministic validation issue shape and task `092` issue codes.
+- Confirms export bundle creation from fixture Modelling-produced artifacts, including manifest creation, failed/missing artifact handling, `Download All` metadata, individual artifact metadata, placeholder files, and exclusion of raw CoinGecko cache/chat transcript paths.
+- Confirms the V1 CoinGecko client retry/timeout policy shape without making a network call.
+- Restores the previous `storage/cache` tree after execution so local active workflow/cache data is not left modified by the smoke.
+
+Expected result:
+
+- Prints `backend smoke ok`.
+- Command exits with status `0`.
+- Requires no API keys and no live external services.
+
 ### Export Bundle Smoke Test
 
 Command:
@@ -278,6 +315,7 @@ Expected result:
 - No Streamlit/frontend integration checks exist yet.
 - No full modelling-agent integration checks exist yet for consuming cached price history or handing off the complete output artifact set.
 - Export checks use a dummy Modelling-produced CSV, not the full final model artifact matrix.
+- `scripts/backend_smoke.py` is a smoke script, not a formal test suite; QA should decide whether to convert it to the selected project test pattern.
 
 ## Suggested QA Follow-Ups
 
