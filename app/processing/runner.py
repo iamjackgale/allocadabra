@@ -20,7 +20,13 @@ from app.processing.models import (
     model_failure_from_exception,
     run_supported_model,
 )
-from app.processing.progress import ProgressCallback, make_progress_event
+from app.processing.progress import (
+    CancelCheck,
+    ModellingCancelled,
+    ProgressCallback,
+    make_progress_event,
+    raise_if_cancelled,
+)
 from app.processing.transformations import (
     allocation_over_time,
     allocation_weights_table,
@@ -47,12 +53,14 @@ def generate_modelling_outputs(
     selected_models: list[str] | None = None,
     output_dir: Path = MODEL_OUTPUTS_DIR,
     progress_callback: ProgressCallback | None = None,
+    cancel_check: CancelCheck | None = None,
 ) -> dict[str, Any]:
     """Generate model-owned Review/export artifacts without zip packaging."""
     model_ids = selected_models or list(SUPPORTED_MODELS)
     if len(model_ids) > MAX_SELECTED_MODELS:
         raise ValueError("Compare no more than 3 models in a single run.")
 
+    raise_if_cancelled(cancel_check, phase="datasets")
     writer = ArtifactWriter(output_dir)
     _notify_progress(
         progress_callback,
@@ -64,7 +72,9 @@ def generate_modelling_outputs(
         selected_assets=selected_assets,
         price_history_by_id=price_history_by_id,
     )
+    raise_if_cancelled(cancel_check, phase="datasets")
     transformations = build_transformations(dataset.prices)
+    raise_if_cancelled(cancel_check, phase="datasets")
     _notify_progress(
         progress_callback,
         phase="datasets",
@@ -73,6 +83,7 @@ def generate_modelling_outputs(
     )
 
     canonical = dataset.prices.reset_index()
+    raise_if_cancelled(cancel_check, phase="datasets")
     writer.write_dataframe(
         df=canonical,
         relative_path="canonical-modelling-dataset.csv",
@@ -93,8 +104,10 @@ def generate_modelling_outputs(
         message="Running selected portfolio models.",
     )
     for model_id in model_ids:
+        raise_if_cancelled(cancel_check, phase="modelling")
         try:
             result = run_supported_model(model_id, transformations.daily_returns)
+            raise_if_cancelled(cancel_check, phase="modelling")
             successes.append(result)
             metric_rows.append(
                 summary_metrics_for_model(
@@ -102,6 +115,7 @@ def generate_modelling_outputs(
                     returns=portfolio_returns(transformations.daily_returns, result.weights),
                 )
             )
+            raise_if_cancelled(cancel_check, phase="analysis")
             _write_model_artifacts(
                 writer=writer,
                 result=result,
@@ -110,9 +124,13 @@ def generate_modelling_outputs(
                 covariance=transformations.covariance_matrix,
                 correlation=transformations.correlation_matrix,
             )
+            raise_if_cancelled(cancel_check, phase="analysis")
+        except ModellingCancelled:
+            raise
         except Exception as exc:
             logger.warning("Model %s failed: %s", model_id, exc)
             failures.append(model_failure_from_exception(model_id=model_id, exc=exc))
+        raise_if_cancelled(cancel_check, phase="modelling")
     _notify_progress(
         progress_callback,
         phase="modelling",
@@ -128,8 +146,10 @@ def generate_modelling_outputs(
         status="started",
         message="Preparing summary metrics and review artifacts.",
     )
+    raise_if_cancelled(cancel_check, phase="analysis")
     if successes:
         metrics = summary_metrics_table(metric_rows)
+        raise_if_cancelled(cancel_check, phase="analysis")
         writer.write_dataframe(
             df=metrics,
             relative_path="summary-metrics.csv",
@@ -139,6 +159,7 @@ def generate_modelling_outputs(
             output_type="summary_metrics",
         )
 
+    raise_if_cancelled(cancel_check, phase="analysis")
     if failures:
         writer.write_json(
             payload={"failed_models": [failure.to_dict() for failure in failures]},
@@ -149,6 +170,7 @@ def generate_modelling_outputs(
             output_type="failed_models",
             individual_download_enabled=True,
         )
+    raise_if_cancelled(cancel_check, phase="analysis")
     _notify_progress(
         progress_callback,
         phase="analysis",
@@ -161,6 +183,7 @@ def generate_modelling_outputs(
         status="started",
         message="Finalizing model output artifacts.",
     )
+    raise_if_cancelled(cancel_check, phase="outputs")
     _notify_progress(
         progress_callback,
         phase="outputs",
@@ -170,6 +193,7 @@ def generate_modelling_outputs(
         else "No models completed successfully.",
     )
 
+    raise_if_cancelled(cancel_check, phase="outputs")
     return {
         "schema_version": SCHEMA_VERSION,
         "created_at": utc_now_iso(),

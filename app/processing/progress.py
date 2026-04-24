@@ -20,6 +20,20 @@ ProgressPhase = Literal[
 ProgressStatus = Literal["started", "completed", "failed", "info"]
 
 ProgressCallback = Callable[[dict[str, object]], None]
+CancelCheck = Callable[[], bool]
+
+
+class ModellingCancelled(RuntimeError):
+    """Raised internally when a cooperative cancellation request is observed."""
+
+    def __init__(
+        self,
+        message: str = "Modelling was cancelled.",
+        *,
+        phase: ProgressPhase = "outputs",
+    ) -> None:
+        super().__init__(message)
+        self.phase = phase
 
 
 @dataclass(frozen=True)
@@ -68,3 +82,18 @@ def emit_progress(
     if callback is not None:
         callback(event)
     return event
+
+
+def is_cancel_requested(cancel_check: CancelCheck | None) -> bool:
+    """Return whether a cooperative cancellation has been requested."""
+    return bool(cancel_check is not None and cancel_check())
+
+
+def raise_if_cancelled(
+    cancel_check: CancelCheck | None,
+    *,
+    phase: ProgressPhase = "outputs",
+) -> None:
+    """Stop modelling cooperatively when the caller requests cancellation."""
+    if is_cancel_requested(cancel_check):
+        raise ModellingCancelled(phase=phase)
