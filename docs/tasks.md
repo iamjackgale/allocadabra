@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-24 08:12:47 BST |
+| last_updated | 2026-04-24 09:45:00 BST |
 
 # Task Tracker
 
@@ -122,15 +122,15 @@
 | 104 | TODO | Modelling Agent | Support Frontend integration of modelling progress, result shapes, partial failures, and user-facing error handling if callable gaps appear. |  |
 | 105 | TODO | Frontend Agent | Run an end-to-end local smoke test covering happy path, validation failure, modelling failure, partial model success, and export/download availability. |  |
 | 106 | TODO | Orchestrator Agent | Review the integrated Frontend/Backend/Modelling flow and reconcile contract mismatches before QA starts. |  |
-| 107 | TODO | AI/Perplexity Agent | Run live Configuration Mode verification through the actual app integration path using `PERPLEXITY_API_KEY`. |  |
-| 108 | TODO | AI/Perplexity Agent | Run live Review Mode verification through the actual app integration path using real review-summary inputs and visible-context injection. |  |
-| 109 | TODO | AI/Perplexity Agent | Validate live AI guardrails for no financial advice, no unsupported models, and no invalid metadata adoption. |  |
-| 110 | TODO | AI/Perplexity Agent | Refine Configuration Mode prompt behaviour based on live UI usage, especially missing-field prompting, constraints handling, and pasted-plan adoption. |  |
-| 111 | TODO | AI/Perplexity Agent | Refine Review Mode prompt behaviour based on live UI usage, especially comparative explanations, context narrowing, and follow-up detail requests. |  |
+| 107 | TODO | AI/Perplexity Agent | Run live Configuration Mode verification (tests CM-1 through CM-4) per `docs/specs/app/ai-live-integration.md`. |  |
+| 108 | TODO | AI/Perplexity Agent | Run live Review Mode verification (tests RM-1 through RM-3) using the synthetic manifest per `docs/specs/app/ai-live-integration.md`. |  |
+| 109 | TODO | AI/Perplexity Agent | Validate live guardrails (GR-1 through GR-4) for financial advice, unsupported models, live data requests, and invalid metadata per `docs/specs/app/ai-live-integration.md`. |  |
+| 110 | TODO | AI/Perplexity Agent | Refine Configuration Mode prompt behaviour based on live UI usage, especially missing-field prompting and constraints handling, per `docs/specs/app/ai-live-integration.md`. |  |
+| 111 | TODO | AI/Perplexity Agent | Refine Review Mode prompt behaviour based on live UI usage, especially comparative explanations, context narrowing, and follow-up detail requests, per `docs/specs/app/ai-live-integration.md`. |  |
 | 112 | TODO | Frontend Agent | Verify AI chat UI wiring in Configuration and Review, including loading states, recoverable failures, and safe-error display. |  |
 | 113 | TODO | Frontend Agent | Verify visible Review context is correctly passed into Review Mode without exposing internal context payloads to the user. |  |
-| 114 | TODO | AI/Perplexity Agent | Run a live transcript-quality review for Configuration and Review modes and identify any prompt or spec updates required. |  |
-| 115 | TODO | Orchestrator Agent | Review live AI behaviour against specs and decide whether prompt or spec changes become follow-up implementation tasks before QA and demo prep. |  |
+| 114 | TODO | AI/Perplexity Agent | Run a live transcript-quality review for Configuration and Review modes and prepare the gap list for Orchestrator review (blocks task 115) per `docs/specs/app/ai-live-integration.md`. |  |
+| 115 | TODO | Orchestrator Agent | Review live AI behaviour against specs once task 114 is complete; decide whether gaps become follow-up tasks before QA and demo prep per `docs/specs/app/ai-live-integration.md`. |  |
 | 116 | DONE | Modelling Agent | Implement cooperative cancellation support for active modelling runs using a `cancel_check` callback and `modelling_cancelled` result shape. | 2026-04-24 07:54:20 BST |
 | 117 | TODO | QA/Validation Agent | Convert `docs/validation/frontend-validation.md` into repeatable frontend smoke checks once the project test pattern is selected. |  |
 | 118 | TODO | QA/Validation Agent | Add fixture-backed Review rendering validation using stored manifest and artifact samples. |  |
