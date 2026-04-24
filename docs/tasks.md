@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-24 13:26:19 BST |
+| last_updated | 2026-04-24 13:41:50 BST |
 
 # Task Tracker
 
@@ -55,7 +55,7 @@
 | 037 | DONE | Backend/Data Agent | Set up the Backend/Data Agent with `docs/prompts/agents/backend-data-agent.md` and a dedicated branch. | 2026-04-23 07:12:08 BST |
 | 038 | DONE | Modelling Agent | Set up the Modelling Agent with `docs/prompts/agents/modelling-agent.md` and a dedicated branch. | 2026-04-23 07:13:23 BST |
 | 039 | DONE | AI/Perplexity Agent | Set up the AI/Perplexity Agent with `docs/prompts/agents/ai-perplexity-agent.md` and a dedicated branch. | 2026-04-23 09:51:16 BST |
-| 040 | TODO | Frontend Agent | Set up the Frontend Agent with `docs/prompts/agents/frontend-agent.md` and a dedicated branch. |  |
+| 040 | DONE | Frontend Agent | Set up the Frontend Agent with `docs/prompts/agents/frontend-agent.md` and a dedicated branch. | 2026-04-24 13:41:50 BST |
 | 041 | TODO | QA/Validation Agent | Set up the QA/Validation Agent with `docs/prompts/agents/qa-validation-agent.md` and a dedicated branch. |  |
 | 042 | DONE | AI/Perplexity Agent | Implement `docs/specs/ai/ai-model-integration.md`, including typed metadata normalization/validation and finalized frontend-callable AI helper interfaces. Live Perplexity verification remains tracked by task `076`. | 2026-04-23 16:40:22 BST |
 | 043 | DONE | AI/Perplexity Agent | Implement `docs/specs/ai/parameters-agent.md`, including stronger modelling-plan parsing/validation, structured metadata schemas, and Configuration Mode prompt tightening. | 2026-04-23 16:40:22 BST |
@@ -112,7 +112,7 @@
 | 094 | DONE | Orchestrator Agent | Save the second Backend/Data Agent brief for task `092` in `docs/prompts/briefs/backend-data-agent-2.md`. | 2026-04-24 07:20:53 BST |
 | 095 | DONE | Orchestrator Agent | Save the first Frontend Agent brief for core implementation in `docs/prompts/briefs/frontend-agent-1.md`. | 2026-04-23 20:26:05 BST |
 | 096 | DONE | Orchestrator Agent | Create a Frontend/Backend/Modelling integration spec covering end-to-end phase flow, interface handoffs, state transitions, retries, partial failures, and export readiness. | 2026-04-24 07:42:52 BST |
-| 097 | TODO | Orchestrator Agent | Create an AI live integration spec covering Configuration Mode, Review Mode, guardrails, context injection, live-provider verification, and prompt-quality review. |  |
+| 097 | DONE | Orchestrator Agent | Create an AI live integration spec covering Configuration Mode, Review Mode, guardrails, context injection, live-provider verification, and prompt-quality review. | 2026-04-24 13:41:50 BST |
 | 098 | DONE | Frontend Agent | Implement end-to-end phase routing for `Configuration -> Modelling -> Review` using the current app-layer callables. | 2026-04-24 07:54:20 BST |
 | 099 | DONE | Frontend Agent | Wire Configuration submission to deterministic validation, AI plan generation, plan confirmation, and transition into Modelling. | 2026-04-24 07:54:20 BST |
 | 100 | DONE | Frontend Agent | Wire the Modelling screen to `run_active_modelling(...)`, including live progress-event rendering, success state, partial-success state, and failure state. | 2026-04-24 07:54:20 BST |
@@ -135,7 +135,7 @@
 | 117 | TODO | QA/Validation Agent | Convert `docs/validation/frontend-validation.md` into repeatable frontend smoke checks once the project test pattern is selected. |  |
 | 118 | TODO | QA/Validation Agent | Add fixture-backed Review rendering validation using stored manifest and artifact samples. |  |
 | 119 | TODO | Frontend Agent | Run full live end-to-end Streamlit validation once `COINGECKO_API_KEY` and `PERPLEXITY_API_KEY` are configured. |  |
-| 120 | TODO | Frontend Agent | Pull latest `main`, adopt Backend task `092` validation issue codes, adopt Modelling cooperative cancellation, and report any remaining UI integration gaps. |  |
+| 120 | DONE | Frontend Agent | Pull latest `main`, adopt Backend task `092` validation issue codes, adopt Modelling cooperative cancellation, and report any remaining UI integration gaps. | 2026-04-24 13:41:50 BST |
 | 121 | DONE | Orchestrator Agent | Save the second Modelling Agent brief for tasks `069` and `070` in `docs/prompts/briefs/modelling-agent-2.md`. | 2026-04-24 08:04:58 BST |
 | 122 | DONE | Orchestrator Agent | Save the third Backend/Data Agent brief for task `082` in `docs/prompts/briefs/backend-data-agent-3.md`. | 2026-04-24 13:10:15 BST |
 | 123 | DONE | Frontend Agent | Add a local/dev synthetic Review fixture entry point and missing-key UI validation hook so AI live integration tests `RM-1` through `RM-3`, `CM-4`, and transcript-quality review can run through the Streamlit app. | 2026-04-24 13:26:19 BST |
