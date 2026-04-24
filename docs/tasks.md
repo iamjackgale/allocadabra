@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-24 09:45:00 BST |
+| last_updated | 2026-04-24 13:26:19 BST |
 
 # Task Tracker
 
@@ -96,8 +96,8 @@
 | 078 | DONE | Orchestrator Agent | Approve and save the AI Runtime Dependency mini spec and add `perplexityai` to the shared project dependencies and lockfile. | 2026-04-23 12:18:43 BST |
 | 079 | DONE | Orchestrator Agent | Create `docs/validation/general-validation.md` with repo-level validation checks for merges, dependency updates, and pushes to `main`. | 2026-04-23 12:21:50 BST |
 | 080 | DONE | AI/Perplexity Agent | Strengthen Configuration Mode prompts around unsupported constraints, required missing fields, and asset-guidance boundaries without changing frontend controls or modelling constraints. | 2026-04-23 16:40:22 BST |
-| 081 | TODO | AI/Perplexity Agent | Align AI supported-model validation with the Modelling-owned supported-model registry once a stable app-layer registry/export is available; until then keep the fixed V1 model set. |  |
-| 082 | TODO | Backend/Data Agent | Add focused backend validation tests or smoke scripts for cache, session lifecycle, and export bundle behavior once the project test pattern is selected. |  |
+| 081 | DONE | AI/Perplexity Agent | Align AI supported-model validation with the Modelling-owned supported-model registry once a stable app-layer registry/export is available; until then keep the fixed V1 model set. | 2026-04-24 13:22:37 BST |
+| 082 | DONE | Backend/Data Agent | Add focused backend validation tests or smoke scripts for cache, session lifecycle, and export bundle behavior once the project test pattern is selected. | 2026-04-24 13:19:59 BST |
 | 083 | TODO | Backend/Data Agent | Support Modelling Agent integration only if the modelling run contract exposes a concrete storage/export adapter gap; Backend remains owner of export packaging and storage interfaces, not model execution. |  |
 | 084 | DONE | Orchestrator Agent | Review Backend, Modelling, and AI post-scaffold summaries and keep task ownership boundaries consistent before assigning the next work tranche. | 2026-04-23 12:24:54 BST |
 | 085 | DONE | Orchestrator Agent | Create `docs/prompts/briefs/` for top-up refresh prompts and save the first Modelling and AI agent briefs. | 2026-04-23 12:29:28 BST |
@@ -137,6 +137,10 @@
 | 119 | TODO | Frontend Agent | Run full live end-to-end Streamlit validation once `COINGECKO_API_KEY` and `PERPLEXITY_API_KEY` are configured. |  |
 | 120 | TODO | Frontend Agent | Pull latest `main`, adopt Backend task `092` validation issue codes, adopt Modelling cooperative cancellation, and report any remaining UI integration gaps. |  |
 | 121 | DONE | Orchestrator Agent | Save the second Modelling Agent brief for tasks `069` and `070` in `docs/prompts/briefs/modelling-agent-2.md`. | 2026-04-24 08:04:58 BST |
+| 122 | DONE | Orchestrator Agent | Save the third Backend/Data Agent brief for task `082` in `docs/prompts/briefs/backend-data-agent-3.md`. | 2026-04-24 13:10:15 BST |
+| 123 | DONE | Frontend Agent | Add a local/dev synthetic Review fixture entry point and missing-key UI validation hook so AI live integration tests `RM-1` through `RM-3`, `CM-4`, and transcript-quality review can run through the Streamlit app. | 2026-04-24 13:26:19 BST |
+| 124 | DONE | Orchestrator Agent | Save the Frontend synthetic Review fixture mini spec in `docs/prompts/briefs/frontend-synthetic-review-fixture-mini-spec-1.md`. | 2026-04-24 13:11:42 BST |
+| 125 | DONE | Orchestrator Agent | Save the second AI/Perplexity Agent brief for task `081` in `docs/prompts/briefs/ai-perplexity-agent-2.md`. | 2026-04-24 13:13:47 BST |
 
 ## Potential Extensions Beyond V1
 
