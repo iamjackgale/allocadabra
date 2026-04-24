@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:27:31 BST |
-| last_updated | 2026-04-23 12:45:33 BST |
+| last_updated | 2026-04-24 13:18:28 BST |
 
 # AI Model Integration Spec
 
@@ -203,6 +203,14 @@ The AI may suggest only the initial supported models:
 | `hierarchical_risk_parity` | Hierarchical Risk Parity |
 
 Worst Case, Ordered Weighted Average, and Hierarchical Equal Risk are future-only and must not be suggested for first-build execution.
+
+The AI layer should load the supported V1 model set from the Modelling-owned contract where practical. If the Modelling contract cannot be imported in the current runtime, the AI layer may fall back to one fixed V1 helper containing:
+
+- `mean_variance`
+- `risk_parity`
+- `hierarchical_risk_parity`
+
+All Configuration and Review metadata validation should use the same AI-owned supported-model access path.
 
 ## Web Search
 

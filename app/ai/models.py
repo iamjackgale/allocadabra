@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from app.ai.model_registry import load_supported_models
+
 
 @dataclass(frozen=True)
 class SupportedModel:
@@ -13,10 +15,9 @@ class SupportedModel:
     display_name: str
 
 
-SUPPORTED_MODELS: tuple[SupportedModel, ...] = (
-    SupportedModel("mean_variance", "Mean Variance"),
-    SupportedModel("risk_parity", "Risk Parity"),
-    SupportedModel("hierarchical_risk_parity", "Hierarchical Risk Parity"),
+SUPPORTED_MODELS: tuple[SupportedModel, ...] = tuple(
+    SupportedModel(model.model_id, model.display_name)
+    for model in load_supported_models()
 )
 
 SUPPORTED_MODEL_IDS = tuple(model.model_id for model in SUPPORTED_MODELS)
