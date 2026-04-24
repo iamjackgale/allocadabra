@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 20:20:07 BST |
+| last_updated | 2026-04-24 07:20:53 BST |
 
 # Task Tracker
 
@@ -109,6 +109,28 @@
 | 091 | DONE | Orchestrator Agent | Apply the Frontend runtime dependency mini spec by adding `streamlit` to shared dependencies in `pyproject.toml`, regenerating `uv.lock`, and validating the import. | 2026-04-23 20:20:07 BST |
 | 092 | TODO | Backend/Data Agent | Implement deterministic configuration validation for unsupported model IDs and impossible constraint combinations, with stable field-specific issue codes for the Frontend Configuration flow. |  |
 | 093 | DONE | Orchestrator Agent | Merge the Modelling Agent frontend-callable contract tranche into `main` and reconcile tasks `031`, `066`, `067`, and `068` before Frontend wires end-to-end Modelling flow. | 2026-04-23 20:20:07 BST |
+| 094 | DONE | Orchestrator Agent | Save the second Backend/Data Agent brief for task `092` in `docs/prompts/briefs/backend-data-agent-2.md`. | 2026-04-24 07:20:53 BST |
+| 095 | DONE | Orchestrator Agent | Save the first Frontend Agent brief for core implementation in `docs/prompts/briefs/frontend-agent-1.md`. | 2026-04-23 20:26:05 BST |
+| 096 | TODO | Orchestrator Agent | Create a Frontend/Backend/Modelling integration spec covering end-to-end phase flow, interface handoffs, state transitions, retries, partial failures, and export readiness. |  |
+| 097 | TODO | Orchestrator Agent | Create an AI live integration spec covering Configuration Mode, Review Mode, guardrails, context injection, live-provider verification, and prompt-quality review. |  |
+| 098 | TODO | Frontend Agent | Implement end-to-end phase routing for `Configuration -> Modelling -> Review` using the current app-layer callables. |  |
+| 099 | TODO | Frontend Agent | Wire Configuration submission to deterministic validation, AI plan generation, plan confirmation, and transition into Modelling. |  |
+| 100 | TODO | Frontend Agent | Wire the Modelling screen to `run_active_modelling(...)`, including live progress-event rendering, success state, partial-success state, and failure state. |  |
+| 101 | TODO | Frontend Agent | Wire the Review screen to modelling artifacts and Backend/Data export manifest and download callables. |  |
+| 102 | TODO | Frontend Agent | Implement user navigation rules across phases, including `Return to Configure`, `Review Results`, and `Start New Model`. |  |
+| 103 | TODO | Backend/Data Agent | Verify export handoff compatibility between Modelling outputs and Backend/Data bundle and manifest preparation in a real end-to-end app flow. |  |
+| 104 | TODO | Modelling Agent | Support Frontend integration of modelling progress, result shapes, partial failures, and user-facing error handling if callable gaps appear. |  |
+| 105 | TODO | Frontend Agent | Run an end-to-end local smoke test covering happy path, validation failure, modelling failure, partial model success, and export/download availability. |  |
+| 106 | TODO | Orchestrator Agent | Review the integrated Frontend/Backend/Modelling flow and reconcile contract mismatches before QA starts. |  |
+| 107 | TODO | AI/Perplexity Agent | Run live Configuration Mode verification through the actual app integration path using `PERPLEXITY_API_KEY`. |  |
+| 108 | TODO | AI/Perplexity Agent | Run live Review Mode verification through the actual app integration path using real review-summary inputs and visible-context injection. |  |
+| 109 | TODO | AI/Perplexity Agent | Validate live AI guardrails for no financial advice, no unsupported models, and no invalid metadata adoption. |  |
+| 110 | TODO | AI/Perplexity Agent | Refine Configuration Mode prompt behaviour based on live UI usage, especially missing-field prompting, constraints handling, and pasted-plan adoption. |  |
+| 111 | TODO | AI/Perplexity Agent | Refine Review Mode prompt behaviour based on live UI usage, especially comparative explanations, context narrowing, and follow-up detail requests. |  |
+| 112 | TODO | Frontend Agent | Verify AI chat UI wiring in Configuration and Review, including loading states, recoverable failures, and safe-error display. |  |
+| 113 | TODO | Frontend Agent | Verify visible Review context is correctly passed into Review Mode without exposing internal context payloads to the user. |  |
+| 114 | TODO | AI/Perplexity Agent | Run a live transcript-quality review for Configuration and Review modes and identify any prompt or spec updates required. |  |
+| 115 | TODO | Orchestrator Agent | Review live AI behaviour against specs and decide whether prompt or spec changes become follow-up implementation tasks before QA and demo prep. |  |
 
 ## Potential Extensions Beyond V1
 
