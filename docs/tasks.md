@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-24 07:59:39 BST |
+| last_updated | 2026-04-24 08:04:58 BST |
 
 # Task Tracker
 
@@ -136,6 +136,7 @@
 | 118 | TODO | QA/Validation Agent | Add fixture-backed Review rendering validation using stored manifest and artifact samples. |  |
 | 119 | TODO | Frontend Agent | Run full live end-to-end Streamlit validation once `COINGECKO_API_KEY` and `PERPLEXITY_API_KEY` are configured. |  |
 | 120 | TODO | Frontend Agent | Pull latest `main`, adopt Backend task `092` validation issue codes, adopt Modelling cooperative cancellation, and report any remaining UI integration gaps. |  |
+| 121 | DONE | Orchestrator Agent | Save the second Modelling Agent brief for tasks `069` and `070` in `docs/prompts/briefs/modelling-agent-2.md`. | 2026-04-24 08:04:58 BST |
 
 ## Potential Extensions Beyond V1
 
