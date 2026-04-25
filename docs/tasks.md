@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-25 BST (tasks 117/118/129 DONE, task 133 added) |
+| last_updated | 2026-04-25 BST (task 130 DONE, 119 BLOCKED invalid key, task 134 added) |
 
 # Task Tracker
 
@@ -120,21 +120,21 @@
 | 102 | DONE | Frontend Agent | Implement user navigation rules across phases, including `Return to Configure`, `Review Results`, and `Start New Model`. | 2026-04-24 07:54:20 BST |
 | 103 | DONE | Backend/Data Agent | Verify export handoff compatibility between Modelling outputs and Backend/Data bundle and manifest preparation in a real end-to-end app flow. | 2026-04-25 07:55:07 BST |
 | 104 | TODO | Modelling Agent | Support Frontend integration of modelling progress, result shapes, partial failures, and user-facing error handling if callable gaps appear. |  |
-| 105 | TODO | Frontend Agent | Run an end-to-end local smoke test covering happy path, validation failure, modelling failure, partial model success, and export/download availability. |  |
+| 105 | TODO | Frontend Agent | Run an end-to-end local smoke test. Validation failure path confirmed (Brief 4). Happy path, modelling failure, partial success, and download paths blocked by invalid CoinGecko key (401 on price history). |  |
 | 106 | DONE | Orchestrator Agent | Review the integrated Frontend/Backend/Modelling flow and reconcile contract mismatches before QA starts. | 2026-04-25 BST |
 | 107 | DONE | AI/Perplexity Agent | Run live Configuration Mode verification (tests CM-1 through CM-4) per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 108 | DONE | AI/Perplexity Agent | Run live Review Mode verification (tests RM-1 through RM-3) using the synthetic manifest per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 109 | DONE | AI/Perplexity Agent | Validate live guardrails (GR-1 through GR-4) for financial advice, unsupported models, live data requests, and invalid metadata per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 110 | DONE | AI/Perplexity Agent | Refine Configuration Mode prompt behaviour based on live UI usage, especially missing-field prompting and constraints handling, per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 111 | DONE | AI/Perplexity Agent | Refine Review Mode prompt behaviour based on live UI usage, especially comparative explanations, context narrowing, and follow-up detail requests, per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
-| 112 | TODO | Frontend Agent | Verify AI chat UI wiring in Configuration and Review, including loading states, recoverable failures, and safe-error display. Partially verified (Brief 3): missing-key path, retry path, and 3-failure disable path confirmed deterministically; full live verification blocked until `PERPLEXITY_API_KEY` is available. |  |
-| 113 | TODO | Frontend Agent | Verify visible Review context is correctly passed into Review Mode without exposing internal context payloads to the user. Partially verified (Brief 3): synthetic Review fixture confirmed no exposure of `visible_context`, `detailed_context`, `chart_table_headers`, `visible_table_data`, or `open_expander_ids` strings; full live Review context pass blocked until `COINGECKO_API_KEY` and `PERPLEXITY_API_KEY` are available. |  |
+| 112 | TODO | Frontend Agent | Verify AI chat UI wiring in Configuration and Review, including loading states, recoverable failures, and safe-error display. Live Perplexity verified at Python level (Brief 4): responses correct, financial advice refusal exact match, context leakage nil. UI loading state and chat history persistence require browser verification. |  |
+| 113 | TODO | Frontend Agent | Verify visible Review context is correctly passed into Review Mode without exposing internal context payloads to the user. Verified at Python level (Brief 4): allocation weights (55% BTC) and max drawdown values cited correctly, no context leakage. Full live run with real modelling data blocked by invalid CoinGecko key. |  |
 | 114 | DONE | AI/Perplexity Agent | Run a live transcript-quality review for Configuration and Review modes and prepare the gap list for Orchestrator review (blocks task 115) per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 115 | DONE | Orchestrator Agent | Review live AI behaviour against specs once task 114 is complete; decide whether gaps become follow-up tasks before QA and demo prep per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:51:42 BST |
 | 116 | DONE | Modelling Agent | Implement cooperative cancellation support for active modelling runs using a `cancel_check` callback and `modelling_cancelled` result shape. | 2026-04-24 07:54:20 BST |
 | 117 | DONE | QA/Validation Agent | Convert `docs/validation/frontend-validation.md` into repeatable frontend smoke checks. Script at `scripts/frontend_smoke.py`. | 2026-04-25 BST |
 | 118 | DONE | QA/Validation Agent | Add fixture-backed Review rendering validation using stored manifest and artifact samples. Script at `scripts/review_fixture_smoke.py`. | 2026-04-25 BST |
-| 119 | TODO | Frontend Agent | Run full live end-to-end Streamlit validation. Both API keys now set in `8fe0` worktree; unblocked. Covered by task `105` in Brief 4. |  |
+| 119 | BLOCKED | Frontend Agent | Run full live end-to-end Streamlit validation. Perplexity key valid; CoinGecko key in `8fe0` `.env` returns 401 on price history endpoint. Blocked until key is replaced. |  |
 | 120 | DONE | Frontend Agent | Pull latest `main`, adopt Backend task `092` validation issue codes, adopt Modelling cooperative cancellation, and report any remaining UI integration gaps. | 2026-04-24 13:41:50 BST |
 | 121 | DONE | Orchestrator Agent | Save the second Modelling Agent brief for tasks `069` and `070` in `docs/prompts/briefs/modelling-agent-2.md`. | 2026-04-24 08:04:58 BST |
 | 122 | DONE | Orchestrator Agent | Save the third Backend/Data Agent brief for task `082` in `docs/prompts/briefs/backend-data-agent-3.md`. | 2026-04-24 13:10:15 BST |
@@ -145,10 +145,11 @@
 | 127 | DONE | Orchestrator Agent | Save the third Frontend Agent brief for tasks `105`, `112`, `113`, and `119` in `docs/prompts/briefs/frontend-agent-3.md`. | 2026-04-24 13:48:34 BST |
 | 128 | DONE | Orchestrator Agent | Save the fourth Backend/Data Agent brief for tasks `064`, `083`, and `103` in `docs/prompts/briefs/backend-data-agent-4.md`. | 2026-04-25 07:44:37 BST |
 | 129 | DONE | QA/Validation Agent | Convert AI live and fixture checks into repeatable validation coverage for missing-key handling, guardrail intercepts, metadata shape, and context selection. Script at `scripts/ai_smoke_extended.py`. | 2026-04-25 BST |
-| 130 | TODO | Frontend Agent | Replace deprecated Streamlit `use_container_width` usage with current API equivalents to remove non-blocking runtime warnings before demo prep. |
+| 130 | DONE | Frontend Agent | Replace deprecated Streamlit `use_container_width` usage with `width="stretch"/"content"` across all four frontend files. 36 usages fixed; no warnings in Streamlit 1.56.0. | 2026-04-25 BST |
 | 131 | DONE | Orchestrator Agent | Save the first QA/Validation Agent brief for tasks 117, 118, 129, and the validation gap review in `docs/prompts/briefs/qa-validation-agent-1.md`. | 2026-04-25 BST |
 | 132 | DONE | Orchestrator Agent | Save the fourth Frontend Agent brief for tasks `105`, `112`, `113`, `119`, and `130` in `docs/prompts/briefs/frontend-agent-4.md`. | 2026-04-25 BST |
 | 133 | DONE | Orchestrator Agent | Review QA/Validation Agent Brief 1 gap report at `docs/validation/validation-gap-report-1.md` and mark tasks 117, 118, 129 complete. | 2026-04-25 BST |
+| 134 | DONE | Orchestrator Agent | Review Frontend Agent Brief 4 results; mark task 130 complete; update 105/112/113/119 status with CoinGecko key blocker. | 2026-04-25 BST |
 
 ## Potential Extensions Beyond V1
 
