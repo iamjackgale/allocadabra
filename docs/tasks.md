@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-25 07:55:07 BST |
+| last_updated | 2026-04-25 09:00:00 BST |
 
 # Task Tracker
 
@@ -127,8 +127,8 @@
 | 109 | DONE | AI/Perplexity Agent | Validate live guardrails (GR-1 through GR-4) for financial advice, unsupported models, live data requests, and invalid metadata per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 110 | DONE | AI/Perplexity Agent | Refine Configuration Mode prompt behaviour based on live UI usage, especially missing-field prompting and constraints handling, per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 111 | DONE | AI/Perplexity Agent | Refine Review Mode prompt behaviour based on live UI usage, especially comparative explanations, context narrowing, and follow-up detail requests, per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
-| 112 | TODO | Frontend Agent | Verify AI chat UI wiring in Configuration and Review, including loading states, recoverable failures, and safe-error display. |  |
-| 113 | TODO | Frontend Agent | Verify visible Review context is correctly passed into Review Mode without exposing internal context payloads to the user. |  |
+| 112 | TODO | Frontend Agent | Verify AI chat UI wiring in Configuration and Review, including loading states, recoverable failures, and safe-error display. Partially verified (Brief 3): missing-key path, retry path, and 3-failure disable path confirmed deterministically; full live verification blocked until `PERPLEXITY_API_KEY` is available. |  |
+| 113 | TODO | Frontend Agent | Verify visible Review context is correctly passed into Review Mode without exposing internal context payloads to the user. Partially verified (Brief 3): synthetic Review fixture confirmed no exposure of `visible_context`, `detailed_context`, `chart_table_headers`, `visible_table_data`, or `open_expander_ids` strings; full live Review context pass blocked until `COINGECKO_API_KEY` and `PERPLEXITY_API_KEY` are available. |  |
 | 114 | DONE | AI/Perplexity Agent | Run a live transcript-quality review for Configuration and Review modes and prepare the gap list for Orchestrator review (blocks task 115) per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 115 | DONE | Orchestrator Agent | Review live AI behaviour against specs once task 114 is complete; decide whether gaps become follow-up tasks before QA and demo prep per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:51:42 BST |
 | 116 | DONE | Modelling Agent | Implement cooperative cancellation support for active modelling runs using a `cancel_check` callback and `modelling_cancelled` result shape. | 2026-04-24 07:54:20 BST |
