@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-24 13:41:50 BST |
+| last_updated | 2026-04-25 07:55:07 BST |
 
 # Task Tracker
 
@@ -79,7 +79,7 @@
 | 061 | DONE | Orchestrator Agent | Decide `uv.lock` version-control policy, document it, and commit the lockfile for reproducible local installs. | 2026-04-23 09:40:39 BST |
 | 062 | DONE | Backend/Data Agent | Document Backend/Data validation handoff and verification commands in `docs/validation/backend-validation.md` for QA review. | 2026-04-23 12:04:56 BST |
 | 063 | DONE | Backend/Data Agent | Document the V1 CoinGecko retry, timeout, and rate-limit policy in `docs/specs/data-backend/coingecko-api.md` to match the implemented client behaviour. | 2026-04-23 12:45:16 BST |
-| 064 | TODO | Backend/Data Agent | Revisit the 2-day CoinGecko price-cache freshness tolerance after live Streamlit/runtime integration and tighten it if validation shows stale data risk. |  |
+| 064 | BLOCKED | Backend/Data Agent | Revisit the 2-day CoinGecko price-cache freshness tolerance after live Streamlit/runtime integration and tighten it if validation shows stale data risk. Blocked until `COINGECKO_API_KEY` is available for live cache/freshness validation. |  |
 | 065 | DONE | Modelling Agent | Create `docs/validation/modelling-validation.md` documenting solver/runtime feasibility and modelling export artifact smoke checks. | 2026-04-23 12:05:03 BST |
 | 066 | DONE | Modelling Agent | Define and implement the frontend-callable modelling run interface for active workflow model execution, including return shape for successful models, failed models, artifact metadata, and user-facing errors. | 2026-04-23 19:36:15 BST |
 | 067 | DONE | Modelling Agent | Add structured modelling progress callback/event support aligned to Modelling Phase checkpoints: Validation, Ingestion, Datasets, Modelling, Analysis, and Outputs. | 2026-04-23 19:36:15 BST |
@@ -98,7 +98,7 @@
 | 080 | DONE | AI/Perplexity Agent | Strengthen Configuration Mode prompts around unsupported constraints, required missing fields, and asset-guidance boundaries without changing frontend controls or modelling constraints. | 2026-04-23 16:40:22 BST |
 | 081 | DONE | AI/Perplexity Agent | Align AI supported-model validation with the Modelling-owned supported-model registry once a stable app-layer registry/export is available; until then keep the fixed V1 model set. | 2026-04-24 13:22:37 BST |
 | 082 | DONE | Backend/Data Agent | Add focused backend validation tests or smoke scripts for cache, session lifecycle, and export bundle behavior once the project test pattern is selected. | 2026-04-24 13:19:59 BST |
-| 083 | TODO | Backend/Data Agent | Support Modelling Agent integration only if the modelling run contract exposes a concrete storage/export adapter gap; Backend remains owner of export packaging and storage interfaces, not model execution. |  |
+| 083 | DONE | Backend/Data Agent | Support Modelling Agent integration only if the modelling run contract exposes a concrete storage/export adapter gap; no Backend/Data adapter gap was found in the task `103` handoff smoke. | 2026-04-25 07:55:07 BST |
 | 084 | DONE | Orchestrator Agent | Review Backend, Modelling, and AI post-scaffold summaries and keep task ownership boundaries consistent before assigning the next work tranche. | 2026-04-23 12:24:54 BST |
 | 085 | DONE | Orchestrator Agent | Create `docs/prompts/briefs/` for top-up refresh prompts and save the first Modelling and AI agent briefs. | 2026-04-23 12:29:28 BST |
 | 086 | DONE | Orchestrator Agent | Save the first Backend/Data Agent brief for task 063 in `docs/prompts/briefs/backend-data-agent-1.md`. | 2026-04-23 12:30:52 BST |
@@ -118,7 +118,7 @@
 | 100 | DONE | Frontend Agent | Wire the Modelling screen to `run_active_modelling(...)`, including live progress-event rendering, success state, partial-success state, and failure state. | 2026-04-24 07:54:20 BST |
 | 101 | DONE | Frontend Agent | Wire the Review screen to modelling artifacts and Backend/Data export manifest and download callables. | 2026-04-24 07:54:20 BST |
 | 102 | DONE | Frontend Agent | Implement user navigation rules across phases, including `Return to Configure`, `Review Results`, and `Start New Model`. | 2026-04-24 07:54:20 BST |
-| 103 | TODO | Backend/Data Agent | Verify export handoff compatibility between Modelling outputs and Backend/Data bundle and manifest preparation in a real end-to-end app flow. |  |
+| 103 | DONE | Backend/Data Agent | Verify export handoff compatibility between Modelling outputs and Backend/Data bundle and manifest preparation in a real end-to-end app flow. | 2026-04-25 07:55:07 BST |
 | 104 | TODO | Modelling Agent | Support Frontend integration of modelling progress, result shapes, partial failures, and user-facing error handling if callable gaps appear. |  |
 | 105 | TODO | Frontend Agent | Run an end-to-end local smoke test covering happy path, validation failure, modelling failure, partial model success, and export/download availability. |  |
 | 106 | TODO | Orchestrator Agent | Review the integrated Frontend/Backend/Modelling flow and reconcile contract mismatches before QA starts. |  |
