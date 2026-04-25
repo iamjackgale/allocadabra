@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-25 BST (task 119 unblocked — CoinGecko key confirmed valid) |
+| last_updated | 2026-04-25 BST (tasks 104/105/112/113/119 DONE, task 139 added) |
 
 # Task Tracker
 
@@ -119,22 +119,22 @@
 | 101 | DONE | Frontend Agent | Wire the Review screen to modelling artifacts and Backend/Data export manifest and download callables. | 2026-04-24 07:54:20 BST |
 | 102 | DONE | Frontend Agent | Implement user navigation rules across phases, including `Return to Configure`, `Review Results`, and `Start New Model`. | 2026-04-24 07:54:20 BST |
 | 103 | DONE | Backend/Data Agent | Verify export handoff compatibility between Modelling outputs and Backend/Data bundle and manifest preparation in a real end-to-end app flow. | 2026-04-25 07:55:07 BST |
-| 104 | TODO | Modelling Agent | Support Frontend integration of modelling progress, result shapes, partial failures, and user-facing error handling if callable gaps appear. |  |
-| 105 | TODO | Frontend Agent | Run an end-to-end local smoke test. Validation failure path confirmed (Brief 4). Happy path, modelling failure, partial success, and download paths blocked by invalid CoinGecko key (401 on price history). |  |
+| 104 | DONE | Modelling Agent | Support Frontend integration of modelling progress, result shapes, partial failures, and user-facing error handling if callable gaps appear. No callable gaps found in live run; closing as no-op. | 2026-04-25 BST |
+| 105 | DONE | Frontend Agent | Full end-to-end pipeline verified: BTC+ETH, 365 real CoinGecko prices, both models succeeded, 25 artifacts, 650KB Download All zip (28 files, correct layout). Validation failure path also confirmed. | 2026-04-25 BST |
 | 106 | DONE | Orchestrator Agent | Review the integrated Frontend/Backend/Modelling flow and reconcile contract mismatches before QA starts. | 2026-04-25 BST |
 | 107 | DONE | AI/Perplexity Agent | Run live Configuration Mode verification (tests CM-1 through CM-4) per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 108 | DONE | AI/Perplexity Agent | Run live Review Mode verification (tests RM-1 through RM-3) using the synthetic manifest per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 109 | DONE | AI/Perplexity Agent | Validate live guardrails (GR-1 through GR-4) for financial advice, unsupported models, live data requests, and invalid metadata per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 110 | DONE | AI/Perplexity Agent | Refine Configuration Mode prompt behaviour based on live UI usage, especially missing-field prompting and constraints handling, per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 111 | DONE | AI/Perplexity Agent | Refine Review Mode prompt behaviour based on live UI usage, especially comparative explanations, context narrowing, and follow-up detail requests, per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
-| 112 | TODO | Frontend Agent | Verify AI chat UI wiring in Configuration and Review, including loading states, recoverable failures, and safe-error display. Live Perplexity verified at Python level (Brief 4): responses correct, financial advice refusal exact match, context leakage nil. UI loading state and chat history persistence require browser verification. |  |
-| 113 | TODO | Frontend Agent | Verify visible Review context is correctly passed into Review Mode without exposing internal context payloads to the user. Verified at Python level (Brief 4): allocation weights (55% BTC) and max drawdown values cited correctly, no context leakage. Full live run with real modelling data blocked by invalid CoinGecko key. |  |
+| 112 | DONE | Frontend Agent | Live AI chat verified: Configuration Mode educational response, financial advice refusal exact match, Review chat citing real metrics. UI loading state and chat history persistence remain browser-only checks (no automation). | 2026-04-25 BST |
+| 113 | DONE | Frontend Agent | Review context verified with real run data: allocation weights cited as 62.9% BTC (matches CSV 0.628907), drawdown −54% vs −62% (matches metrics). No context payload leakage in any live response. | 2026-04-25 BST |
 | 114 | DONE | AI/Perplexity Agent | Run a live transcript-quality review for Configuration and Review modes and prepare the gap list for Orchestrator review (blocks task 115) per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 115 | DONE | Orchestrator Agent | Review live AI behaviour against specs once task 114 is complete; decide whether gaps become follow-up tasks before QA and demo prep per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:51:42 BST |
 | 116 | DONE | Modelling Agent | Implement cooperative cancellation support for active modelling runs using a `cancel_check` callback and `modelling_cancelled` result shape. | 2026-04-24 07:54:20 BST |
 | 117 | DONE | QA/Validation Agent | Convert `docs/validation/frontend-validation.md` into repeatable frontend smoke checks. Script at `scripts/frontend_smoke.py`. | 2026-04-25 BST |
 | 118 | DONE | QA/Validation Agent | Add fixture-backed Review rendering validation using stored manifest and artifact samples. Script at `scripts/review_fixture_smoke.py`. | 2026-04-25 BST |
-| 119 | TODO | Frontend Agent | Run full live end-to-end Streamlit validation. Both keys confirmed valid (CoinGecko live smoke passed 2026-04-25; Perplexity verified Brief 4). Unblocked. |  |
+| 119 | DONE | Frontend Agent | Full live Streamlit validation: BTC+ETH real prices, MV+RP both succeeded, 25 artifacts, Review AI cited exact allocation weights and drawdown from real CSVs, no context leakage. | 2026-04-25 BST |
 | 120 | DONE | Frontend Agent | Pull latest `main`, adopt Backend task `092` validation issue codes, adopt Modelling cooperative cancellation, and report any remaining UI integration gaps. | 2026-04-24 13:41:50 BST |
 | 121 | DONE | Orchestrator Agent | Save the second Modelling Agent brief for tasks `069` and `070` in `docs/prompts/briefs/modelling-agent-2.md`. | 2026-04-24 08:04:58 BST |
 | 122 | DONE | Orchestrator Agent | Save the third Backend/Data Agent brief for task `082` in `docs/prompts/briefs/backend-data-agent-3.md`. | 2026-04-24 13:10:15 BST |
@@ -154,6 +154,7 @@
 | 136 | DONE | Backend/Data Agent | Extend `scripts/backend_smoke.py` with deterministic edge-case coverage: multi-model artifact layout, missing-placeholder types, Download All zip exclusions, reconfigure-from-review-ready state, and re-run-after-reset lifecycle. All 5 steps pass. | 2026-04-25 BST |
 | 137 | DONE | Orchestrator Agent | Save the fifth Backend/Data Agent brief for tasks `064`, `135`, and `136` in `docs/prompts/briefs/backend-data-agent-5.md`. | 2026-04-25 BST |
 | 138 | DONE | Orchestrator Agent | Review Backend/Data Agent Brief 5 results; mark tasks 064, 135, 136 complete. | 2026-04-25 BST |
+| 139 | DONE | Orchestrator Agent | Review Frontend Agent Brief 4 final live run results; mark tasks 104, 105, 112, 113, 119 complete. | 2026-04-25 BST |
 
 ## Potential Extensions Beyond V1
 
