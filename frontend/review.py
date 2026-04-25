@@ -134,13 +134,13 @@ def render_review_page(workflow: dict[str, Any]) -> None:
         )
         action_cols = st.columns(2)
         with action_cols[0]:
-            if st.button("Return To Configure", use_container_width=True):
+            if st.button("Return To Configure", width="stretch"):
                 request_confirmation(
                     "return_to_configure",
                     "This returns to Configuration and clears the current outputs and Review chat. Download results first if you want to keep them.",
                 )
         with action_cols[1]:
-            if st.button("Start New Model", use_container_width=True):
+            if st.button("Start New Model", width="stretch"):
                 request_confirmation(
                     "start_new_model",
                     "This clears the current configuration, outputs, and Review chat. Download results first if you want to keep them.",
@@ -166,14 +166,14 @@ def _render_review_controls(
                 data=Path(path).read_bytes(),
                 file_name=str(download_all.get("filename") or "allocadabra-results.zip"),
                 mime="application/zip",
-                use_container_width=True,
+                width="stretch",
             )
         else:
             st.button(
                 "Download All",
                 disabled=True,
                 help=str(download_all.get("reason") or "Download bundle unavailable."),
-                use_container_width=True,
+                width="stretch",
             )
 
     model_labels = _model_selector_labels(model_order, failed_models)
@@ -214,7 +214,7 @@ def _render_sections(
                 label,
                 key=f"section_{section_id}",
                 type="primary" if active else "secondary",
-                use_container_width=True,
+                width="stretch",
                 help=SECTION_HELP[section_id],
             ):
                 set_review_section(section_id)
@@ -259,7 +259,7 @@ def _render_summary_metrics(
                 better=spec["better"],
             )
     styler = styler.format(metric_display_value)
-    st.dataframe(styler, use_container_width=True, height=520)
+    st.dataframe(styler, width="stretch", height=520)
 
     with st.expander("Metric guide"):
         for spec in METRIC_SPECS.values():
@@ -282,14 +282,14 @@ def _render_allocation_weights(
         st.info("Allocation weights were not generated for this run.")
         return
 
-    st.dataframe(table, use_container_width=True, hide_index=True)
+    st.dataframe(table, width="stretch", hide_index=True)
     csv_bytes = table.to_csv(index=False).encode("utf-8")
     st.download_button(
         "Download section",
         data=csv_bytes,
         file_name="allocation-weights-comparison.csv",
         mime="text/csv",
-        use_container_width=False,
+        width="content",
     )
 
 
@@ -335,7 +335,7 @@ def _render_model_section(
             "Download section",
             disabled=True,
             help=missing_artifact_reason(missing),
-            use_container_width=False,
+            width="content",
         )
         st.info(missing_artifact_reason(missing))
         return
@@ -345,12 +345,12 @@ def _render_model_section(
     else:
         fig = _figure_for_section(section_id, df, selected_model_id)
         if fig is not None:
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
         elif download_artifact and str(download_artifact.get("format")) == "png":
             metadata = get_artifact_file_info(str(download_artifact["artifact_id"]))
             path = metadata.get("path")
             if metadata.get("ok") and isinstance(path, str):
-                st.image(path, use_container_width=True)
+                st.image(path, width="stretch")
     _render_manifest_download(download_artifact)
 
 
@@ -361,7 +361,7 @@ def _render_dendrogram(download_artifact: dict[str, Any] | None) -> None:
     metadata = get_artifact_file_info(str(download_artifact["artifact_id"]))
     path = metadata.get("path")
     if metadata.get("ok") and isinstance(path, str):
-        st.image(path, use_container_width=True)
+        st.image(path, width="stretch")
     else:
         st.info("This artifact was not generated for this run.")
 
@@ -399,7 +399,7 @@ def _render_manifest_download(artifact: dict[str, Any] | None) -> None:
             "Download section",
             disabled=True,
             help="This artifact was not generated for this run.",
-            use_container_width=False,
+            width="content",
         )
         return
 
@@ -410,7 +410,7 @@ def _render_manifest_download(artifact: dict[str, Any] | None) -> None:
             "Download section",
             disabled=True,
             help=str(metadata.get("reason") or "This artifact was not generated for this run."),
-            use_container_width=False,
+            width="content",
         )
         return
 
@@ -419,7 +419,7 @@ def _render_manifest_download(artifact: dict[str, Any] | None) -> None:
         data=Path(path).read_bytes(),
         file_name=Path(path).name,
         mime=_mime_type_for(path),
-        use_container_width=False,
+        width="content",
     )
 
 
@@ -526,7 +526,7 @@ def _render_review_confirmation() -> None:
     st.warning(confirmation["message"])
     cols = st.columns(2)
     with cols[0]:
-        if st.button("Confirm", type="primary", use_container_width=True):
+        if st.button("Confirm", type="primary", width="stretch"):
             action = confirmation["action"]
             clear_confirmation()
             if action == "return_to_configure":
@@ -537,7 +537,7 @@ def _render_review_confirmation() -> None:
                 reset_review_ui()
             st.rerun()
     with cols[1]:
-        if st.button("Keep current outputs", use_container_width=True):
+        if st.button("Keep current outputs", width="stretch"):
             clear_confirmation()
             st.rerun()
 

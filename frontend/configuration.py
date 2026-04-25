@@ -109,10 +109,10 @@ def render_configuration_form(workflow: dict[str, Any]) -> None:
 
     action_cols = st.columns([1.3, 1])
     with action_cols[0]:
-        if st.button("Generate Plan", type="primary", use_container_width=True):
+        if st.button("Generate Plan", type="primary", width="stretch"):
             _handle_generate_plan(updated_inputs)
     with action_cols[1]:
-        if st.button("Reset Configuration", use_container_width=True):
+        if st.button("Reset Configuration", width="stretch"):
             request_confirmation(
                 "reset_configuration",
                 "This clears your selected assets, preferences, constraints, generated plan, chats, and outputs.",
@@ -129,20 +129,20 @@ def render_plan_preview(workflow: dict[str, Any]) -> None:
 
     action_cols = st.columns(3)
     with action_cols[0]:
-        if st.button("Run", type="primary", use_container_width=True):
+        if st.button("Run", type="primary", width="stretch"):
             start_modelling_run()
             st.rerun()
     with action_cols[1]:
-        if st.button("Regenerate", use_container_width=True):
+        if st.button("Regenerate", width="stretch"):
             _handle_generate_plan(dict(workflow.get("user_inputs", {})))
     with action_cols[2]:
-        if st.button("Reconfigure", use_container_width=True):
+        if st.button("Reconfigure", width="stretch"):
             request_confirmation(
                 "reconfigure_plan",
                 "This abandons the current plan and returns to Configuration with your previous selections still filled in.",
             )
 
-    if st.button("Reset Configuration", use_container_width=True):
+    if st.button("Reset Configuration", width="stretch"):
         request_confirmation(
             "reset_configuration",
             "This clears your selected assets, preferences, constraints, generated plan, chats, and outputs.",
@@ -196,7 +196,7 @@ def _render_asset_selector(selected_assets: list[dict[str, Any]]) -> None:
         st.error(f"Token list could not be loaded. {exc}")
         retry_cols = st.columns(2)
         with retry_cols[0]:
-            if st.button("Check again", use_container_width=True):
+            if st.button("Check again", width="stretch"):
                 bump_token_refresh_nonce()
                 st.rerun()
         with retry_cols[1]:
@@ -205,7 +205,7 @@ def _render_asset_selector(selected_assets: list[dict[str, Any]]) -> None:
 
     if search_term and not tokens:
         st.warning("No assets matched the current search.")
-        if st.button("Refresh token list", use_container_width=False):
+        if st.button("Refresh token list", width="content"):
             bump_token_refresh_nonce()
             st.rerun()
         return
@@ -226,7 +226,7 @@ def _render_asset_selector(selected_assets: list[dict[str, Any]]) -> None:
     with add_cols[0]:
         st.caption(f"Selected assets: {len(selected_assets)} / 10. Minimum to generate a plan: 2.")
     with add_cols[1]:
-        if st.button("Add Asset", use_container_width=True, disabled=add_disabled):
+        if st.button("Add Asset", width="stretch", disabled=add_disabled):
             asset = option_map.get(selected_label)
             if asset:
                 next_assets = list(selected_assets)
@@ -255,7 +255,7 @@ def _render_selected_assets(selected_assets: list[dict[str, Any]]) -> None:
                 unsafe_allow_html=True,
             )
         with cols[1]:
-            if st.button("Remove", key=f"remove_{asset['id']}", use_container_width=True):
+            if st.button("Remove", key=f"remove_{asset['id']}", width="stretch"):
                 next_assets = [row for row in selected_assets if row.get("id") != asset["id"]]
                 update_active_inputs({"selected_assets": next_assets})
                 st.rerun()
@@ -278,7 +278,7 @@ def _render_single_choice_cards(
                 if st.button(
                     option,
                     key=f"{key_prefix}_{row_index}_{option}",
-                    use_container_width=True,
+                    width="stretch",
                     type="primary" if current == option else "secondary",
                     help=help_lookup[option],
                 ):
@@ -436,7 +436,7 @@ def _render_confirmation_panel() -> None:
     st.warning(confirmation["message"])
     cols = st.columns(2)
     with cols[0]:
-        if st.button("Confirm", type="primary", use_container_width=True):
+        if st.button("Confirm", type="primary", width="stretch"):
             action = confirmation["action"]
             clear_confirmation()
             if action == "reconfigure_plan":
@@ -446,7 +446,7 @@ def _render_confirmation_panel() -> None:
                 reset_review_ui()
             st.rerun()
     with cols[1]:
-        if st.button("Keep current state", use_container_width=True):
+        if st.button("Keep current state", width="stretch"):
             clear_confirmation()
             st.rerun()
 

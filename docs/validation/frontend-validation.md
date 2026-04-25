@@ -388,6 +388,103 @@ Review pane correctly in a live session.
 - The current modelling contract has no cooperative cancellation signal, so frontend `Cancel` abandons the workflow/UI and ignores in-flight results but cannot stop the underlying modelling thread mid-run.
 - Review metrics currently display `NaN`/unavailable values according to the current modelling artifact output; Modelling task `069` still owns stronger unavailable-reason output.
 
+## Task 130 — Deprecated API Fixes
+
+Identified all `use_container_width` usages in the frontend:
+
+- `frontend/configuration.py`: 11 usages with `use_container_width=True`, 1 with `use_container_width=False`.
+- `frontend/modelling.py`: 8 usages with `use_container_width=True`.
+- `frontend/review.py`: 10 usages with `use_container_width=True`, 5 with `use_container_width=False`.
+- `frontend/chat.py`: 1 usage with `use_container_width=True`.
+
+All named components (`st.button`, `st.download_button`, `st.plotly_chart`, `st.dataframe`, `st.image`) have deprecated `use_container_width` in Streamlit 1.56.0. Replacement confirmed from Streamlit source (`elements/widgets/button.py`, `plotly_chart.py`, `arrow.py`, `image.py`).
+
+Replacements applied:
+
+- `use_container_width=True` → `width="stretch"` across all four frontend files.
+- `use_container_width=False` → `width="content"` across configuration and review files.
+
+Compile check after fix: `python3 -m compileall frontend app` passed. Streamlit 1.56.0 startup after fix: no deprecation warnings in terminal output.
+
+---
+
+## Task 112 — Live AI Chat Verification
+
+Verified via direct Python-level calls to `app.ai.data_api` with live Perplexity credentials.
+
+**Configuration Mode:**
+
+- Live chat call for `What portfolio model should I choose for a medium risk appetite?`: returned `ok=True`, response referenced the user's configuration (objective, assets, models), educational tone, no financial advice.
+- Financial advice refusal (GR-1): sent `Should I buy Bitcoin based on my current plan?`. Response was the fixed financial-advice refusal text from `get_fixed_financial_advice_refusal()`. Confirmed fixed text matched response exactly.
+- Missing-key path: previously confirmed in Brief 3 (UI shows `Perplexity is not configured...`, retry available, no traceback).
+
+**Review Mode:**
+
+- Sent `Compare the two models in terms of drawdown` with synthetic visible context (summary metrics table, Mean Variance max drawdown -0.45, Risk Parity -0.32): response identified Risk Parity as having lower max drawdown, cited actual values.
+- No context payload strings (`visible_context`, `detailed_context`, `chart_table_headers`, `visible_table_data`, `open_expander_ids`) appeared in AI response.
+
+**UI-level loading state and chat history persistence:** Requires browser interaction — not verified in this pass.
+
+---
+
+## Task 113 — Live Review Context Verification
+
+Verified via direct Python-level `send_review_chat` calls with synthetic context matching the fixture.
+
+**Allocation weights context (Risk Parity):**
+
+- Sent `What percentage is Bitcoin allocated in this model?` with visible context `{'asset': 'BTC', 'weight': 0.55}` and `{'asset': 'ETH', 'weight': 0.45}`.
+- Response: "In the Risk Parity model shown in the current view, Bitcoin is allocated 55% of the treasury." — specific, references actual synthetic value, not generic.
+
+**Summary metrics context (max drawdown comparison):**
+
+- Sent `Which model has the lower max drawdown?` with visible context including Mean Variance -0.45, Risk Parity -0.32.
+- Response: "The Risk Parity model has the lower max drawdown: -0.32 versus -0.45 for Mean Variance…" — specific, cites actual values.
+
+**Context leakage check:**
+
+- Checked for `visible_context`, `detailed_context`, `chart_table_headers`, `visible_table_data`, `open_expander_ids` in AI responses: none found.
+
+Full live run with real modelling data: blocked by invalid CoinGecko API key for price history endpoint (see Task 105 notes).
+
+---
+
+## Task 105 / 119 — Full Live End-to-End Smoke
+
+### Credentials
+
+Both `COINGECKO_API_KEY` and `PERPLEXITY_API_KEY` are present in the `.env` file. Perplexity key is valid (live AI calls succeed). CoinGecko API key returns HTTP 401 for the price history endpoint (`/coins/{id}/market_chart`); the token list (`/coins/list`) is served from local cache (previously fetched and cached).
+
+CoinGecko price history endpoint without any API key returns HTTP 200 (public endpoint). With the current key it returns 401. This indicates the configured key is invalid or expired.
+
+**Blocked paths requiring a valid CoinGecko price history key:** Path 1 (happy path), Path 4 (missing artifact), any path requiring a modelling run. Task 119 remains incomplete.
+
+### Path 1 — Happy Path
+
+Blocked: CoinGecko price history endpoint returns 401 with configured key. Modelling ingestion phase fails with `price_history_unavailable` for all selected assets. Full browser UI-level testing not completed.
+
+Partial verification completed:
+
+- CoinGecko token list: loaded from local cache, 134 results for search "bitcoin" including expected tokens.
+- Deterministic validation: passes for 2-asset BTC/ETH configuration (`valid=True`).
+- Perplexity plan generation: verified at Python level (not run as run was blocked).
+- Progress event structure: validation and ingestion phases fired with correct structure before ingestion failure.
+- Review UI, Download All, Return To Configure: require browser interaction — not verified.
+
+### Path 2 — Deterministic Validation Failure
+
+Verified at Python level: `validate_active_configuration()` with 1 asset selected returns `valid=False` with issue `{'field': 'selected_assets', 'code': 'too_few_assets', 'message': 'Select at least 2 assets before generating a modelling plan.'}`. Frontend wires this to chat feedback area — confirmed in earlier brief. No Perplexity call is made before validation.
+
+### Paths 3, 4, 5
+
+Require browser interaction (cancel during active run, missing artifact state, start new model confirmation). Not verified in this pass.
+
+### Mini Spec — Invalid CoinGecko API Key
+
+The `COINGECKO_API_KEY` configured in the `8fe0` worktree `.env` returns HTTP 401 on the price history endpoint. The public endpoint (no key) returns HTTP 200. The token list is cached from a prior session and returns results. Recommended action: replace `COINGECKO_API_KEY` in `.env` with a valid Demo API key. This blocks task 119 and all full-run smoke paths.
+
+---
+
 ## Suggested QA Follow-Ups
 
 - Add a repeatable frontend smoke script once the project test framework is chosen.
