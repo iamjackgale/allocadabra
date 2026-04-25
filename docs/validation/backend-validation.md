@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 07:34:14 BST |
-| last_updated | 2026-04-24 13:14:43 BST |
+| last_updated | 2026-04-25 07:55:07 BST |
 | owner | QA/Validation Agent |
 | source_agent | Backend/Data Agent |
 
@@ -59,6 +59,15 @@ Task `082` validation commands run:
 - `PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 scripts/backend_smoke.py`: printed `backend smoke ok`.
 - `uv lock --check`: passed after sandbox escalation so `uv` could read its local cache.
 - `rg -n '(<{7}|={7}|>{7})' .`: no conflict markers were found.
+
+For task `103`, the Backend/Data Agent added and passed a repeatable Modelling-to-export handoff smoke:
+
+- `uv run python scripts/backend_modelling_handoff_smoke.py`
+- The smoke calls `app.processing.run_active_modelling(...)` with fresh local cached price CSVs, then passes returned `artifacts`, `failed_models`, and `missing_artifacts` directly to `prepare_review_export_bundle(...)`.
+- The smoke verifies root export artifacts, model-specific `models/{model_id}/` artifacts, missing placeholders, failed-model reasons, frontend-safe download metadata, raw CoinGecko/cache exclusion, and Review readiness after export preparation.
+- No Backend/Data adapter gap was found for the current `run_active_modelling(...)` handoff.
+
+For task `064`, `COINGECKO_API_KEY` was not available in the shell environment and no repo-root `.env` was present, so live CoinGecko freshness validation was not run. The deterministic handoff smoke verifies the current freshness boundary: latest cached date exactly 2 days behind UTC today is usable, while 3 days behind is stale.
 
 ## Verification Commands
 
@@ -228,6 +237,32 @@ Expected result:
 - Command exits with status `0`.
 - Requires no API keys and no live external services.
 
+### Backend/Modelling Export Handoff Smoke Script
+
+Command:
+
+```bash
+uv run python scripts/backend_modelling_handoff_smoke.py
+```
+
+Purpose:
+
+- Confirms real Modelling-produced artifact descriptors from `app.processing.run_active_modelling(...)` can be passed to `prepare_review_export_bundle(...)` without field-name translation.
+- Confirms required root artifacts are exported when modelling succeeds: `user-inputs.json`, `modelling-plan.md`, `canonical-modelling-dataset.csv`, `summary-metrics.csv`, and `manifest.json`.
+- Confirms successful model artifacts land under `models/{model_id}/` in `Download All`.
+- Confirms failed model reasons and missing optional artifact placeholders are represented in the export manifest and zip bundle.
+- Confirms `get_review_export_manifest()`, `get_review_download_all()`, and `get_review_artifact_download(...)` return frontend-safe shapes.
+- Confirms active workflow phase is not marked `review` until Backend/Data export preparation completes.
+- Confirms raw CoinGecko cache paths and chat transcript paths are excluded from `Download All`.
+- Confirms the current 2-day price-cache freshness boundary without making a live CoinGecko request.
+
+Expected result:
+
+- Prints `backend modelling handoff smoke ok`.
+- Command exits with status `0`.
+- Requires the project `uv` environment for modelling dependencies.
+- Requires no API keys and no live external services.
+
 ### Export Bundle Smoke Test
 
 Command:
@@ -311,6 +346,7 @@ Expected result:
 ## Known Validation Gaps
 
 - No live CoinGecko API request was run because that requires a real `COINGECKO_API_KEY` in `.env`.
+- Live price-cache freshness validation remains blocked until `COINGECKO_API_KEY` is available through repo-root `.env` or the shell environment.
 - No automated test suite or fixture-based unit tests exist yet.
 - No Streamlit/frontend integration checks exist yet.
 - No full modelling-agent integration checks exist yet for consuming cached price history or handing off the complete output artifact set.

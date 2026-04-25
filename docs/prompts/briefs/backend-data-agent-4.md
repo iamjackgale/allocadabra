@@ -2,7 +2,7 @@
 |---|---|
 | created | 2026-04-25 07:44:37 BST |
 | last_updated | 2026-04-25 07:44:37 BST |
-| prompt_used |  |
+| prompt_used | 2026-04-25 07:48:19 BST |
 
 # Backend/Data Agent Brief 4
 
@@ -15,6 +15,7 @@ Before starting:
 3. Review relevant specs and raise any pressing questions, issues, or proposed changes before implementation.
 4. Confirm whether `COINGECKO_API_KEY` is available through repo-root `.env` or shell environment before running live cache/freshness checks.
 5. Read:
+
    - `/docs/plan.md`
    - `/docs/tasks.md`
    - `/docs/specs/data-backend/coingecko-api.md`
@@ -189,3 +190,4 @@ When complete, report:
 - whether `064` is complete or blocked pending live runtime validation;
 - whether `083` required code changes or can be closed as no-op;
 - any mini specs needed for Frontend or Modelling.
+
