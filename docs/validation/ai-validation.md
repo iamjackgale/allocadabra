@@ -382,15 +382,83 @@ Expected result:
 - Prints `review metadata rejection ok`.
 - Prints `review metadata validation ok`.
 
+### AI Intercept Smoke Test
+
+Command:
+
+```bash
+uv run python - <<'PY'
+from app.ai.data_api import send_configuration_chat, send_review_chat, get_fixed_financial_advice_refusal
+from app.storage import reset_configuration, update_active_inputs, mark_review_ready
+
+reset_configuration()
+update_active_inputs({
+    "selected_assets": [{"id": "bitcoin", "symbol": "btc", "name": "Bitcoin"}],
+    "selected_models": ["mean_variance", "risk_parity"],
+})
+config = send_configuration_chat("Can I run a model with what I have set up?")
+assert config["ok"]
+assert config["metadata"]["kind"] == "configuration_suggestion"
+assert config["metadata"]["missing_required_fields"] == [
+    "selected_assets",
+    "treasury_objective",
+    "risk_appetite",
+]
+
+mark_review_ready({"manifest_path": "storage/cache/model-outputs/manifest.json"})
+review = send_review_chat("Should I buy Bitcoin based on these results?")
+assert review["ok"]
+assert review["message"] == get_fixed_financial_advice_refusal()
+print("ai intercept smoke ok")
+PY
+```
+
+Purpose:
+
+- Confirms Configuration readiness questions can short-circuit to deterministic missing-field guidance with stored metadata.
+- Confirms direct financial-advice requests are intercepted before provider output can reach the user.
+
+Expected result:
+
+- Prints `ai intercept smoke ok`.
+
+## Live UI Verification
+
+Manual runtime used:
+
+```bash
+uv run streamlit run frontend/app.py --server.headless true --server.port 8501
+```
+
+Validation paths used:
+
+- Configuration Mode: `http://localhost:8501`
+- Synthetic Review fixture: `http://localhost:8501/?alloca_dev_review_fixture=1`
+- Missing-key path: `http://localhost:8501/?alloca_dev_no_ai_env=1`
+
+Observed live outcomes:
+
+- `CM-1` passed after the readiness intercept was added: one-paragraph reply, no financial advice, and stored metadata `{kind: configuration_suggestion, selected_model_ids, missing_required_fields: []}`.
+- `CM-2` passed after the readiness intercept was added: one-paragraph missing-fields reply, no invented objective/risk labels, and stored metadata with `missing_required_fields = [selected_assets, treasury_objective, risk_appetite]`.
+- `CM-3` passed: unsupported constraints were redirected to supported V1 constraint controls and no unsupported constraint was presented as actionable.
+- `CM-4` passed: the `alloca_dev_no_ai_env=1` hook produced a recoverable inline missing-key error with `Retry last message`, without clearing active inputs.
+- `RM-1` passed after Review-opening prompt tightening: the synthetic fixture produced a one-paragraph opening grounded in the fixed synthetic manifest without external citations or live data references.
+- `RM-2` passed: the Risk Parity allocation follow-up stayed grounded in the visible allocation weights context and stored Review metadata referencing `risk_parity` and `allocation_weights`.
+- `RM-3` passed: further follow-up chat stayed grounded in the synthetic manifest and remained one paragraph by default.
+- `GR-1` passed after adding a direct-request intercept: the UI returned the fixed financial-advice refusal text exactly.
+- `GR-2` passed after adding a direct-model-choice intercept: the UI deflected without instructing the user to choose a model.
+- `GR-3` passed after adding a live-data intercept: the UI refused live CoinGecko data requests and stayed grounded in the app's existing run/historical window only.
+- `GR-4` passed after adding an unsupported-model intercept: the UI refused Black-Litterman and named only supported V1 models.
+
 ## Known Validation Gaps
 
 - Live Perplexity provider verification now succeeds when `PERPLEXITY_API_KEY` is configured in local `.env`.
 - The provider wrapper is implemented against the Perplexity SDK, `perplexityai` is included in `pyproject.toml` and `uv.lock`, and the SDK import path has been validated through `uv run`.
 - Supported-model alignment now prefers the Modelling-owned contract in the project runtime and falls back to one fixed V1 AI helper only when Modelling imports are unavailable.
 - No automated test suite or fixture-based unit tests exist yet.
-- No Streamlit/frontend integration checks exist yet.
 - No QA checks exist yet for actual Perplexity response shape drift.
-- No end-to-end checks exist yet for generated plan confirmation, modelling handoff, Review opening generation, or chat lifecycle across phase transitions.
+- No repeatable browser automation or QA-owned fixture tests exist yet for the live Streamlit AI flows.
+- The live pass covered Configuration/Review chat and guardrails, but not generated-plan confirmation, modelling handoff after a real run, or long transcript behavior across a full end-to-end workflow.
 
 ## Optional Live Provider Check
 

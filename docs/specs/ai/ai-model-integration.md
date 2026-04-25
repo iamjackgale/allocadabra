@@ -48,6 +48,7 @@ Default chat responses:
 
 - Prefer plain text/Markdown-style text that is efficient to render in a chatbot UI.
 - Do not spend extra compute on polished formatting unless needed for comprehension.
+- Keep default answers to one paragraph unless the user explicitly asks for more detail.
 
 Modelling plan output:
 
@@ -165,6 +166,15 @@ Initial AI scaffolding exposes frontend-callable helpers from `app.ai.data_api`:
 
 All public helpers return dictionaries with `ok: true` on success. Recoverable failures return `ok: false`, a stable `code`, and user-facing `message`; validation failures may include `issues`. Raw prompts and raw provider responses are not returned to the frontend by default.
 
+Configuration and Review chat may short-circuit certain requests before using provider output when a deterministic app-safe response is preferable, including:
+
+- direct financial-advice requests.
+- direct requests to choose a model on the user's behalf.
+- requests for live data outside the app's V1 scope.
+- requests for unsupported or future-only models.
+
+Configuration chat may also answer simple readiness checks from deterministic app validation state so missing required fields and current supported selections stay aligned with the form.
+
 ## Structured Metadata Validation
 
 The AI layer validates app-actable metadata through typed helpers before storing it in active workflow state.
@@ -233,6 +243,7 @@ Web search is a potential V2 feature.
 - If AI text and structured metadata conflict, structured metadata should be rejected and the user should be asked to regenerate or confirm manually.
 - If Perplexity is unavailable, show a recoverable error and let the user retry; do not proceed to AI-required steps.
 - If AI returns financial advice despite guardrails, discard or replace the output with a refusal/error message and allow the user to prompt a further AI analysis on the same educational basis.
+- The app may bypass provider output entirely for direct financial-advice requests and return the fixed refusal deterministically.
 - There is no manual fallback in V1; the app does not work if AI is unavailable for AI-required steps.
 
 ## Implementation Ownership
