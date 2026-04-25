@@ -108,6 +108,11 @@ def retry_message_for(mode: str) -> str | None:
     return ui_state()["chat_retry_messages"].get(mode)
 
 
+def chat_failure_count(mode: str) -> int:
+    """Return consecutive AI failure count for one chat mode."""
+    return int(ui_state()["chat_failure_counts"].get(mode, 0))
+
+
 def request_confirmation(action: str, message: str) -> None:
     """Store a pending confirmation action."""
     ui_state()["confirmation"] = {"action": action, "message": message}

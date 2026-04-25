@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-24 07:15:35 BST |
-| last_updated | 2026-04-24 13:15:53 BST |
+| last_updated | 2026-04-25 07:49:36 BST |
 | owner | QA/Validation Agent |
 | source_agent | Frontend Agent |
 
@@ -26,6 +26,21 @@ The checks cover initial frontend work for:
 The checks do not validate live CoinGecko token loading, live Perplexity responses, full model execution with real market data, browser interaction coverage, or full end-to-end workflow acceptance criteria.
 
 ## Latest Validation Run
+
+Frontend Agent Brief 3 validation:
+
+- `git pull origin main`: already up to date.
+- Credential availability check: repo-root `.env` absent; `COINGECKO_API_KEY` unavailable in shell; `PERPLEXITY_API_KEY` unavailable in shell.
+- `PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall frontend app`: passed.
+- `rg -n '(<{7}|={7}|>{7})' .`: no conflict markers.
+- `uv lock --check`: passed.
+- `uv run streamlit run frontend/app.py --server.headless true --server.port 8501`: started at `http://localhost:8501`.
+- Configuration missing-key path: opened `http://localhost:8501/?alloca_dev_no_ai_env=1`, sent a Configuration chat message, and observed the user message rendered, `Perplexity is not configured...`, `Retry last message`, no traceback, and Configuration state still visible.
+- Configuration repeated-failure path: clicked `Retry last message` until three consecutive failures and observed `Repeated failures stopped automatic retries...`, disabled chat input, disabled retry button, and no traceback.
+- Review fixture/context path: opened `http://localhost:8501/?alloca_dev_review_fixture=brief3&alloca_dev_no_ai_env=1` and observed Review open with `Ranked for: Stable performance · Medium risk appetite`, Allocation weights active, Risk Parity selected, and no exposed `visible_context`, `detailed_context`, `chart_table_headers`, `visible_table_data`, or `open_expander_ids` strings.
+- Review missing-key chat path: sent `What does the allocation look like for Risk Parity?` in Review chat and observed the user message rendered, retry available, recoverable missing-key copy, no traceback, and no exposed context payload names.
+- Task `119` full live end-to-end Streamlit validation was not run because both required API keys are unavailable.
+- Destructive reset checks such as confirming `Start New Model` were not executed in this pass because they clear local workflow/output state and require explicit action-time approval.
 
 Synthetic Review fixture implementation validation:
 

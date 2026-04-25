@@ -13,6 +13,7 @@ from app.ai.data_api import (
     send_review_chat,
 )
 from frontend.runtime import (
+    chat_failure_count,
     clear_chat_failure,
     get_chat_feedback,
     register_chat_failure,
@@ -45,6 +46,8 @@ def render_chat_panel(
     if feedback:
         st.info(feedback)
 
+    chat_disabled = chat_failure_count(mode) >= 3
+
     if mode == "review" and not messages and opening_summary:
         _ensure_review_opening(opening_summary, model_output_summary or {})
         st.rerun()
@@ -60,14 +63,15 @@ def render_chat_panel(
     if retry_message:
         retry_col, _ = st.columns([1, 3])
         with retry_col:
-            if st.button("Retry last message", key=f"{mode}_retry", use_container_width=True):
-                _submit_message(
-                    mode=mode,
-                    prompt=retry_message,
-                    model_output_summary=model_output_summary,
-                    visible_context=visible_context,
-                    detailed_context=detailed_context,
-                )
+            if st.button("Retry last message", key=f"{mode}_retry", use_container_width=True, disabled=chat_disabled):
+                with st.spinner("Waiting for AI response..."):
+                    _submit_message(
+                        mode=mode,
+                        prompt=retry_message,
+                        model_output_summary=model_output_summary,
+                        visible_context=visible_context,
+                        detailed_context=detailed_context,
+                    )
                 st.rerun()
 
     placeholder = (
@@ -79,16 +83,17 @@ def render_chat_panel(
         placeholder,
         key=f"{mode}_chat_input",
         height=88,
-        disabled=False,
+        disabled=chat_disabled,
     )
     if prompt:
-        _submit_message(
-            mode=mode,
-            prompt=prompt,
-            model_output_summary=model_output_summary,
-            visible_context=visible_context,
-            detailed_context=detailed_context,
-        )
+        with st.spinner("Waiting for AI response..."):
+            _submit_message(
+                mode=mode,
+                prompt=prompt,
+                model_output_summary=model_output_summary,
+                visible_context=visible_context,
+                detailed_context=detailed_context,
+            )
         st.rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
@@ -154,4 +159,3 @@ def _looks_like_modelling_plan(prompt: str) -> bool:
         "## data window",
     ]
     return all(heading in lowered for heading in required)
-
