@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-25 BST (task 130 DONE, 119 BLOCKED invalid key, task 134 added) |
+| last_updated | 2026-04-25 BST (tasks 135–137 added, backend brief 5) |
 
 # Task Tracker
 
@@ -150,6 +150,9 @@
 | 132 | DONE | Orchestrator Agent | Save the fourth Frontend Agent brief for tasks `105`, `112`, `113`, `119`, and `130` in `docs/prompts/briefs/frontend-agent-4.md`. | 2026-04-25 BST |
 | 133 | DONE | Orchestrator Agent | Review QA/Validation Agent Brief 1 gap report at `docs/validation/validation-gap-report-1.md` and mark tasks 117, 118, 129 complete. | 2026-04-25 BST |
 | 134 | DONE | Orchestrator Agent | Review Frontend Agent Brief 4 results; mark task 130 complete; update 105/112/113/119 status with CoinGecko key blocker. | 2026-04-25 BST |
+| 135 | TODO | Backend/Data Agent | Add opt-in live CoinGecko smoke step to `scripts/backend_smoke.py` gated on `COINGECKO_API_KEY`; fetch `bitcoin` price history, assert ≥90 PricePoints, assert latest date within 2 days of today; skip gracefully when key absent. |  |
+| 136 | TODO | Backend/Data Agent | Extend `scripts/backend_smoke.py` with deterministic edge-case coverage: multi-model artifact layout, missing-placeholder types, Download All zip exclusions, reconfigure-from-review-ready state, and re-run-after-reset lifecycle. |  |
+| 137 | DONE | Orchestrator Agent | Save the fifth Backend/Data Agent brief for tasks `064`, `135`, and `136` in `docs/prompts/briefs/backend-data-agent-5.md`. | 2026-04-25 BST |
 
 ## Potential Extensions Beyond V1
 
