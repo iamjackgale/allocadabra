@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-25 BST (tasks 064/135/136 DONE, task 138 added) |
+| last_updated | 2026-04-25 BST (task 119 unblocked — CoinGecko key confirmed valid) |
 
 # Task Tracker
 
@@ -134,7 +134,7 @@
 | 116 | DONE | Modelling Agent | Implement cooperative cancellation support for active modelling runs using a `cancel_check` callback and `modelling_cancelled` result shape. | 2026-04-24 07:54:20 BST |
 | 117 | DONE | QA/Validation Agent | Convert `docs/validation/frontend-validation.md` into repeatable frontend smoke checks. Script at `scripts/frontend_smoke.py`. | 2026-04-25 BST |
 | 118 | DONE | QA/Validation Agent | Add fixture-backed Review rendering validation using stored manifest and artifact samples. Script at `scripts/review_fixture_smoke.py`. | 2026-04-25 BST |
-| 119 | BLOCKED | Frontend Agent | Run full live end-to-end Streamlit validation. Perplexity key valid; CoinGecko key in `8fe0` `.env` returns 401 on price history endpoint. Blocked until key is replaced. |  |
+| 119 | TODO | Frontend Agent | Run full live end-to-end Streamlit validation. Both keys confirmed valid (CoinGecko live smoke passed 2026-04-25; Perplexity verified Brief 4). Unblocked. |  |
 | 120 | DONE | Frontend Agent | Pull latest `main`, adopt Backend task `092` validation issue codes, adopt Modelling cooperative cancellation, and report any remaining UI integration gaps. | 2026-04-24 13:41:50 BST |
 | 121 | DONE | Orchestrator Agent | Save the second Modelling Agent brief for tasks `069` and `070` in `docs/prompts/briefs/modelling-agent-2.md`. | 2026-04-24 08:04:58 BST |
 | 122 | DONE | Orchestrator Agent | Save the third Backend/Data Agent brief for task `082` in `docs/prompts/briefs/backend-data-agent-3.md`. | 2026-04-24 13:10:15 BST |
