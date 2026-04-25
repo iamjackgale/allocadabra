@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-24 07:15:35 BST |
-| last_updated | 2026-04-25 07:49:36 BST |
+| last_updated | 2026-04-25 BST (tasks 117, 118 — smoke scripts added) |
 | owner | QA/Validation Agent |
 | source_agent | Frontend Agent |
 
@@ -287,6 +287,96 @@ Then verify:
 - `Download All` and per-section downloads follow manifest availability.
 - Missing artifacts disable download controls with `This artifact was not generated for this run.`
 - Review chat receives visible context without showing injected context details to the user.
+
+## Repeatable Smoke Script (Task 117)
+
+Script: `scripts/frontend_smoke.py`
+
+Run: `uv run python scripts/frontend_smoke.py`
+
+Expected final line: `frontend smoke ok`
+
+### What it covers
+
+- **Step 1 — compile check.** Runs `compileall` over both `frontend/` and `app/` via
+  subprocess with `PYTHONPYCACHEPREFIX` set.
+- **Step 2 — import check.** Runs `sys.executable -c "import frontend.app, frontend.chat,
+  frontend.review, frontend.configuration, frontend.data, frontend.runtime,
+  frontend.modelling, frontend.theme, frontend.constants, frontend.dev_tools"` as a
+  subprocess to confirm all key frontend modules import without errors or `st` contamination.
+- **Step 3 — constants integrity.** Imports `frontend.constants` directly (no `st` calls at
+  module level) and asserts `METRIC_SPECS` is non-empty, `MODEL_LABELS` contains at minimum
+  `mean_variance`, `risk_parity`, and `hierarchical_risk_parity`, `REVIEW_SECTIONS` is
+  non-empty, and `PER_MODEL_REVIEW_SECTIONS` is non-empty.
+- **Step 4 — manual check summary.** Prints exact URLs for dev-flag paths that require
+  Streamlit running and cannot be automated without browser tooling.
+
+Note: `frontend` is not included in the project editable install (`pyproject.toml` includes
+only `app*`). The script adds the project root to `sys.path` before importing
+`frontend.constants` directly.
+
+### What remains manual
+
+All checks requiring a running Streamlit instance:
+
+```
+http://localhost:8501/?alloca_dev_no_ai_env=1           — missing-key Configuration error
+http://localhost:8501/?alloca_dev_review_fixture=brief3 — synthetic Review fixture
+http://localhost:8501/?alloca_dev_review_fixture=brief3&alloca_dev_no_ai_env=1 — fixture + missing-key
+```
+
+### Validation run (2026-04-25)
+
+- `uv run python scripts/frontend_smoke.py`: printed `frontend smoke ok`. Exit code `0`.
+- Compile check passed for `frontend/` and `app/`.
+- Import check passed for all ten frontend modules.
+- Constants integrity passed: `METRIC_SPECS` has 14 keys, `MODEL_LABELS` has 3 keys,
+  `REVIEW_SECTIONS` has 10 entries, `PER_MODEL_REVIEW_SECTIONS` has 7 entries.
+
+---
+
+## Fixture-Backed Review Rendering (Task 118)
+
+Script: `scripts/review_fixture_smoke.py`
+
+Run: `uv run python scripts/review_fixture_smoke.py`
+
+Expected final line: `review fixture smoke ok`
+
+### What it covers
+
+- **Step 1 — synthetic artifact files.** Writes three synthetic CSVs to
+  `/tmp/allocadabra-synthetic-review-fixture/`: `summary-metrics.csv` (2 model rows, all 14
+  V1 metric columns), `mean-variance-allocation-weights.csv`, and
+  `risk-parity-allocation-weights.csv` (2 asset rows each).
+- **Step 2 — export bundle.** Sets up workflow state (reset → update inputs → store plan →
+  confirm plan) and calls `prepare_review_export_bundle(...)` with the three synthetic
+  artifact descriptors, matching the structure used by `frontend/dev_tools.py`.
+- **Step 3 — manifest validation.** Calls `get_review_export_manifest()` and asserts: non-empty
+  dict, `artifacts` list present, all three synthetic IDs present, both model IDs in at least
+  one artifact, all available artifact paths exist on disk, `summary_metrics` has
+  `category="general"`, both allocation weights have `category="model"` and
+  `output_type="allocation_weights"`.
+- **Step 4 — summary metrics CSV.** Reads from manifest path and asserts: 2 rows, `model_id`
+  column contains `mean_variance` and `risk_parity`, all 14 V1 metric columns present, no
+  literal `nan` / `null` strings in any cell.
+- **Step 5 — allocation weights CSVs.** For each, asserts: `asset` and `weight` columns
+  present, 2 rows, weights numeric and in `[0, 1]`, weights sum within `0.001` of `1.0`.
+- **Step 6 — cleanup.** Calls `reset_configuration()` to clear model outputs state and removes
+  the synthetic temp directory.
+
+### Remaining gap
+
+Visual rendering of the fixture on the Review page requires Streamlit running. Use
+`http://localhost:8501/?alloca_dev_review_fixture=brief3` to confirm the fixture opens the
+Review pane correctly in a live session.
+
+### Validation run (2026-04-25)
+
+- `uv run python scripts/review_fixture_smoke.py`: printed `review fixture smoke ok`. Exit code `0`.
+- Manifest structure, artifact paths, CSV content, and allocation weight shapes all passed.
+
+---
 
 ## Known Validation Gaps
 

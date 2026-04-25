@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 12:02:46 BST |
-| last_updated | 2026-04-24 13:18:28 BST |
+| last_updated | 2026-04-25 BST (task 129 — extended smoke script added) |
 | owner | QA/Validation Agent |
 | source_agent | AI/Perplexity Agent |
 
@@ -532,6 +532,58 @@ Observed result:
 - Printed `config ok`.
 - Printed `review ok`.
 - Configuration and Review responses both returned non-empty text.
+
+## Repeatable Extended Smoke Script (Task 129)
+
+Script: `scripts/ai_smoke_extended.py`
+
+Run: `uv run python scripts/ai_smoke_extended.py`
+
+Expected final line: `ai smoke extended ok`
+
+### What it covers
+
+- **Step 1 — missing-key handling.** Removes `PERPLEXITY_API_KEY` from the process
+  environment and monkeypatches `app.ai.provider.load_dotenv_if_present` to a no-op,
+  then calls `send_configuration_chat(...)` with a neutral message that bypasses all
+  deterministic intercepts. Asserts `ok=False`, a non-empty `message`, and no raw Python
+  traceback text. Restores the original loader in a `finally` block.
+- **Step 2 — Configuration readiness intercept.** With one asset and no objective or risk
+  appetite, calls `send_configuration_chat("Can I run a model with what I have set up?")`,
+  which triggers `_looks_like_configuration_readiness_check` — a deterministic intercept
+  that never reaches the provider. Asserts `ok=True`, `kind="configuration_suggestion"`, and
+  `missing_required_fields` contains `treasury_objective` and `risk_appetite`.
+- **Step 3 — financial advice guardrail in Review mode.** Calls `mark_review_ready(...)` to
+  set phase to `review`, then calls `send_review_chat("Should I buy Bitcoin based on these
+  results?")`. Asserts `ok=True` and `message == get_fixed_financial_advice_refusal()`.
+- **Step 4 — unsupported-model intercept.** Calls `send_configuration_chat("Run
+  Black-Litterman for me.")`, which matches `user_requests_unsupported_model`. Asserts
+  `ok=True` and that the response does not instruct the user to use an unsupported model.
+- **Step 5 — metadata shape validation.** Runs `validate_modelling_plan` and
+  `validate_review_metadata` for supported and unsupported/future-only model IDs. Asserts
+  `looks_like_financial_advice` returns True for advice text and False for neutral text.
+- **Step 6 — context-selection smoke.** Runs the single-model narrowing assertion and the
+  multi-model comparison assertion from `ai-validation.md` as in-process checks.
+- **Step 7 — cleanup.** Calls `reset_configuration()` to leave storage in a clean state.
+
+### Remaining live-key-dependent gaps
+
+- Live Perplexity provider call verification requires `PERPLEXITY_API_KEY` in `.env`.
+- Synthetic Review chat with real AI responses (RM-1, RM-2, RM-3 from live UI pass) is not
+  covered by this script.
+- Generated-plan confirmation flow and modelling handoff after a real run are not covered.
+- Long-transcript behaviour across a full end-to-end workflow is not covered.
+
+### Validation run (2026-04-25)
+
+- `uv run python scripts/ai_smoke_extended.py`: printed `ai smoke extended ok`. Exit code `0`.
+- Missing-key handling returned `ok=False` without an uncaught exception.
+- Configuration readiness intercept returned `ok=True` with correct metadata shape.
+- Financial advice guardrail returned the fixed refusal exactly.
+- Unsupported-model intercept returned `ok=True` with a deflection message.
+- Metadata shape checks and context-selection assertions all passed.
+
+---
 
 ## Suggested QA Follow-Ups
 
