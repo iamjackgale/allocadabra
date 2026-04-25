@@ -31,6 +31,7 @@ ArtifactStatus = Literal["available", "missing", "failed", "disabled"]
 BUNDLE_FILENAME_PREFIX = "allocadabra-results"
 MODEL_ARTIFACT_PATH_PREFIX = "models"
 MISSING_ARTIFACT_PATH_PREFIX = "missing"
+MISSING_ARTIFACT_DEFAULT_REASON = "This artifact was not generated for this run."
 ZIP_FORMAT = "zip"
 
 
@@ -191,7 +192,7 @@ def get_individual_download_metadata(artifact_id: str) -> dict[str, Any]:
     return {
         "ok": False,
         "enabled": False,
-        "reason": "This artifact was not generated for this run.",
+        "reason": MISSING_ARTIFACT_DEFAULT_REASON,
         "artifact": None,
         "path": None,
     }
@@ -328,7 +329,7 @@ def _materialize_modelling_artifacts(rows: list[dict[str, Any]]) -> list[Artifac
                     artifact_id=entry.artifact_id,
                     label=entry.label,
                     output_type=entry.output_type,
-                    reason=entry.reason or "This artifact was not generated for this run.",
+                    reason=entry.reason or MISSING_ARTIFACT_DEFAULT_REASON,
                     model_id=entry.model_id,
                     required=False,
                 )
@@ -395,7 +396,7 @@ def _write_missing_artifacts(rows: list[dict[str, Any]]) -> list[ArtifactEntry]:
             artifact_id=str(row.get("artifact_id", "")),
             label=str(row.get("label", "Missing artifact")),
             output_type=str(row.get("output_type", "missing_artifact")),
-            reason=str(row.get("reason", "This artifact was not generated for this run.")),
+            reason=str(row.get("reason", MISSING_ARTIFACT_DEFAULT_REASON)),
             model_id=_optional_str(row.get("model_id")),
             required=bool(row.get("required", False)),
         )
@@ -446,7 +447,7 @@ def _artifact_entry_from_modelling_row(row: dict[str, Any]) -> ArtifactEntry:
     bundle_path = _bundle_path_for_artifact(row, artifact_id, fmt, category, model_id)
 
     if status != "available" and not reason:
-        reason = "This artifact was not generated for this run."
+        reason = MISSING_ARTIFACT_DEFAULT_REASON
 
     return ArtifactEntry(
         artifact_id=_safe_artifact_id(artifact_id),

@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-23 07:34:14 BST |
-| last_updated | 2026-04-25 07:55:07 BST |
+| last_updated | 2026-04-25 BST |
 | owner | QA/Validation Agent |
 | source_agent | Backend/Data Agent |
 
@@ -343,14 +343,62 @@ Expected result:
 - Prints `export smoke ok`.
 - Runtime export files under `storage/cache/model-outputs/` are intentionally ignored by `storage/cache/.gitignore`.
 
+### Extended Backend Smoke Script (tasks 135, 136)
+
+For tasks `135` and `136`, `scripts/backend_smoke.py` was extended with five deterministic export/session steps (136) and one opt-in live CoinGecko step (135).
+
+Commands run (task 136 — deterministic steps):
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall app/storage app/ingestion
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 scripts/backend_smoke.py
+uv lock --check
+rg -n '(<{7}|={7}|>{7})' .
+```
+
+All passed. Script output:
+
+```
+step 5 — multi-model layout ok
+step 6 — missing placeholder types ok
+step 7 — download all exclusions ok
+step 8 — reconfigure from review-ready ok
+step 9 — re-run after reset ok
+live coingecko smoke ok
+  latest=2026-04-25, count=365, days_behind=0
+backend smoke ok
+```
+
+New deterministic steps cover:
+
+- **Step 5 (multi-model layout):** Export bundle with artifacts for `mean_variance` and `risk_parity`. Asserts model artifacts land under `models/{model_id}/` and root artifacts (`summary-metrics.csv`, `manifest.json`) are not nested under a model path.
+- **Step 6 (missing placeholder types):** All three optional artifact types (`allocation_weights`, `efficient_frontier`, `chart_png`) absent from modelling output. Asserts each manifest entry has `status=missing`, `individual_download_enabled=False`, and placeholder text matches `MISSING_ARTIFACT_DEFAULT_REASON` imported from `app.storage.export_bundle`.
+- **Step 7 (download all exclusions):** Multi-model bundle. Asserts `get_review_download_all()` zip excludes `coingecko/` paths and chat transcripts, and includes all available model-specific artifacts.
+- **Step 8 (reconfigure from review-ready):** After `prepare_review_export_bundle`, calls `reset_configuration()`. Asserts phase is no longer `review` and `get_review_export_manifest()` returns `None`.
+- **Step 9 (re-run after reset):** Full lifecycle run A → reset → run B with fresh data. Asserts run B manifest contains `run_b_summary` but not `run_a_summary`, confirming independence.
+
+### Live CoinGecko Smoke (tasks 135, 064)
+
+Task `135` adds an opt-in live step gated on `COINGECKO_API_KEY` presence. When the key is absent the script prints `COINGECKO_API_KEY not set — skipping live coingecko smoke` and exits `0`.
+
+Live run result (2026-04-25, worktree `c0c4`):
+
+- `COINGECKO_API_KEY` present in repo-root `.env` (length 27, Demo plan key).
+- `client.fetch_market_chart("bitcoin")` returned **365 price points**.
+- Latest `PricePoint.date`: **2026-04-25** (today's UTC date).
+- `days_behind=0` — latest point is current-day data.
+
+### Task 064 — Freshness Tolerance Conclusion
+
+**Status: DONE — no change required.**
+
+Live evidence (2026-04-25): CoinGecko returned 365 daily points for bitcoin with the latest date equal to today's UTC date (`days_behind=0`). The API publishes prior-UTC-day data approximately 10 minutes after midnight UTC; in edge cases the latest available point may therefore be 1 day behind. The current 2-day tolerance correctly covers this edge case with one day of margin. Tightening to 1 day would leave no margin for the 10-minute publication window or any transient delay. **The 2-day tolerance is confirmed correct for V1.**
+
 ## Known Validation Gaps
 
-- No live CoinGecko API request was run because that requires a real `COINGECKO_API_KEY` in `.env`.
-- Live price-cache freshness validation remains blocked until `COINGECKO_API_KEY` is available through repo-root `.env` or the shell environment.
 - No automated test suite or fixture-based unit tests exist yet.
 - No Streamlit/frontend integration checks exist yet.
 - No full modelling-agent integration checks exist yet for consuming cached price history or handing off the complete output artifact set.
-- Export checks use a dummy Modelling-produced CSV, not the full final model artifact matrix.
 - `scripts/backend_smoke.py` is a smoke script, not a formal test suite; QA should decide whether to convert it to the selected project test pattern.
 
 ## Suggested QA Follow-Ups
