@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-24 07:15:35 BST |
-| last_updated | 2026-04-25 BST (tasks 117, 118 — smoke scripts added) |
+| last_updated | 2026-04-25 BST (tasks 112, 113, 105, 119 — live full run verified) |
 | owner | QA/Validation Agent |
 | source_agent | Frontend Agent |
 
@@ -387,6 +387,116 @@ Review pane correctly in a live session.
 - Backend/Data task `092` is still required for stronger deterministic issue-code coverage around unsupported model IDs and impossible constraint combinations.
 - The current modelling contract has no cooperative cancellation signal, so frontend `Cancel` abandons the workflow/UI and ignores in-flight results but cannot stop the underlying modelling thread mid-run.
 - Review metrics currently display `NaN`/unavailable values according to the current modelling artifact output; Modelling task `069` still owns stronger unavailable-reason output.
+
+## Task 130 — Deprecated API Fixes
+
+Identified all `use_container_width` usages in the frontend:
+
+- `frontend/configuration.py`: 11 usages with `use_container_width=True`, 1 with `use_container_width=False`.
+- `frontend/modelling.py`: 8 usages with `use_container_width=True`.
+- `frontend/review.py`: 10 usages with `use_container_width=True`, 5 with `use_container_width=False`.
+- `frontend/chat.py`: 1 usage with `use_container_width=True`.
+
+All named components (`st.button`, `st.download_button`, `st.plotly_chart`, `st.dataframe`, `st.image`) have deprecated `use_container_width` in Streamlit 1.56.0. Replacement confirmed from Streamlit source (`elements/widgets/button.py`, `plotly_chart.py`, `arrow.py`, `image.py`).
+
+Replacements applied:
+
+- `use_container_width=True` → `width="stretch"` across all four frontend files.
+- `use_container_width=False` → `width="content"` across configuration and review files.
+
+Compile check after fix: `python3 -m compileall frontend app` passed. Streamlit 1.56.0 startup after fix: no deprecation warnings in terminal output.
+
+---
+
+## Task 112 — Live AI Chat Verification
+
+Verified via direct Python-level calls to `app.ai.data_api` with live Perplexity credentials.
+
+**Configuration Mode:**
+
+- Live chat call for `What portfolio model should I choose for a medium risk appetite?`: returned `ok=True`, response referenced the user's configuration (objective, assets, models), educational tone, no financial advice.
+- Financial advice refusal (GR-1): sent `Should I buy Bitcoin based on my current plan?`. Response was the fixed financial-advice refusal text from `get_fixed_financial_advice_refusal()`. Confirmed fixed text matched exactly.
+- Missing-key path: previously confirmed in Brief 3 (UI shows `Perplexity is not configured...`, retry available, no traceback).
+
+**Review Mode (real run data):**
+
+- After a successful full modelling run with BTC/ETH, sent `Compare the two models in terms of drawdown` with real summary metrics as visible context. Response: "In terms of drawdown, the Risk Parity model is less severe than the Mean Variance model: its maximum drawdown is about −54% versus −62% for Mean Variance, and its average drawdown is roughly −23% versus −28%..." — correctly cites real metric values.
+- No context payload strings (`visible_context`, `detailed_context`, `chart_table_headers`, `visible_table_data`, `open_expander_ids`) appeared in AI response.
+
+**Review opening (real run):** `generate_review_opening` returned educational comparison paragraph referencing actual model outputs and ranking summary, no financial advice, correct recommendation phrasing ("ranks first because...").
+
+**UI-level loading state and chat history persistence:** Requires browser interaction — not verified in this automated pass.
+
+---
+
+## Task 113 — Live Review Context Verification
+
+Verified via direct Python-level `send_review_chat` calls with real model output data from the full live run.
+
+**Allocation weights context (Risk Parity, real data):**
+
+- Real allocation from CSV: `BTC_price=0.628907`, `ETH_price=0.371093`.
+- Sent `What percentage is Bitcoin allocated in this model?` with visible context from actual allocation-weights.csv.
+- Response: "In the Risk Parity model currently in view, Bitcoin is allocated approximately 62.9% of the portfolio weight, with Ethereum making up the remaining 37.1%." — matches actual CSV value to 1 decimal place.
+
+**Summary metrics context (max drawdown comparison, real data):**
+
+- Real metrics: Mean Variance max drawdown −62.3%, Risk Parity −54.0%.
+- Sent `Which model has the lower max drawdown?` with real summary metrics as visible context.
+- Response cited actual values (−54% and −62%), identified Risk Parity as lower.
+
+**Context leakage check:**
+
+- Both responses checked for `visible_context`, `detailed_context`, `chart_table_headers`, `visible_table_data`, `open_expander_ids`: none found in either response.
+
+Both comparative (summary metrics) and per-model (allocation weights) sections pass context correctly with real data.
+
+---
+
+## Task 105 / 119 — Full Live End-to-End Smoke
+
+### Credentials
+
+Both `COINGECKO_API_KEY` (27-char Demo key) and `PERPLEXITY_API_KEY` are set in the `8fe0` worktree `.env`. Both are valid and used in this pass.
+
+### Path 1 — Happy Path (satisfies task 119)
+
+Completed via Python pipeline (equivalent to the UI flow, same app-layer callables):
+
+1. `reset_configuration()` — clean state.
+2. `update_active_inputs(BTC, ETH, Stable performance, Medium, Mean Variance + Risk Parity)` — configuration set.
+3. `validate_active_configuration()` → `valid=True`.
+4. `generate_modelling_plan(...)` — Perplexity plan generated. Plan markdown contains Objective, Risk Appetite, Selected Assets, Constraints, Selected Models, Data Window.
+5. `confirm_generated_plan()` → plan status `confirmed`.
+6. `run_active_modelling(progress_callback=...)` — all 6 phases completed in sequence:
+   - `[validation] completed: Configuration is ready for modelling.`
+   - `[ingestion] completed: Price histories are ready.` (365 real daily CoinGecko prices for BTC + ETH)
+   - `[datasets] completed: Modelling dataset has been prepared.` (365 rows, 2 columns, 0 missing)
+   - `[modelling] completed: Selected model runs are complete.`
+   - `[analysis] completed: Metrics and chart data are ready.`
+   - `[outputs] completed: Model output artifacts are ready.`
+7. Result: `ok=True`, `successful_models=['mean_variance', 'risk_parity']`, `failed_models=[]`, `errors=[]`, 25 artifacts, 0 missing.
+8. `prepare_review_export_bundle(modelling_artifacts=..., ...)` — exports created, workflow phase set to `review`.
+9. Bundle `allocadabra-results-20260425-1844.zip` (650.8 KB) created, opened cleanly with 28 files in correct layout:
+   - General: `canonical-modelling-dataset.csv`, `modelling-plan.md`, `user-inputs.json`, `manifest.json`, `summary-metrics.csv`, `summary-metric-unavailable-reasons.csv`.
+   - Per-model: `models/mean_variance/` and `models/risk_parity/` each with CSVs and PNGs.
+10. Streamlit app started at `http://localhost:8501` with `phase=review` in persisted workflow — app opens directly in Review.
+
+Individual artifact downloads verified: allocation-weights CSV (75 bytes), drawdown PNG (80 KB), modelling-plan MD — all readable.
+
+Summary metrics (real run): Mean Variance total return +29.3%, max drawdown −62.3%, Sharpe 0.41; Risk Parity total return −1.1%, max drawdown −54.0%, Sharpe −0.02. Volatility lower for Risk Parity (51% vs 72% annualized).
+
+Task 119 marked complete: full live run completed with real CoinGecko prices and real Perplexity AI responses.
+
+### Path 2 — Deterministic Validation Failure
+
+`validate_active_configuration()` with 1 asset returns `valid=False`, issue `field=selected_assets, code=too_few_assets, message=Select at least 2 assets before generating a modelling plan.` Frontend wires this to chat feedback area — no Perplexity call made before validation.
+
+### Paths 3, 4, 5 — Cancel, Missing Artifact, Start New Model
+
+Require active browser interaction (Cancel during live thread, reading dialog copy, Start New Model confirmation). Not verified in this automated pass. No missing artifacts appeared in this run (Path 4 not applicable).
+
+---
 
 ## Suggested QA Follow-Ups
 

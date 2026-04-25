@@ -67,7 +67,7 @@ def _render_live_modelling_fragment(workflow: dict[str, Any]) -> None:
     _render_progress(progress_events)
     _render_live_status(progress_events)
 
-    if st.button("Cancel", use_container_width=True):
+    if st.button("Cancel", width="stretch"):
         request_confirmation(
             "cancel_modelling",
             "This abandons the current modelling run, deletes partial outputs, and returns to Configuration with your previous options selected.",
@@ -95,11 +95,11 @@ def _render_run_result(workflow: dict[str, Any]) -> None:
 
     cols = st.columns(2)
     with cols[0]:
-        if st.button("Retry Run", type="primary", use_container_width=True):
+        if st.button("Retry Run", type="primary", width="stretch"):
             start_modelling_run()
             st.rerun()
     with cols[1]:
-        if st.button("Cancel", use_container_width=True):
+        if st.button("Cancel", width="stretch"):
             request_confirmation(
                 "cancel_modelling",
                 "This abandons the current modelling run, deletes partial outputs, and returns to Configuration with your previous options selected.",
@@ -155,12 +155,12 @@ def _render_interrupted_state() -> None:
     )
     cols = st.columns(2)
     with cols[0]:
-        if st.button("Return To Configuration", use_container_width=True):
+        if st.button("Return To Configuration", width="stretch"):
             abandon_generated_plan()
             clear_modelling_run()
             st.rerun()
     with cols[1]:
-        if st.button("Restart Run", type="primary", use_container_width=True):
+        if st.button("Restart Run", type="primary", width="stretch"):
             start_modelling_run()
             st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
@@ -172,7 +172,7 @@ def _render_review_gate() -> None:
     st.success("Review artifacts are ready.")
     st.markdown("### Review Results")
     st.caption("Modelling completed. Failed models, if any, will be marked in Review.")
-    if st.button("Review Results", type="primary", use_container_width=True):
+    if st.button("Review Results", type="primary", width="stretch"):
         set_review_gate_pending(False)
         clear_modelling_run()
         st.rerun()
@@ -194,12 +194,12 @@ def _render_confirmation_panel() -> None:
     st.warning(confirmation["message"])
     cols = st.columns(2)
     with cols[0]:
-        if st.button("Confirm cancellation", type="primary", use_container_width=True):
+        if st.button("Confirm cancellation", type="primary", width="stretch"):
             clear_confirmation()
             cancel_modelling_run()
             st.rerun()
     with cols[1]:
-        if st.button("Continue modelling", use_container_width=True):
+        if st.button("Continue modelling", width="stretch"):
             clear_confirmation()
             st.rerun()
 

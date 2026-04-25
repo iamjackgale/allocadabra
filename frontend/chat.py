@@ -63,7 +63,7 @@ def render_chat_panel(
     if retry_message:
         retry_col, _ = st.columns([1, 3])
         with retry_col:
-            if st.button("Retry last message", key=f"{mode}_retry", use_container_width=True, disabled=chat_disabled):
+            if st.button("Retry last message", key=f"{mode}_retry", width="stretch", disabled=chat_disabled):
                 with st.spinner("Waiting for AI response..."):
                     _submit_message(
                         mode=mode,
