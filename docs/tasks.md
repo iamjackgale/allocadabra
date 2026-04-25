@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-25 BST (tasks 135–137 added, backend brief 5) |
+| last_updated | 2026-04-25 BST (tasks 064/135/136 DONE, task 138 added) |
 
 # Task Tracker
 
@@ -79,7 +79,7 @@
 | 061 | DONE | Orchestrator Agent | Decide `uv.lock` version-control policy, document it, and commit the lockfile for reproducible local installs. | 2026-04-23 09:40:39 BST |
 | 062 | DONE | Backend/Data Agent | Document Backend/Data validation handoff and verification commands in `docs/validation/backend-validation.md` for QA review. | 2026-04-23 12:04:56 BST |
 | 063 | DONE | Backend/Data Agent | Document the V1 CoinGecko retry, timeout, and rate-limit policy in `docs/specs/data-backend/coingecko-api.md` to match the implemented client behaviour. | 2026-04-23 12:45:16 BST |
-| 064 | BLOCKED | Backend/Data Agent | Revisit the 2-day CoinGecko price-cache freshness tolerance after live Streamlit/runtime integration and tighten it if validation shows stale data risk. Blocked until `COINGECKO_API_KEY` is available for live cache/freshness validation. |  |
+| 064 | DONE | Backend/Data Agent | Revisit the 2-day CoinGecko price-cache freshness tolerance after live Streamlit/runtime integration and tighten it if validation shows stale data risk. Live run (2026-04-25): 365 daily points, latest=today, days_behind=0. 2-day tolerance confirmed correct for V1. | 2026-04-25 BST |
 | 065 | DONE | Modelling Agent | Create `docs/validation/modelling-validation.md` documenting solver/runtime feasibility and modelling export artifact smoke checks. | 2026-04-23 12:05:03 BST |
 | 066 | DONE | Modelling Agent | Define and implement the frontend-callable modelling run interface for active workflow model execution, including return shape for successful models, failed models, artifact metadata, and user-facing errors. | 2026-04-23 19:36:15 BST |
 | 067 | DONE | Modelling Agent | Add structured modelling progress callback/event support aligned to Modelling Phase checkpoints: Validation, Ingestion, Datasets, Modelling, Analysis, and Outputs. | 2026-04-23 19:36:15 BST |
@@ -150,9 +150,10 @@
 | 132 | DONE | Orchestrator Agent | Save the fourth Frontend Agent brief for tasks `105`, `112`, `113`, `119`, and `130` in `docs/prompts/briefs/frontend-agent-4.md`. | 2026-04-25 BST |
 | 133 | DONE | Orchestrator Agent | Review QA/Validation Agent Brief 1 gap report at `docs/validation/validation-gap-report-1.md` and mark tasks 117, 118, 129 complete. | 2026-04-25 BST |
 | 134 | DONE | Orchestrator Agent | Review Frontend Agent Brief 4 results; mark task 130 complete; update 105/112/113/119 status with CoinGecko key blocker. | 2026-04-25 BST |
-| 135 | TODO | Backend/Data Agent | Add opt-in live CoinGecko smoke step to `scripts/backend_smoke.py` gated on `COINGECKO_API_KEY`; fetch `bitcoin` price history, assert ≥90 PricePoints, assert latest date within 2 days of today; skip gracefully when key absent. |  |
-| 136 | TODO | Backend/Data Agent | Extend `scripts/backend_smoke.py` with deterministic edge-case coverage: multi-model artifact layout, missing-placeholder types, Download All zip exclusions, reconfigure-from-review-ready state, and re-run-after-reset lifecycle. |  |
+| 135 | DONE | Backend/Data Agent | Add opt-in live CoinGecko smoke step to `scripts/backend_smoke.py` gated on `COINGECKO_API_KEY`; fetch `bitcoin` price history, assert ≥90 PricePoints, assert latest date within 2 days of today; skip gracefully when key absent. Live run: 365 points, days_behind=0. | 2026-04-25 BST |
+| 136 | DONE | Backend/Data Agent | Extend `scripts/backend_smoke.py` with deterministic edge-case coverage: multi-model artifact layout, missing-placeholder types, Download All zip exclusions, reconfigure-from-review-ready state, and re-run-after-reset lifecycle. All 5 steps pass. | 2026-04-25 BST |
 | 137 | DONE | Orchestrator Agent | Save the fifth Backend/Data Agent brief for tasks `064`, `135`, and `136` in `docs/prompts/briefs/backend-data-agent-5.md`. | 2026-04-25 BST |
+| 138 | DONE | Orchestrator Agent | Review Backend/Data Agent Brief 5 results; mark tasks 064, 135, 136 complete. | 2026-04-25 BST |
 
 ## Potential Extensions Beyond V1
 
