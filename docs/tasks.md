@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-25 (2) BST |
+| last_updated | 2026-04-25 BST (tasks 117/118/129 DONE, task 133 added) |
 
 # Task Tracker
 
@@ -132,9 +132,9 @@
 | 114 | DONE | AI/Perplexity Agent | Run a live transcript-quality review for Configuration and Review modes and prepare the gap list for Orchestrator review (blocks task 115) per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 115 | DONE | Orchestrator Agent | Review live AI behaviour against specs once task 114 is complete; decide whether gaps become follow-up tasks before QA and demo prep per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:51:42 BST |
 | 116 | DONE | Modelling Agent | Implement cooperative cancellation support for active modelling runs using a `cancel_check` callback and `modelling_cancelled` result shape. | 2026-04-24 07:54:20 BST |
-| 117 | TODO | QA/Validation Agent | Convert `docs/validation/frontend-validation.md` into repeatable frontend smoke checks once the project test pattern is selected. |  |
-| 118 | TODO | QA/Validation Agent | Add fixture-backed Review rendering validation using stored manifest and artifact samples. |  |
-| 119 | TODO | Frontend Agent | Run full live end-to-end Streamlit validation once `COINGECKO_API_KEY` and `PERPLEXITY_API_KEY` are configured. |  |
+| 117 | DONE | QA/Validation Agent | Convert `docs/validation/frontend-validation.md` into repeatable frontend smoke checks. Script at `scripts/frontend_smoke.py`. | 2026-04-25 BST |
+| 118 | DONE | QA/Validation Agent | Add fixture-backed Review rendering validation using stored manifest and artifact samples. Script at `scripts/review_fixture_smoke.py`. | 2026-04-25 BST |
+| 119 | TODO | Frontend Agent | Run full live end-to-end Streamlit validation. Both API keys now set in `8fe0` worktree; unblocked. Covered by task `105` in Brief 4. |  |
 | 120 | DONE | Frontend Agent | Pull latest `main`, adopt Backend task `092` validation issue codes, adopt Modelling cooperative cancellation, and report any remaining UI integration gaps. | 2026-04-24 13:41:50 BST |
 | 121 | DONE | Orchestrator Agent | Save the second Modelling Agent brief for tasks `069` and `070` in `docs/prompts/briefs/modelling-agent-2.md`. | 2026-04-24 08:04:58 BST |
 | 122 | DONE | Orchestrator Agent | Save the third Backend/Data Agent brief for task `082` in `docs/prompts/briefs/backend-data-agent-3.md`. | 2026-04-24 13:10:15 BST |
@@ -144,9 +144,11 @@
 | 126 | DONE | Orchestrator Agent | Save the third AI/Perplexity Agent brief for live integration tasks `107`, `108`, `109`, `110`, `111`, and `114` in `docs/prompts/briefs/ai-perplexity-agent-3.md`. | 2026-04-24 13:46:50 BST |
 | 127 | DONE | Orchestrator Agent | Save the third Frontend Agent brief for tasks `105`, `112`, `113`, and `119` in `docs/prompts/briefs/frontend-agent-3.md`. | 2026-04-24 13:48:34 BST |
 | 128 | DONE | Orchestrator Agent | Save the fourth Backend/Data Agent brief for tasks `064`, `083`, and `103` in `docs/prompts/briefs/backend-data-agent-4.md`. | 2026-04-25 07:44:37 BST |
-| 129 | TODO | QA/Validation Agent | Convert AI live and fixture checks into repeatable validation coverage for missing-key handling, synthetic Review chat, guardrail intercepts, metadata shape, and representative free-form Configuration prompts. |  |
-| 130 | TODO | Frontend Agent | Replace deprecated Streamlit `use_container_width` usage with current API equivalents to remove non-blocking runtime warnings before demo prep. |  |
-| 131 | DONE | Orchestrator Agent | Save the first QA/Validation Agent brief covering tasks `117`, `118`, `129`, and the validation gap review in `docs/prompts/briefs/qa-validation-agent-1.md`. | 2026-04-25 BST |
+| 129 | DONE | QA/Validation Agent | Convert AI live and fixture checks into repeatable validation coverage for missing-key handling, guardrail intercepts, metadata shape, and context selection. Script at `scripts/ai_smoke_extended.py`. | 2026-04-25 BST |
+| 130 | TODO | Frontend Agent | Replace deprecated Streamlit `use_container_width` usage with current API equivalents to remove non-blocking runtime warnings before demo prep. |
+| 131 | DONE | Orchestrator Agent | Save the first QA/Validation Agent brief for tasks 117, 118, 129, and the validation gap review in `docs/prompts/briefs/qa-validation-agent-1.md`. | 2026-04-25 BST |
+| 132 | DONE | Orchestrator Agent | Save the fourth Frontend Agent brief for tasks `105`, `112`, `113`, `119`, and `130` in `docs/prompts/briefs/frontend-agent-4.md`. | 2026-04-25 BST |
+| 133 | DONE | Orchestrator Agent | Review QA/Validation Agent Brief 1 gap report at `docs/validation/validation-gap-report-1.md` and mark tasks 117, 118, 129 complete. | 2026-04-25 BST |
 
 ## Potential Extensions Beyond V1
 
