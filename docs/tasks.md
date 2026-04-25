@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-25 BST |
+| last_updated | 2026-04-25 (2) BST |
 
 # Task Tracker
 
@@ -146,6 +146,7 @@
 | 128 | DONE | Orchestrator Agent | Save the fourth Backend/Data Agent brief for tasks `064`, `083`, and `103` in `docs/prompts/briefs/backend-data-agent-4.md`. | 2026-04-25 07:44:37 BST |
 | 129 | TODO | QA/Validation Agent | Convert AI live and fixture checks into repeatable validation coverage for missing-key handling, synthetic Review chat, guardrail intercepts, metadata shape, and representative free-form Configuration prompts. |  |
 | 130 | TODO | Frontend Agent | Replace deprecated Streamlit `use_container_width` usage with current API equivalents to remove non-blocking runtime warnings before demo prep. |  |
+| 131 | DONE | Orchestrator Agent | Save the first QA/Validation Agent brief covering tasks `117`, `118`, `129`, and the validation gap review in `docs/prompts/briefs/qa-validation-agent-1.md`. | 2026-04-25 BST |
 
 ## Potential Extensions Beyond V1
 
