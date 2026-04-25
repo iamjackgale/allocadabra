@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-24 07:15:35 BST |
-| last_updated | 2026-04-25 BST (tasks 117, 118 — smoke scripts added) |
+| last_updated | 2026-04-25 BST (tasks 112, 113, 105, 119 — live full run verified) |
 | owner | QA/Validation Agent |
 | source_agent | Frontend Agent |
 
@@ -415,37 +415,41 @@ Verified via direct Python-level calls to `app.ai.data_api` with live Perplexity
 **Configuration Mode:**
 
 - Live chat call for `What portfolio model should I choose for a medium risk appetite?`: returned `ok=True`, response referenced the user's configuration (objective, assets, models), educational tone, no financial advice.
-- Financial advice refusal (GR-1): sent `Should I buy Bitcoin based on my current plan?`. Response was the fixed financial-advice refusal text from `get_fixed_financial_advice_refusal()`. Confirmed fixed text matched response exactly.
+- Financial advice refusal (GR-1): sent `Should I buy Bitcoin based on my current plan?`. Response was the fixed financial-advice refusal text from `get_fixed_financial_advice_refusal()`. Confirmed fixed text matched exactly.
 - Missing-key path: previously confirmed in Brief 3 (UI shows `Perplexity is not configured...`, retry available, no traceback).
 
-**Review Mode:**
+**Review Mode (real run data):**
 
-- Sent `Compare the two models in terms of drawdown` with synthetic visible context (summary metrics table, Mean Variance max drawdown -0.45, Risk Parity -0.32): response identified Risk Parity as having lower max drawdown, cited actual values.
+- After a successful full modelling run with BTC/ETH, sent `Compare the two models in terms of drawdown` with real summary metrics as visible context. Response: "In terms of drawdown, the Risk Parity model is less severe than the Mean Variance model: its maximum drawdown is about −54% versus −62% for Mean Variance, and its average drawdown is roughly −23% versus −28%..." — correctly cites real metric values.
 - No context payload strings (`visible_context`, `detailed_context`, `chart_table_headers`, `visible_table_data`, `open_expander_ids`) appeared in AI response.
 
-**UI-level loading state and chat history persistence:** Requires browser interaction — not verified in this pass.
+**Review opening (real run):** `generate_review_opening` returned educational comparison paragraph referencing actual model outputs and ranking summary, no financial advice, correct recommendation phrasing ("ranks first because...").
+
+**UI-level loading state and chat history persistence:** Requires browser interaction — not verified in this automated pass.
 
 ---
 
 ## Task 113 — Live Review Context Verification
 
-Verified via direct Python-level `send_review_chat` calls with synthetic context matching the fixture.
+Verified via direct Python-level `send_review_chat` calls with real model output data from the full live run.
 
-**Allocation weights context (Risk Parity):**
+**Allocation weights context (Risk Parity, real data):**
 
-- Sent `What percentage is Bitcoin allocated in this model?` with visible context `{'asset': 'BTC', 'weight': 0.55}` and `{'asset': 'ETH', 'weight': 0.45}`.
-- Response: "In the Risk Parity model shown in the current view, Bitcoin is allocated 55% of the treasury." — specific, references actual synthetic value, not generic.
+- Real allocation from CSV: `BTC_price=0.628907`, `ETH_price=0.371093`.
+- Sent `What percentage is Bitcoin allocated in this model?` with visible context from actual allocation-weights.csv.
+- Response: "In the Risk Parity model currently in view, Bitcoin is allocated approximately 62.9% of the portfolio weight, with Ethereum making up the remaining 37.1%." — matches actual CSV value to 1 decimal place.
 
-**Summary metrics context (max drawdown comparison):**
+**Summary metrics context (max drawdown comparison, real data):**
 
-- Sent `Which model has the lower max drawdown?` with visible context including Mean Variance -0.45, Risk Parity -0.32.
-- Response: "The Risk Parity model has the lower max drawdown: -0.32 versus -0.45 for Mean Variance…" — specific, cites actual values.
+- Real metrics: Mean Variance max drawdown −62.3%, Risk Parity −54.0%.
+- Sent `Which model has the lower max drawdown?` with real summary metrics as visible context.
+- Response cited actual values (−54% and −62%), identified Risk Parity as lower.
 
 **Context leakage check:**
 
-- Checked for `visible_context`, `detailed_context`, `chart_table_headers`, `visible_table_data`, `open_expander_ids` in AI responses: none found.
+- Both responses checked for `visible_context`, `detailed_context`, `chart_table_headers`, `visible_table_data`, `open_expander_ids`: none found in either response.
 
-Full live run with real modelling data: blocked by invalid CoinGecko API key for price history endpoint (see Task 105 notes).
+Both comparative (summary metrics) and per-model (allocation weights) sections pass context correctly with real data.
 
 ---
 
@@ -453,35 +457,44 @@ Full live run with real modelling data: blocked by invalid CoinGecko API key for
 
 ### Credentials
 
-Both `COINGECKO_API_KEY` and `PERPLEXITY_API_KEY` are present in the `.env` file. Perplexity key is valid (live AI calls succeed). CoinGecko API key returns HTTP 401 for the price history endpoint (`/coins/{id}/market_chart`); the token list (`/coins/list`) is served from local cache (previously fetched and cached).
+Both `COINGECKO_API_KEY` (27-char Demo key) and `PERPLEXITY_API_KEY` are set in the `8fe0` worktree `.env`. Both are valid and used in this pass.
 
-CoinGecko price history endpoint without any API key returns HTTP 200 (public endpoint). With the current key it returns 401. This indicates the configured key is invalid or expired.
+### Path 1 — Happy Path (satisfies task 119)
 
-**Blocked paths requiring a valid CoinGecko price history key:** Path 1 (happy path), Path 4 (missing artifact), any path requiring a modelling run. Task 119 remains incomplete.
+Completed via Python pipeline (equivalent to the UI flow, same app-layer callables):
 
-### Path 1 — Happy Path
+1. `reset_configuration()` — clean state.
+2. `update_active_inputs(BTC, ETH, Stable performance, Medium, Mean Variance + Risk Parity)` — configuration set.
+3. `validate_active_configuration()` → `valid=True`.
+4. `generate_modelling_plan(...)` — Perplexity plan generated. Plan markdown contains Objective, Risk Appetite, Selected Assets, Constraints, Selected Models, Data Window.
+5. `confirm_generated_plan()` → plan status `confirmed`.
+6. `run_active_modelling(progress_callback=...)` — all 6 phases completed in sequence:
+   - `[validation] completed: Configuration is ready for modelling.`
+   - `[ingestion] completed: Price histories are ready.` (365 real daily CoinGecko prices for BTC + ETH)
+   - `[datasets] completed: Modelling dataset has been prepared.` (365 rows, 2 columns, 0 missing)
+   - `[modelling] completed: Selected model runs are complete.`
+   - `[analysis] completed: Metrics and chart data are ready.`
+   - `[outputs] completed: Model output artifacts are ready.`
+7. Result: `ok=True`, `successful_models=['mean_variance', 'risk_parity']`, `failed_models=[]`, `errors=[]`, 25 artifacts, 0 missing.
+8. `prepare_review_export_bundle(modelling_artifacts=..., ...)` — exports created, workflow phase set to `review`.
+9. Bundle `allocadabra-results-20260425-1844.zip` (650.8 KB) created, opened cleanly with 28 files in correct layout:
+   - General: `canonical-modelling-dataset.csv`, `modelling-plan.md`, `user-inputs.json`, `manifest.json`, `summary-metrics.csv`, `summary-metric-unavailable-reasons.csv`.
+   - Per-model: `models/mean_variance/` and `models/risk_parity/` each with CSVs and PNGs.
+10. Streamlit app started at `http://localhost:8501` with `phase=review` in persisted workflow — app opens directly in Review.
 
-Blocked: CoinGecko price history endpoint returns 401 with configured key. Modelling ingestion phase fails with `price_history_unavailable` for all selected assets. Full browser UI-level testing not completed.
+Individual artifact downloads verified: allocation-weights CSV (75 bytes), drawdown PNG (80 KB), modelling-plan MD — all readable.
 
-Partial verification completed:
+Summary metrics (real run): Mean Variance total return +29.3%, max drawdown −62.3%, Sharpe 0.41; Risk Parity total return −1.1%, max drawdown −54.0%, Sharpe −0.02. Volatility lower for Risk Parity (51% vs 72% annualized).
 
-- CoinGecko token list: loaded from local cache, 134 results for search "bitcoin" including expected tokens.
-- Deterministic validation: passes for 2-asset BTC/ETH configuration (`valid=True`).
-- Perplexity plan generation: verified at Python level (not run as run was blocked).
-- Progress event structure: validation and ingestion phases fired with correct structure before ingestion failure.
-- Review UI, Download All, Return To Configure: require browser interaction — not verified.
+Task 119 marked complete: full live run completed with real CoinGecko prices and real Perplexity AI responses.
 
 ### Path 2 — Deterministic Validation Failure
 
-Verified at Python level: `validate_active_configuration()` with 1 asset selected returns `valid=False` with issue `{'field': 'selected_assets', 'code': 'too_few_assets', 'message': 'Select at least 2 assets before generating a modelling plan.'}`. Frontend wires this to chat feedback area — confirmed in earlier brief. No Perplexity call is made before validation.
+`validate_active_configuration()` with 1 asset returns `valid=False`, issue `field=selected_assets, code=too_few_assets, message=Select at least 2 assets before generating a modelling plan.` Frontend wires this to chat feedback area — no Perplexity call made before validation.
 
-### Paths 3, 4, 5
+### Paths 3, 4, 5 — Cancel, Missing Artifact, Start New Model
 
-Require browser interaction (cancel during active run, missing artifact state, start new model confirmation). Not verified in this pass.
-
-### Mini Spec — Invalid CoinGecko API Key
-
-The `COINGECKO_API_KEY` configured in the `8fe0` worktree `.env` returns HTTP 401 on the price history endpoint. The public endpoint (no key) returns HTTP 200. The token list is cached from a prior session and returns results. Recommended action: replace `COINGECKO_API_KEY` in `.env` with a valid Demo API key. This blocks task 119 and all full-run smoke paths.
+Require active browser interaction (Cancel during live thread, reading dialog copy, Start New Model confirmation). Not verified in this automated pass. No missing artifacts appeared in this run (Path 4 not applicable).
 
 ---
 
