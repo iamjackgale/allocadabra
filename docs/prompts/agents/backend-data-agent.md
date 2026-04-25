@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:33:31 BST |
-| last_updated | 2026-04-22 22:27:16 BST |
+| last_updated | 2026-04-25 BST |
 | prompt_used | 2026-04-23 07:10:35 BST |
 
 # Backend/Data Agent Prompt
@@ -132,6 +132,22 @@ When assigned implementation or spec work, produce changes that make these bound
 - Modelling Agent consumes normalized price history and confirmed session state for dataset building and model execution.
 - QA/Validation Agent validates cache lifecycle, resume behaviour, export availability, and model-generation triggers.
 
-## Status
+## Completed Work
 
-Ready for detailed backend/data work, except for the shared dataset-building boundary that should be finalized with the Modelling Agent.
+All initial implementation tasks are complete. Key areas delivered:
+
+- CoinGecko token list and price history ingestion with local JSON cache under `/storage/cache/coingecko`.
+- Active workflow session state lifecycle in `app/storage/session_state.py`.
+- Deterministic configuration validation with structured issue codes in `app/storage/validation.py`.
+- Export bundle creation, artifact manifest, individual download metadata, and Download All zip in `app/storage/export_bundle.py`.
+- Frontend-callable data API layer in `app/storage/data_api.py`, including `list_token_options`, `fetch_price_history_for_assets`, `validate_active_configuration`, `prepare_review_export_bundle`, `get_review_export_manifest`, `get_review_download_all`, and `get_review_artifact_download`.
+- Backend/Modelling handoff smoke script at `scripts/backend_modelling_handoff_smoke.py`.
+- Validation results documented in `docs/validation/backend-validation.md`.
+
+## Open / Blocked Tasks
+
+- Task `064`: 2-day CoinGecko price-cache freshness tolerance validation is blocked until `COINGECKO_API_KEY` is configured in repo-root `.env`.
+
+## When Resuming
+
+When a new brief arrives, read `docs/tasks.md` and the assigned brief before taking any action. The dataset-building boundary with the Modelling Agent is now stable and implemented. No shared boundary conflicts remain.

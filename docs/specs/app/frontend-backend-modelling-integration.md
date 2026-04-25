@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-24 07:19:40 BST |
-| last_updated | 2026-04-24 07:42:52 BST |
+| last_updated | 2026-04-25 BST |
 
 # Frontend/Backend/Modelling Integration
 
@@ -211,3 +211,37 @@ Open validation checklist to refine:
 | Orchestrator Agent | Cross-agent contracts are consistent and no agent has taken ownership of another agent's folder or interface. |
 
 Frontend Agent should run the first integrated smoke test while implementing. QA/Validation Agent should later formalize repeatable checks.
+
+## Orchestrator Integration Review — 2026-04-25
+
+Completed Orchestrator review of the implemented Frontend/Backend/Modelling contracts against this spec (task `106`).
+
+### Findings
+
+No critical contract mismatches found. The implemented call chain aligns with the spec.
+
+Key verified points:
+
+| Area | Verdict |
+|---|---|
+| `run_active_modelling(...)` return shape | Correct. Returns `ok`, `successful_models`, `failed_models`, `artifacts`, `missing_artifacts`, `errors`, `user_message`, `progress_events`, `dataset_metadata`, `output_dir` as specified. |
+| `missing_artifacts` split | Correct. `app/processing/data_api.py` splits artifacts by `status == "missing"` and excludes `failed_models` output type before passing to Backend/Data. |
+| `prepare_review_export_bundle(...)` wiring | Correct. Frontend calls it in `drain_modelling_updates` with `modelling_artifacts`, `failed_models`, and `missing_artifacts` from the result payload. |
+| Progress phases | Correct. All six phases (`validation`, `ingestion`, `datasets`, `modelling`, `analysis`, `outputs`) are emitted. |
+| Partial success routing | Correct. `ok=True` when at least one model succeeds; `drain_modelling_updates` transitions to `review_ready` and gates on `Review Results`. |
+| Cancelled run cleanup | Correct. `cancel_event` is threaded through; `ModellingCancelled` result triggers status `cancelled` and temp output dir cleanup. |
+| Export manifest gating for Review | Correct. Review screen reads from the export manifest; `mark_review_ready` is called by `prepare_review_export_bundle`. |
+| Folder ownership | No cross-boundary violations found. Frontend owns `frontend/`, Backend owns `app/storage/`, Modelling owns `app/processing/`. |
+
+### Minor Design Gaps (not blocking QA start)
+
+| Gap | Impact | Disposition |
+|---|---|---|
+| `_render_run_result` always shows Retry, even for non-retryable validation/config failures. Spec distinguishes retryable (data/cache) vs non-retryable (invalid config) paths. | Low. Non-retryable errors do surface in the error display; `Cancel` effectively returns to Configuration. | Accept for V1. QA should verify user path via cancel in those cases. |
+| `user_message` from `run_active_modelling` is not shown in the zero-error fallback branch of `_render_run_result`. | Low. Only reached if `ok=False` with no errors (edge case). | Accept for V1. |
+
+### QA Start Gate
+
+Both minor gaps are acceptable for V1. QA/Validation Agent may start formalizing repeatable checks once task `041` (QA branch setup) is complete.
+
+Next step for QA: pick up tasks `117` and `118` first (deterministic frontend smoke and fixture-backed Review rendering), then `129` (AI live/fixture checks).

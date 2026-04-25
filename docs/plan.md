@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-23 09:40:39 BST |
+| last_updated | 2026-04-25 BST |
 
 # Allocadabra Project Plan
 
@@ -160,13 +160,13 @@ Confirmed:
 | CoinGecko Demo API | Market data API | Token list and token price history source. |
 | Local filesystem storage/cache | Local persistence model | Stores CoinGecko cache, active user inputs, chat state, and current model outputs under the local app workspace. |
 
-To decide:
+Decided (task `024` closed 2026-04-25):
 
-- Export packaging dependency.
-- Exact local cache/session file formats and schema versioning.
-- Frontend-callable app-layer function names and return shapes.
-- Model output manifest shape.
-- Streamlit pattern for one-open-section Review behaviour.
+- Export packaging: standard library `zipfile` with `ZIP_DEFLATED`. No additional dependency.
+- Cache/session file formats: JSON files under `/storage/cache/`. Schema version integer in `SCHEMA_VERSION` constant (`app/storage/schemas.py`). Version 1 for V1.
+- Frontend-callable app-layer functions: published via `app.storage` and `app.processing` package `__init__.py` exports. See `app/storage/__init__.py` and `app/processing/__init__.py` for the stable callable surface.
+- Model output manifest shape: artifact entries with fields `artifact_id`, `label`, `category`, `model_id`, `output_type`, `path`, `status`, `individual_download_enabled`, and optional `reason` for missing artifacts. Defined in `app/storage/export_bundle.py`.
+- Streamlit one-open-section Review behaviour: implemented using frontend session state (`review_section` key in `allocadabra_ui`) with explicit set/get helpers in `frontend/runtime.py`. Task `032` done.
 
 ## Repository Layout
 

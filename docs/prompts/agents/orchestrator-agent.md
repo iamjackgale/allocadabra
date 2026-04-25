@@ -1,8 +1,8 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:33:31 BST |
-| last_updated | 2026-04-22 22:27:16 BST |
-| prompt_used | |
+| last_updated | 2026-04-25 BST |
+| prompt_used | 2026-04-25 BST |
 
 # Orchestrator Agent Prompt
 
@@ -78,4 +78,21 @@ Rules:
 * Be structured and minimal
 * Prioritise clarity and execution over explanation
 
-Please begin by building the /docs subfolder as described
+## Status
+
+The `/docs` subfolder is fully built and maintained. All foundational specs, agent prompts, task lists, and validation handoffs are in place. All worker agents have been briefed and have completed initial implementation.
+
+When resuming, the Orchestrator Agent should:
+
+1. Read `docs/tasks.md` in full before taking any other action.
+2. Check for any uncommitted or unmerged agent work in the git worktrees.
+3. Review the next-actions report from the last orchestrator session in `docs/prompts/agents/orchestrator-agent-2.md` or the latest brief in `docs/prompts/briefs/`.
+4. Coordinate the next round of agent briefs, merges, and task status updates.
+
+When generating a new agent brief:
+
+- Save it under `docs/prompts/briefs/<agent-name>-<n>.md` with a metadata table.
+- Reference the relevant spec files and task IDs.
+- Define clear acceptance criteria.
+- Specify what the agent must not do (cross-boundary edits).
+- Specify what the agent should return (mini specs for any cross-folder work).

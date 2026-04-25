@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-25 09:00:00 BST |
+| last_updated | 2026-04-25 BST |
 
 # Task Tracker
 
@@ -32,14 +32,14 @@
 | 014 | DONE | Orchestrator Agent | Complete `docs/specs/ai/ai-model-integration.md`. | 2026-04-22 10:37:39 BST |
 | 015 | DONE | Orchestrator Agent | Complete `docs/specs/ai/parameters-agent.md`. | 2026-04-22 10:37:39 BST |
 | 016 | DONE | Orchestrator Agent | Complete `docs/specs/ai/review-agent.md`. | 2026-04-22 10:37:39 BST |
-| 017 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/orchestrator-agent.md`. |  |
+| 017 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/orchestrator-agent.md`. | 2026-04-25 BST |
 | 018 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/product-ux-agent.md`. | 2026-04-22 22:08:50 BST |
 | 019 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/frontend-agent.md`. | 2026-04-22 21:54:38 BST |
-| 020 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/backend-data-agent.md`. |  |
+| 020 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/backend-data-agent.md`. | 2026-04-25 BST |
 | 021 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/modelling-agent.md`. | 2026-04-21 13:03:50 BST |
 | 022 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/ai-perplexity-agent.md`. | 2026-04-22 13:02:38 BST |
-| 023 | TODO | Orchestrator Agent | Complete `docs/prompts/agents/qa-validation-agent.md`. |  |
-| 024 | IN_PROGRESS | Orchestrator Agent | Decide remaining major local app dependencies and storage/interface schemas for inclusion in `plan.md`. |  |
+| 023 | DONE | Orchestrator Agent | Complete `docs/prompts/agents/qa-validation-agent.md`. | 2026-04-25 BST |
+| 024 | DONE | Orchestrator Agent | Decide remaining major local app dependencies and storage/interface schemas for inclusion in `plan.md`. | 2026-04-25 BST |
 | 025 | DONE | Orchestrator Agent | Create shared logging spec at `docs/specs/app/logging.md`. | 2026-04-21 10:53:18 BST |
 | 026 | DONE | Orchestrator Agent | Create and maintain the potential extensions beyond V1 sublist in `docs/tasks.md`. | 2026-04-22 12:21:30 BST |
 | 027 | DONE | Orchestrator Agent | Create `docs/specs/frontend/modelling-page.md` for the Modelling Phase progress screen. | 2026-04-22 21:29:01 BST |
@@ -56,7 +56,7 @@
 | 038 | DONE | Modelling Agent | Set up the Modelling Agent with `docs/prompts/agents/modelling-agent.md` and a dedicated branch. | 2026-04-23 07:13:23 BST |
 | 039 | DONE | AI/Perplexity Agent | Set up the AI/Perplexity Agent with `docs/prompts/agents/ai-perplexity-agent.md` and a dedicated branch. | 2026-04-23 09:51:16 BST |
 | 040 | DONE | Frontend Agent | Set up the Frontend Agent with `docs/prompts/agents/frontend-agent.md` and a dedicated branch. | 2026-04-24 13:41:50 BST |
-| 041 | TODO | QA/Validation Agent | Set up the QA/Validation Agent with `docs/prompts/agents/qa-validation-agent.md` and a dedicated branch. |  |
+| 041 | DONE | QA/Validation Agent | Set up the QA/Validation Agent with `docs/prompts/agents/qa-validation-agent.md` and a dedicated branch. | 2026-04-25 BST |
 | 042 | DONE | AI/Perplexity Agent | Implement `docs/specs/ai/ai-model-integration.md`, including typed metadata normalization/validation and finalized frontend-callable AI helper interfaces. Live Perplexity verification remains tracked by task `076`. | 2026-04-23 16:40:22 BST |
 | 043 | DONE | AI/Perplexity Agent | Implement `docs/specs/ai/parameters-agent.md`, including stronger modelling-plan parsing/validation, structured metadata schemas, and Configuration Mode prompt tightening. | 2026-04-23 16:40:22 BST |
 | 044 | DONE | AI/Perplexity Agent | Implement `docs/specs/ai/review-agent.md`, including Review response metadata validation and expanded detailed-context selection aligned to visible UI context. | 2026-04-23 16:40:22 BST |
@@ -121,7 +121,7 @@
 | 103 | DONE | Backend/Data Agent | Verify export handoff compatibility between Modelling outputs and Backend/Data bundle and manifest preparation in a real end-to-end app flow. | 2026-04-25 07:55:07 BST |
 | 104 | TODO | Modelling Agent | Support Frontend integration of modelling progress, result shapes, partial failures, and user-facing error handling if callable gaps appear. |  |
 | 105 | TODO | Frontend Agent | Run an end-to-end local smoke test covering happy path, validation failure, modelling failure, partial model success, and export/download availability. |  |
-| 106 | TODO | Orchestrator Agent | Review the integrated Frontend/Backend/Modelling flow and reconcile contract mismatches before QA starts. |  |
+| 106 | DONE | Orchestrator Agent | Review the integrated Frontend/Backend/Modelling flow and reconcile contract mismatches before QA starts. | 2026-04-25 BST |
 | 107 | DONE | AI/Perplexity Agent | Run live Configuration Mode verification (tests CM-1 through CM-4) per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 108 | DONE | AI/Perplexity Agent | Run live Review Mode verification (tests RM-1 through RM-3) using the synthetic manifest per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
 | 109 | DONE | AI/Perplexity Agent | Validate live guardrails (GR-1 through GR-4) for financial advice, unsupported models, live data requests, and invalid metadata per `docs/specs/app/ai-live-integration.md`. | 2026-04-25 07:49:05 BST |
