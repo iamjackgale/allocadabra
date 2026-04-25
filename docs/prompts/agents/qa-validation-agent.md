@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-21 08:33:31 BST |
-| last_updated | 2026-04-25 BST |
+| last_updated | 2026-04-25 BST (updated: API keys confirmed, specs added) |
 | prompt_used | |
 
 # QA/Validation Agent Prompt
@@ -36,8 +36,13 @@ Before starting work, read:
 - `/docs/plan.md` for workflow, architecture, constraints, and V1 scope.
 - `/docs/tasks.md` for current task status and ownership.
 - `/docs/validation/` for existing validation handoffs from implementation agents.
-- `/docs/specs/app/frontend-backend-modelling-integration.md` for the V1 integration contract.
-- `/docs/specs/app/ai-live-integration.md` for AI live integration checks.
+- `/docs/specs/app/frontend-backend-modelling-integration.md` for the V1 integration contract and Orchestrator review findings (task `106`).
+- `/docs/specs/app/ai-live-integration.md` for AI live integration checks (tasks `107`–`115`).
+- `/docs/specs/app/export-bundling.md` for export manifest shape, artifact categories, and bundle structure — critical for task `118`.
+- `/docs/specs/data-backend/dataset-building.md` for asset/price history validation rules.
+- `/docs/specs/data-backend/session-storage.md` for active workflow state lifecycle and reset behaviour.
+- `/docs/specs/frontend/model-review.md` for Review page layout, section structure, and failure rules — relevant to task `118`.
+- `/docs/specs/frontend/agent-chat.md` for chat component behaviour in Configuration and Review modes — relevant to task `129`.
 
 ## Folder Ownership And Branching
 
@@ -52,7 +57,7 @@ Shared/read-only context:
 - `/docs/**`, except assigned validation files or prompt updates.
 - `/app/**`, owned by Backend/Data, Modelling, and AI agents.
 - `/frontend/**`, owned by the Frontend Agent.
-- `/scripts/**`, owned by the relevant implementation agent unless explicitly assigned for validation tooling.
+- `/scripts/**`, owned by the relevant implementation agent unless explicitly assigned for validation tooling. QA owns the following validation scripts once created: `scripts/frontend_smoke.py`, `scripts/review_fixture_smoke.py`, `scripts/ai_smoke_extended.py`.
 
 Rules:
 
@@ -77,10 +82,10 @@ The implementation agents have prepared the following validation docs for the QA
 
 | Agent | Validation Doc | Key Gap |
 |---|---|---|
-| Backend/Data Agent | `docs/validation/backend-validation.md` | No live CoinGecko check yet; requires `COINGECKO_API_KEY`. |
-| Modelling Agent | `docs/validation/modelling-validation.md` | Smoke script at `scripts/modelling_smoke.py`; no live price data test. |
-| AI/Perplexity Agent | `docs/validation/ai-validation.md` | Live provider tests require `PERPLEXITY_API_KEY`. |
-| Frontend Agent | `docs/validation/frontend-validation.md` | Missing-key and fixture paths verified; full live run requires both API keys. |
+| Backend/Data Agent | `docs/validation/backend-validation.md` | `COINGECKO_API_KEY` now set in `c0c4` worktree; task `064` (cache freshness) unblocked. |
+| Modelling Agent | `docs/validation/modelling-validation.md` | Smoke script at `scripts/modelling_smoke.py`; no live price data test yet. |
+| AI/Perplexity Agent | `docs/validation/ai-validation.md` | `PERPLEXITY_API_KEY` now set in `a8a0` worktree; live provider tests unblocked. |
+| Frontend Agent | `docs/validation/frontend-validation.md` | Both keys now set in `8fe0` worktree; full live run unblocked. Tasks `112`/`113` unblocked. |
 
 ## Assigned Tasks
 
@@ -91,14 +96,14 @@ The following tasks are assigned to the QA/Validation Agent once the branch is s
 | `117` | Convert `docs/validation/frontend-validation.md` into repeatable frontend smoke checks. | Branch set up (task `041`). |
 | `118` | Add fixture-backed Review rendering validation using stored manifest and artifact samples. | Branch set up. |
 | `129` | Convert AI live and fixture checks into repeatable validation coverage for missing-key handling, synthetic Review chat, guardrail intercepts, metadata shape, and representative free-form Configuration prompts. | Branch set up. |
-| `119` | Full live end-to-end Streamlit validation once `COINGECKO_API_KEY` and `PERPLEXITY_API_KEY` are configured. | Both API keys available. |
+| `119` | Full live end-to-end Streamlit validation once `COINGECKO_API_KEY` and `PERPLEXITY_API_KEY` are configured. | Both keys confirmed available — add `.env` to `qa01` worktree to unblock. |
 
 ## Initial Priorities
 
 1. Start with task `117`: run existing manual checks from `frontend-validation.md` as a repeatable Python or script-based smoke before adding new coverage.
 2. Then task `118`: use the synthetic Review fixture at `?alloca_dev_review_fixture=brief3` to build fixture-backed Review tests. The fixture is defined in `frontend/dev_tools.py`.
 3. Then task `129`: extend AI validation coverage using the no-AI-env flag at `?alloca_dev_no_ai_env=1` and the synthetic Review fixture.
-4. Defer task `119` until both API keys are available.
+4. Task `119` (full live end-to-end Streamlit validation) is now actionable once `.env` with both keys is placed in the `qa01` worktree. Keys are confirmed available — copy from another worktree or the main repo.
 
 ## Dev Tools Available For Testing
 
@@ -142,6 +147,12 @@ The Orchestrator completed a contract review of the integrated flow on 2026-04-2
 - QA start gate: cleared. Tasks `117`, `118`, and `129` may start immediately.
 
 Full review findings are in `docs/specs/app/frontend-backend-modelling-integration.md` under the "Orchestrator Integration Review" section.
+
+## Current Brief
+
+The active brief for this agent is `docs/prompts/briefs/qa-validation-agent-1.md` (created 2026-04-25). It assigns tasks `117`, `118`, and `129`, and asks for a validation gap report at `docs/validation/validation-gap-report-1.md` for Orchestrator review.
+
+When resuming, read the brief before taking any action. It contains detailed step-by-step instructions and acceptance criteria for each script.
 
 ## Non-Goals
 
