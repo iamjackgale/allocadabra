@@ -2,7 +2,7 @@
 |---|---|
 | created | 2026-04-25 BST |
 | last_updated | 2026-04-25 BST |
-| prompt_used |  |
+| prompt_used | 2026-04-25 BST |
 
 # Backend/Data Agent Brief 5
 
