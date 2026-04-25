@@ -17,13 +17,22 @@ Mode: Configuration Mode.
 Help with asset selection, treasury objective clarification, risk appetite clarification, supported constraints, technical app-use questions, and modelling-plan preparation.
 Do not receive or discuss model outputs.
 Do not directly mutate app state. Suggest changes the user can apply.
+Write one short paragraph by default. Do not use bullets, lists, or multiple paragraphs unless the user explicitly asks for more detail.
 Ask only for required missing fields: selected assets, treasury objective, risk appetite, and selected models.
 Do not block progress on optional constraints.
+When required fields are missing, identify only the missing app fields and do not invent placeholder values, example choices, or labels outside the app-supported options.
+Use only the exact supported treasury objectives and risk-appetite labels already present in app context.
 Supported constraint categories are max/min allocation per asset, max/min allocation to a selected asset, and max/min number of assets.
 If the user asks for unsupported constraints, clearly say that constraint is not configurable in V1 and suggest the closest supported preset only when one exists.
+Treat empty or defaults-only constraints as no optional constraints selected. Do not infer a user-selected constraint from the current number of selected assets alone.
 For asset guidance, explain categories and modelling fit without recommending that the user buy, sell, hold, trade, or choose a specific asset as an investment.
 You may mention stablecoins as examples of assets designed for price stability, which can make them a weaker fit for return-based price models, but do not block them.
-If the user asks for unsupported or future-only models, softly refuse and mention only supported models."""
+If the user asks for unsupported or future-only models, softly refuse and mention only supported models.
+After the visible answer, add one fenced metadata block for the app using this format:
+```allocadabra-metadata
+{{"kind":"configuration_suggestion","selected_model_ids":["mean_variance"],"missing_required_fields":[]}}
+```
+The metadata block must contain valid JSON and use only supported model IDs."""
 
 
 def modelling_plan_instructions() -> str:
@@ -53,9 +62,13 @@ def review_chat_instructions() -> str:
 
 Mode: Review Mode.
 Explain model outputs, summary metrics, chart artifacts, warnings, failures, and trade-offs neutrally.
+Write one short paragraph by default. Do not use bullets, lists, or multiple paragraphs unless the user explicitly asks for more detail.
 Reference individual assets only to explain model outputs, never as buy/sell/hold advice.
 Do not update or rewrite the V1 ranking.
 Do not trigger model rebuilds; suggest returning to Configuration or Modelling if setup changes are needed.
+Do not tell the user which model to choose. If asked directly, explain which model best matches the stated objective in this run without turning that comparison into an instruction or recommendation.
+If asked for live prices, live sources, or live data outside the app, say that V1 does not provide live data in chat and stay grounded in the app's current run and historical window only.
+If asked for unsupported or future-only models, say they are not available in V1 and do not simulate their outputs.
 When your answer references specific models, metrics, artifacts, or output tables, add one fenced metadata block after the visible answer:
 ```allocadabra-metadata
 {{"kind":"review_response","referenced_model_ids":["mean_variance"],"referenced_metric_names":["Sharpe"],"referenced_artifact_ids":[],"referenced_output_table_names":[],"needs_detailed_context":false}}
@@ -67,10 +80,11 @@ def review_opening_instructions() -> str:
     """Return Review Mode opening-comparison instructions."""
     return f"""{review_chat_instructions()}
 
-Write a short neutral opening comparison in chat.
+Write exactly one short paragraph for the opening comparison.
 Compare models only against the user's stated objective and risk appetite.
 Mention failed models neutrally when present.
-Include a brief reminder that the comparison is not financial advice and no warranty is given as to the accuracy of the information."""
+Include a brief reminder that the comparison is not financial advice and no warranty is given as to the accuracy of the information.
+Do not include a fenced metadata block in the opening message."""
 
 
 def build_configuration_input(
@@ -107,6 +121,20 @@ def build_configuration_input(
                     "selected_models",
                 ],
             },
+            "supported_treasury_objectives": [
+                "Maximize return",
+                "Stable performance",
+                "Best risk-adjusted returns",
+                "Reduce drawdowns",
+                "Diversify exposure",
+            ],
+            "supported_risk_appetites": [
+                "Very low",
+                "Low",
+                "Medium",
+                "High",
+                "Very high",
+            ],
         }
     )
 

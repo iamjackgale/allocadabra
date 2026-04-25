@@ -13,7 +13,7 @@ from app.ai.constants import (
 )
 from app.ai.context_selection import select_review_detailed_context
 from app.ai.errors import AIIntegrationError, MissingAPIKeyError
-from app.ai.models import normalize_selected_model_ids
+from app.ai.models import display_name_for_model_id, normalize_selected_model_ids
 from app.ai.parsing import split_visible_text_and_metadata
 from app.ai.prompts import (
     build_configuration_input,
@@ -29,12 +29,16 @@ from app.ai.provider import AIProviderResponse, PerplexityProvider
 from app.ai.session_hooks import append_chat_message, get_chat_messages
 from app.ai.validation import (
     looks_like_financial_advice,
+    user_requests_direct_model_choice,
+    user_requests_financial_advice,
+    user_requests_live_data,
+    user_requests_unsupported_model,
     validate_modelling_plan,
     validate_review_metadata,
     validate_suggested_model_metadata,
 )
 from app.storage.session_state import get_workflow_state, store_generated_plan
-from app.storage.validation import validate_configuration_inputs
+from app.storage.validation import RISK_APPETITES, TREASURY_OBJECTIVES, validate_configuration_inputs
 
 
 logger = logging.getLogger(__name__)
@@ -65,6 +69,10 @@ def send_configuration_chat(
     inputs = active_inputs or state.get("user_inputs", {})
     recent_messages = get_chat_messages("configuration", limit=8)
 
+    early_response = _configuration_precheck_response(user_message=user_message, active_inputs=inputs)
+    if early_response is not None:
+        return early_response
+
     return _complete_chat_turn(
         mode="configuration",
         provider=provider,
@@ -74,6 +82,7 @@ def send_configuration_chat(
             active_inputs=inputs,
             recent_messages=recent_messages,
         ),
+        fallback_metadata=_configuration_fallback_metadata(inputs),
     )
 
 
@@ -209,6 +218,11 @@ def send_review_chat(
 
     append_chat_message("review", "user", user_message)
     recent_messages = get_chat_messages("review", limit=8)
+
+    early_response = _review_precheck_response(user_message=user_message)
+    if early_response is not None:
+        return early_response
+
     selected_detailed_context = select_review_detailed_context(
         user_message=user_message,
         visible_context=visible_context,
@@ -260,11 +274,14 @@ def generate_review_opening(
         logger.warning("AI review opening failed: %s", exc)
         return _error_response("provider_unavailable", PROVIDER_UNAVAILABLE_ERROR)
 
-    message = response.text
+    message, metadata = split_visible_text_and_metadata(response.text)
     if looks_like_financial_advice(message):
         message = FIXED_FINANCIAL_ADVICE_REFUSAL
+        metadata = {}
 
-    append_chat_message("review", "assistant", message, metadata={"kind": "review_opening"})
+    validation = validate_review_metadata(metadata)
+    opening_metadata = {**validation.metadata, "kind": "review_opening"} if validation.valid else {"kind": "review_opening"}
+    append_chat_message("review", "assistant", message, metadata=opening_metadata)
     return {"ok": True, "message": message}
 
 
@@ -284,6 +301,7 @@ def _complete_chat_turn(
     provider: AIProvider | None,
     instructions: str,
     input_text: str,
+    fallback_metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     try:
         response = _provider(provider).complete(
@@ -317,11 +335,12 @@ def _complete_chat_turn(
             "issues": validation.issues,
         }
 
-    append_chat_message(mode, "assistant", message, metadata=validation.metadata)
+    metadata = validation.metadata or dict(fallback_metadata or {})
+    append_chat_message(mode, "assistant", message, metadata=metadata)
     return {
         "ok": True,
         "message": message,
-        "metadata": validation.metadata,
+        "metadata": metadata,
         "workflow": get_workflow_state(),
     }
 
@@ -332,3 +351,159 @@ def _provider(provider: AIProvider | None) -> AIProvider:
 
 def _error_response(code: str, message: str) -> dict[str, Any]:
     return {"ok": False, "code": code, "message": message}
+
+
+def _configuration_fallback_metadata(active_inputs: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "kind": "configuration_suggestion",
+        "selected_model_ids": normalize_selected_model_ids(active_inputs.get("selected_models")),
+        "missing_required_fields": _missing_required_fields(active_inputs),
+    }
+
+
+def _missing_required_fields(active_inputs: dict[str, Any]) -> list[str]:
+    missing: list[str] = []
+    if len(active_inputs.get("selected_assets") or []) < 2:
+        missing.append("selected_assets")
+    if active_inputs.get("treasury_objective") not in TREASURY_OBJECTIVES:
+        missing.append("treasury_objective")
+    if active_inputs.get("risk_appetite") not in RISK_APPETITES:
+        missing.append("risk_appetite")
+    if not normalize_selected_model_ids(active_inputs.get("selected_models")):
+        missing.append("selected_models")
+    return missing
+
+
+def _configuration_precheck_response(
+    *,
+    user_message: str,
+    active_inputs: dict[str, Any],
+) -> dict[str, Any] | None:
+    if _looks_like_configuration_readiness_check(user_message):
+        return _store_safe_configuration_reply(
+            _configuration_readiness_reply(active_inputs),
+            active_inputs=active_inputs,
+        )
+    if user_requests_financial_advice(user_message):
+        return _store_safe_configuration_reply(FIXED_FINANCIAL_ADVICE_REFUSAL, active_inputs=active_inputs)
+    if user_requests_direct_model_choice(user_message):
+        return _store_safe_configuration_reply(
+            "I cannot tell you which model to choose. I can compare the supported models in educational terms and explain how Mean Variance, Risk Parity, and Hierarchical Risk Parity differ so you can decide within the app.",
+            active_inputs=active_inputs,
+        )
+    if user_requests_live_data(user_message):
+        return _store_safe_configuration_reply(
+            "Configuration Mode does not provide live market data in chat. It uses the app's historical 365-day daily observation window, so I can help with setup choices but not live price feeds.",
+            active_inputs=active_inputs,
+        )
+    if user_requests_unsupported_model(user_message):
+        return _store_safe_configuration_reply(
+            "That model is not supported in V1. Allocadabra currently supports Mean Variance, Risk Parity, and Hierarchical Risk Parity only.",
+            active_inputs=active_inputs,
+        )
+    return None
+
+
+def _review_precheck_response(*, user_message: str) -> dict[str, Any] | None:
+    if user_requests_financial_advice(user_message):
+        return _store_safe_review_reply(FIXED_FINANCIAL_ADVICE_REFUSAL)
+    if user_requests_direct_model_choice(user_message):
+        return _store_safe_review_reply(
+            "I cannot tell you which model to choose. I can explain which supported model best matches your stated objective and risk appetite in this run, and why, without turning that comparison into a recommendation."
+        )
+    if user_requests_live_data(user_message):
+        return _store_safe_review_reply(
+            "V1 chat cannot provide live CoinGecko price data. I can only discuss the app's current run, its historical 365-day data window, and the generated review outputs already visible in the app."
+        )
+    if user_requests_unsupported_model(user_message):
+        return _store_safe_review_reply(
+            "That model is not available in V1. This app currently supports Mean Variance, Risk Parity, and Hierarchical Risk Parity only, and I cannot simulate unsupported model outputs in chat."
+        )
+    return None
+
+
+def _store_safe_configuration_reply(message: str, *, active_inputs: dict[str, Any]) -> dict[str, Any]:
+    metadata = _configuration_fallback_metadata(active_inputs)
+    workflow = append_chat_message("configuration", "assistant", message, metadata=metadata)
+    return {"ok": True, "message": message, "metadata": metadata, "workflow": workflow}
+
+
+def _store_safe_review_reply(message: str) -> dict[str, Any]:
+    metadata = {"kind": "review_response", "referenced_model_ids": [], "referenced_metric_names": [], "referenced_artifact_ids": [], "referenced_output_table_names": [], "needs_detailed_context": False}
+    workflow = append_chat_message("review", "assistant", message, metadata=metadata)
+    return {"ok": True, "message": message, "metadata": metadata, "workflow": workflow}
+
+
+def _looks_like_configuration_readiness_check(user_message: str) -> bool:
+    lowered = user_message.lower()
+    return any(
+        phrase in lowered
+        for phrase in (
+            "ready to model",
+            "ready to run",
+            "can i run a model",
+            "can i run this",
+            "can i run with what i have",
+            "is this ready",
+            "does my configuration look ready",
+        )
+    )
+
+
+def _configuration_readiness_reply(active_inputs: dict[str, Any]) -> str:
+    missing_fields = _missing_required_fields(active_inputs)
+    model_names = ", ".join(
+        display_name_for_model_id(model_id)
+        for model_id in normalize_selected_model_ids(active_inputs.get("selected_models"))
+    )
+    assets = ", ".join(str(asset.get("name") or asset.get("symbol") or asset) for asset in active_inputs.get("selected_assets") or [])
+    objective = str(active_inputs.get("treasury_objective") or "not set")
+    risk = str(active_inputs.get("risk_appetite") or "not set")
+    constraints_summary = _effective_constraint_summary(active_inputs)
+
+    if missing_fields:
+        labels = {
+            "selected_assets": "at least 2 selected assets",
+            "treasury_objective": "a treasury objective",
+            "risk_appetite": "a risk appetite",
+            "selected_models": "at least 1 supported model",
+        }
+        missing_text = ", ".join(labels[field] for field in missing_fields)
+        return (
+            "Not yet. To run a model, the current setup still needs "
+            f"{missing_text}. Right now the selected assets are {assets or 'not set'}, "
+            f"the treasury objective is {objective}, the risk appetite is {risk}, "
+            f"and the selected supported models are {model_names or 'not set'}."
+        )
+
+    return (
+        "Yes. From a technical perspective, this configuration is ready to model: "
+        f"selected assets {assets}, treasury objective {objective}, risk appetite {risk}, "
+        f"selected supported models {model_names}, and {constraints_summary}."
+    )
+
+
+def _effective_constraint_summary(active_inputs: dict[str, Any]) -> str:
+    constraints = dict(active_inputs.get("constraints") or {})
+    selected_assets = list(active_inputs.get("selected_assets") or [])
+    selected_asset_count = len(selected_assets)
+
+    global_min = constraints.get("global_min_allocation_percent")
+    global_max = constraints.get("global_max_allocation_percent")
+    min_assets = constraints.get("min_assets_in_portfolio")
+    max_assets = constraints.get("max_assets_in_portfolio")
+    selected_asset_min = constraints.get("selected_asset_min_allocation")
+    selected_asset_max = constraints.get("selected_asset_max_allocation")
+
+    defaults_only = (
+        global_min in (None, 0)
+        and global_max in (None, 100)
+        and min_assets in (None, 0)
+        and max_assets in (None, 0, selected_asset_count)
+        and selected_asset_min in (None, {})
+        and selected_asset_max in (None, {})
+    )
+    if defaults_only:
+        return "no additional optional constraints selected"
+
+    return "supported optional constraints applied"

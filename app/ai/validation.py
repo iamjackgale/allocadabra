@@ -60,6 +60,44 @@ DATA_WINDOW_PHRASES = (
     "daily observations",
 )
 
+KNOWN_METRIC_NAMES = {
+    "total_return_pct",
+    "max_drawdown_pct",
+    "sharpe_ratio",
+    "calmar_ratio",
+    "omega_ratio",
+    "sortino_ratio",
+    "annualized_return_pct",
+    "annualized_volatility_pct",
+    "30d_volatility_pct",
+    "avg_drawdown_pct",
+    "skewness",
+    "kurtosis",
+    "cvar_pct",
+    "cdar_pct",
+}
+
+METRIC_NAME_ALIASES = {
+    "sharpe": "sharpe_ratio",
+    "sharpe ratio": "sharpe_ratio",
+    "calmar": "calmar_ratio",
+    "calmar ratio": "calmar_ratio",
+    "omega": "omega_ratio",
+    "omega ratio": "omega_ratio",
+    "sortino": "sortino_ratio",
+    "sortino ratio": "sortino_ratio",
+    "annualized return": "annualized_return_pct",
+    "annualised return": "annualized_return_pct",
+    "annualized volatility": "annualized_volatility_pct",
+    "annualised volatility": "annualized_volatility_pct",
+    "30d volatility": "30d_volatility_pct",
+    "30-day volatility": "30d_volatility_pct",
+    "max drawdown": "max_drawdown_pct",
+    "average drawdown": "avg_drawdown_pct",
+    "cvar": "cvar_pct",
+    "cdar": "cdar_pct",
+}
+
 
 @dataclass(frozen=True)
 class MetadataValidation:
@@ -153,7 +191,7 @@ def validate_suggested_model_metadata(metadata: dict[str, Any]) -> MetadataValid
     if future_names:
         issues.append("Future-only models appeared in AI metadata: " + ", ".join(future_names))
 
-    if not issues and (model_ids or metadata.get("missing_required_fields")):
+    if not issues:
         metadata = ConfigurationSuggestionMetadata(
             selected_model_ids=model_ids,
             missing_required_fields=list_of_strings(metadata.get("missing_required_fields")),
@@ -164,6 +202,7 @@ def validate_suggested_model_metadata(metadata: dict[str, Any]) -> MetadataValid
 def validate_review_metadata(metadata: dict[str, Any]) -> MetadataValidation:
     """Validate optional Review Mode response metadata."""
     model_ids = list_of_strings(metadata.get("referenced_model_ids"))
+    metric_names = _normalize_metric_names(metadata.get("referenced_metric_names"))
     issues: list[str] = []
 
     unsupported = unsupported_model_ids(model_ids)
@@ -181,7 +220,7 @@ def validate_review_metadata(metadata: dict[str, Any]) -> MetadataValidation:
     if not issues:
         metadata = ReviewResponseMetadata(
             referenced_model_ids=model_ids,
-            referenced_metric_names=list_of_strings(metadata.get("referenced_metric_names")),
+            referenced_metric_names=metric_names,
             referenced_artifact_ids=list_of_strings(metadata.get("referenced_artifact_ids")),
             referenced_output_table_names=list_of_strings(metadata.get("referenced_output_table_names")),
             needs_detailed_context=bool_value(metadata.get("needs_detailed_context")),
@@ -210,6 +249,53 @@ def looks_like_financial_advice(text: str) -> bool:
         flags=re.IGNORECASE,
     )
     return bool(advice_pattern.search(text))
+
+
+def user_requests_financial_advice(text: str) -> bool:
+    """Detect direct user requests for investment instructions."""
+    request_pattern = re.compile(
+        r"\b(?:should i|should we|do you recommend|would you recommend|is it a good time to)\s+"
+        r"(?:buy|sell|hold|trade|invest|buying|selling|holding|trading|investing)\b",
+        flags=re.IGNORECASE,
+    )
+    return bool(request_pattern.search(text))
+
+
+def user_requests_direct_model_choice(text: str) -> bool:
+    """Detect direct requests to choose one model on the user's behalf."""
+    lowered = text.lower()
+    phrases = (
+        "which model should i choose",
+        "which model should we choose",
+        "which model do i choose",
+        "which model do we choose",
+        "tell me which model to choose",
+        "pick a model for me",
+        "choose a model for me",
+    )
+    return any(phrase in lowered for phrase in phrases)
+
+
+def user_requests_live_data(text: str) -> bool:
+    """Detect requests for live or real-time market data."""
+    lowered = text.lower()
+    return (
+        "live coingecko" in lowered
+        or "real-time" in lowered
+        or "real time" in lowered
+        or ("live" in lowered and "price" in lowered)
+    )
+
+
+def user_requests_unsupported_model(text: str) -> bool:
+    """Detect requests for models outside the supported V1 set."""
+    lowered = text.lower()
+    unsupported_names = (
+        "black-litterman",
+        "black litterman",
+        *(name.lower() for name in FUTURE_ONLY_MODEL_NAMES),
+    )
+    return any(name in lowered for name in unsupported_names)
 
 
 def _metadata_model_ids(metadata: dict[str, Any]) -> list[str]:
@@ -249,6 +335,22 @@ def _future_only_names_in_text(text: str) -> list[str]:
 def selected_model_names(model_ids: list[str]) -> list[str]:
     """Return display names for supported model IDs."""
     return [display_name_for_model_id(model_id) for model_id in model_ids]
+
+
+def _normalize_metric_names(value: object) -> list[str]:
+    if not isinstance(value, list):
+        return []
+
+    normalized: list[str] = []
+    for item in value:
+        raw = str(item).strip()
+        if not raw:
+            continue
+        lowered = raw.lower()
+        normalized_name = METRIC_NAME_ALIASES.get(lowered, lowered)
+        if normalized_name in KNOWN_METRIC_NAMES and normalized_name not in normalized:
+            normalized.append(normalized_name)
+    return normalized
 
 
 def _parse_choice(value: str, choices: set[str]) -> str | None:
