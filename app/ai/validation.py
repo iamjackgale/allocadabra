@@ -28,15 +28,6 @@ from app.ai.schemas import (
 from app.storage.validation import RISK_APPETITES, TREASURY_OBJECTIVES, validate_configuration_inputs
 
 
-REQUIRED_PLAN_HEADINGS = (
-    "objective",
-    "risk appetite",
-    "selected assets",
-    "constraints",
-    "selected models",
-    "data window",
-)
-
 SUPPORTED_CONSTRAINT_PHRASES = (
     "none",
     "no constraints",
@@ -120,10 +111,6 @@ def validate_modelling_plan(
     metadata = dict(metadata or {})
 
     sections = markdown_sections(markdown)
-    missing_headings = [heading for heading in REQUIRED_PLAN_HEADINGS if heading not in sections]
-    if missing_headings:
-        issues.append("Missing required plan headings: " + ", ".join(missing_headings))
-
     parsed_plan = parse_modelling_plan_fields(markdown)
     issues.extend(_plan_field_issues(parsed_plan, sections))
 
