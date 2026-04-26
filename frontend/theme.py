@@ -138,31 +138,16 @@ def apply_theme(phase: str) -> None:
           padding: 0 0 0.5rem 0;
         }}
 
-        /* Dark mode toggle: pin to right edge of header, transparent appearance */
-        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) {{
-          position: relative !important;
-        }}
-
-        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child {{
-          position: absolute !important;
-          right: 0 !important;
-          top: 0 !important;
-          width: auto !important;
-          background: transparent !important;
-          border: none !important;
-          box-shadow: none !important;
-          padding: 0 !important;
-        }}
-
-        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child [data-testid="stButton"],
-        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child [data-testid="stVerticalBlock"],
-        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child button {{
+        /* Footer toggle: transparent, no border, matches footer text colour */
+        [data-testid="stHorizontalBlock"]:has(.alloca-footer) > [data-testid="column"]:first-child [data-testid="stButton"],
+        [data-testid="stHorizontalBlock"]:has(.alloca-footer) > [data-testid="column"]:first-child [data-testid="stVerticalBlock"],
+        [data-testid="stHorizontalBlock"]:has(.alloca-footer) > [data-testid="column"]:first-child button {{
           background: transparent !important;
           background-color: transparent !important;
           border: none !important;
           box-shadow: none !important;
           outline: none !important;
-          color: {text_main} !important;
+          color: {text_soft} !important;
         }}
 
         /* ── Panel columns via :has() ───────────────────────────────── */
@@ -386,22 +371,12 @@ def apply_theme(phase: str) -> None:
 
 
 def render_header() -> None:
-    """Render the Allocadabra brand title and light/dark mode toggle."""
-    from frontend.runtime import get_dark_mode, toggle_dark_mode
-    dark_mode = get_dark_mode()
-
-    title_col, toggle_col = st.columns([8, 1])
-    with title_col:
-        st.markdown(
-            '<div class="alloca-header-title">Allocadabra</div>'
-            '<div class="alloca-header-subtitle">Making portfolio allocation magical.</div>',
-            unsafe_allow_html=True,
-        )
-    with toggle_col:
-        icon = "☀" if dark_mode else "☾"
-        if st.button(icon, key="dark_mode_toggle", help="Toggle light / dark mode"):
-            toggle_dark_mode()
-            st.rerun()
+    """Render the Allocadabra brand title and subtitle."""
+    st.markdown(
+        '<div class="alloca-header-title">Allocadabra</div>'
+        '<div class="alloca-header-subtitle">Making portfolio allocation magical.</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def render_mobile_overlay() -> None:
@@ -423,13 +398,23 @@ def render_mobile_overlay() -> None:
 
 
 def render_footer() -> None:
-    """Render the persistent product footer."""
-    st.markdown(
-        """
-        <div class="alloca-footer">
-          Experimental project produced for educational purposes only. No warranty as to correctness. Licence: MIT<br/>
-          &copy; 2026 <a href="https://jackgale.uk" target="_blank">Jack Harry Gale</a>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    """Render the persistent product footer with light/dark mode toggle on the left."""
+    from frontend.runtime import get_dark_mode, toggle_dark_mode
+    dark_mode = get_dark_mode()
+
+    toggle_col, footer_col = st.columns([1, 9])
+    with toggle_col:
+        icon = "☀" if dark_mode else "☾"
+        if st.button(icon, key="dark_mode_toggle", help="Toggle light / dark mode"):
+            toggle_dark_mode()
+            st.rerun()
+    with footer_col:
+        st.markdown(
+            """
+            <div class="alloca-footer">
+              Experimental project produced for educational purposes only. No warranty as to correctness. Licence: MIT<br/>
+              &copy; 2026 <a href="https://jackgale.uk" target="_blank">Jack Harry Gale</a>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
