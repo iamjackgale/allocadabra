@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-25 BST (tasks 104/105/112/113/119 DONE, task 139 added) |
+| last_updated | 2026-04-26 BST (tasks 140/141 added, rolling allocation chart) |
 
 # Task Tracker
 
@@ -155,6 +155,8 @@
 | 137 | DONE | Orchestrator Agent | Save the fifth Backend/Data Agent brief for tasks `064`, `135`, and `136` in `docs/prompts/briefs/backend-data-agent-5.md`. | 2026-04-25 BST |
 | 138 | DONE | Orchestrator Agent | Review Backend/Data Agent Brief 5 results; mark tasks 064, 135, 136 complete. | 2026-04-25 BST |
 | 139 | DONE | Orchestrator Agent | Review Frontend Agent Brief 4 final live run results; mark tasks 104, 105, 112, 113, 119 complete. | 2026-04-25 BST |
+| 140 | TODO | Modelling Agent | Replace static allocation-over-time chart with 13-checkpoint rolling monthly re-optimisation. Run optimizer once per monthly checkpoint over the past 12 months; fall back to equal weights when data is insufficient. |  |
+| 141 | DONE | Orchestrator Agent | Save Modelling Agent Brief 3 for task 140 in `docs/prompts/briefs/modelling-agent-3.md`. | 2026-04-26 BST |
 
 ## Potential Extensions Beyond V1
 
