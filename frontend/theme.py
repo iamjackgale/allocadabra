@@ -154,8 +154,11 @@ def apply_theme(phase: str) -> None:
           padding: 0 !important;
         }}
 
+        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child [data-testid="stButton"],
+        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child [data-testid="stVerticalBlock"],
         [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child button {{
           background: transparent !important;
+          background-color: transparent !important;
           border: none !important;
           box-shadow: none !important;
           outline: none !important;
