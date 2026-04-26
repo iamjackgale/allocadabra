@@ -109,7 +109,7 @@ def render_review_page(workflow: dict[str, Any]) -> None:
     risk = workflow.get("user_inputs", {}).get("risk_appetite") or "Not set"
     with review_col:
         st.markdown('<div class="alloca-phase">REVIEW</div>', unsafe_allow_html=True)
-        with st.container(height=900, border=True):
+        with st.container(height=810, border=True):
             st.markdown(
                 "Compare model outputs against your selected objective and risk appetite. Green/yellow/red rankings compare these models within this run only."
             )
