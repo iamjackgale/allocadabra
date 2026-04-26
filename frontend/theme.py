@@ -2,9 +2,19 @@
 
 from __future__ import annotations
 
+import base64
+from pathlib import Path
+
 import streamlit as st
 
 from frontend.constants import PHASE_ACCENTS
+
+_ASSETS_DIR = Path(__file__).parent / "assets"
+
+
+def _logo_b64(dark_mode: bool) -> str:
+    filename = "allocadabra_dark.png" if dark_mode else "allocadabra_light.png"
+    return base64.b64encode((_ASSETS_DIR / filename).read_bytes()).decode()
 
 
 def apply_theme(phase: str) -> None:
@@ -136,6 +146,7 @@ def apply_theme(phase: str) -> None:
           font-weight: 400;
           color: {text_main};
           padding: 0 0 0.5rem 0;
+          margin-top: -1rem;
         }}
 
         /* Footer toggle: transparent, no border, matches footer text colour */
@@ -243,6 +254,15 @@ def apply_theme(phase: str) -> None:
         [data-testid="stChatInput"] textarea {{
           color: {text_main} !important;
           background: transparent !important;
+        }}
+
+        /* ── Panel buttons: smaller font ───────────────────────────── */
+        [data-testid="column"]:has(.alloca-phase) button[data-testid="baseButton-primary"],
+        [data-testid="column"]:has(.alloca-phase) button[data-testid="baseButton-primary"] *,
+        [data-testid="column"]:has(.alloca-phase) button[data-testid="baseButton-secondary"],
+        [data-testid="column"]:has(.alloca-phase) button[data-testid="baseButton-secondary"] * {{
+          font-size: 0.7rem !important;
+          line-height: 1.2 !important;
         }}
 
         /* ── Secondary buttons: transparent with matching text ──────── */
@@ -371,9 +391,11 @@ def apply_theme(phase: str) -> None:
 
 
 def render_header() -> None:
-    """Render the Allocadabra brand title and subtitle."""
+    """Render the Allocadabra brand logo and subtitle."""
+    from frontend.runtime import get_dark_mode
+    logo_b64 = _logo_b64(get_dark_mode())
     st.markdown(
-        '<div class="alloca-header-title">Allocadabra</div>'
+        f'<img src="data:image/png;base64,{logo_b64}" alt="Allocadabra" style="height:54px; display:block; margin-bottom:0;">'
         '<div class="alloca-header-subtitle">Making portfolio allocation magical.</div>',
         unsafe_allow_html=True,
     )

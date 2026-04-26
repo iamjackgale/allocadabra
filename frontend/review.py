@@ -109,7 +109,7 @@ def render_review_page(workflow: dict[str, Any]) -> None:
     risk = workflow.get("user_inputs", {}).get("risk_appetite") or "Not set"
     with review_col:
         st.markdown('<div class="alloca-phase">REVIEW</div>', unsafe_allow_html=True)
-        with st.container(height=800, border=True):
+        with st.container(height=725, border=True):
             st.markdown(
                 "Compare model outputs against your selected objective and risk appetite. Green/yellow/red rankings compare these models within this run only."
             )
@@ -134,20 +134,21 @@ def render_review_page(workflow: dict[str, Any]) -> None:
                 raw_summary=raw_summary,
                 summary_matrix=summary_matrix,
             )
-            action_cols = st.columns(2)
-            with action_cols[0]:
-                if st.button("Return To Configure", width="stretch"):
-                    request_confirmation(
-                        "return_to_configure",
-                        "This returns to Configuration and clears the current outputs and Review chat. Download results first if you want to keep them.",
-                    )
-            with action_cols[1]:
-                if st.button("Start New Model", width="stretch"):
-                    request_confirmation(
-                        "start_new_model",
-                        "This clears the current configuration, outputs, and Review chat. Download results first if you want to keep them.",
-                    )
-            _render_review_confirmation()
+
+        action_cols = st.columns(2)
+        with action_cols[0]:
+            if st.button("Return To Configure", width="stretch"):
+                request_confirmation(
+                    "return_to_configure",
+                    "This returns to Configuration and clears the current outputs and Review chat. Download results first if you want to keep them.",
+                )
+        with action_cols[1]:
+            if st.button("Start New Model", width="stretch"):
+                request_confirmation(
+                    "start_new_model",
+                    "This clears the current configuration, outputs, and Review chat. Download results first if you want to keep them.",
+                )
+        _render_review_confirmation()
 
 
 def _render_review_controls(

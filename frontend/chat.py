@@ -42,7 +42,7 @@ def render_chat_panel(
 
     chat_disabled = chat_failure_count(mode) >= 3
 
-    history = st.container(height=655)
+    history = st.container(height=635)
     with history:
         if not messages:
             with st.chat_message("assistant"):

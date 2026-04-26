@@ -125,7 +125,7 @@ def build_configuration_input(
             "supported_treasury_objectives": [
                 "Maximize return",
                 "Stable performance",
-                "Best risk-adjusted returns",
+                "Risk-adjusted returns",
                 "Reduce drawdowns",
                 "Diversify exposure",
             ],

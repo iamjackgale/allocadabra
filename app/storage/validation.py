@@ -8,14 +8,9 @@ from typing import Any
 
 MIN_ASSETS = 2
 MAX_ASSETS = 10
-MIN_MODELS = 1
-MAX_MODELS = 3
+MIN_MODELS = 2
+MAX_MODELS = 4
 
-SUPPORTED_MODEL_IDS = {
-    "mean_variance",
-    "risk_parity",
-    "hierarchical_risk_parity",
-}
 
 CONSTRAINT_KEYS = {
     "global_min_allocation_percent",
@@ -31,7 +26,7 @@ SELECTED_ASSET_CONSTRAINT_KEYS = {"asset_ids", "percent"}
 TREASURY_OBJECTIVES = {
     "Maximize return",
     "Stable performance",
-    "Best risk-adjusted returns",
+    "Risk-adjusted returns",
     "Reduce drawdowns",
     "Diversify exposure",
 }
@@ -135,7 +130,7 @@ def validate_configuration_inputs(inputs: dict[str, Any]) -> ValidationResult:
             ValidationIssue(
                 field="selected_models",
                 code="too_few_models",
-                message="Choose at least 1 supported model.",
+                message="Choose at least 2 supported models.",
             )
         )
     if len(selected_models) > MAX_MODELS:
@@ -143,7 +138,7 @@ def validate_configuration_inputs(inputs: dict[str, Any]) -> ValidationResult:
             ValidationIssue(
                 field="selected_models",
                 code="too_many_models",
-                message="Choose no more than 3 models for comparison.",
+                message="Choose no more than 4 models for comparison.",
             )
         )
 
@@ -178,15 +173,6 @@ def _validate_selected_models(
 
         model_id = model.strip()
         model_ids.append(model_id)
-        if model_id not in SUPPORTED_MODEL_IDS:
-            issues.append(
-                ValidationIssue(
-                    field="selected_models",
-                    code="unsupported_model_id",
-                    message="Choose only supported V1 models.",
-                    context={"model_id": model_id},
-                )
-            )
 
     seen: set[str] = set()
     for model_id in model_ids:

@@ -7,7 +7,6 @@ from typing import Any
 import streamlit as st
 
 from app.ai.data_api import generate_modelling_plan
-from app.ai.models import DEFAULT_MODEL_IDS
 from app.storage import abandon_generated_plan, list_token_options, reset_configuration, update_active_inputs, validate_active_configuration
 from frontend.constants import (
     MODEL_HELP,
@@ -33,27 +32,36 @@ def render_configuration_panel(workflow: dict[str, Any]) -> None:
     """Render the full Configuration workflow pane."""
     st.markdown('<div class="alloca-phase">MODEL CONFIGURATION</div>', unsafe_allow_html=True)
 
-    inputs = dict(workflow.get("user_inputs", {}))
-    selected_models = list(inputs.get("selected_models") or DEFAULT_MODEL_IDS)
-    if not inputs.get("selected_models"):
-        inputs["selected_models"] = selected_models
-        update_active_inputs({"selected_models": selected_models})
-
     plan = workflow.get("modelling_plan", {})
-    with st.container(height=800, border=True):
-        if plan.get("status") in {"generated", "confirmed"} and plan.get("markdown"):
+    in_plan_preview = plan.get("status") in {"generated", "confirmed"} and plan.get("markdown")
+
+    with st.container(height=725, border=True):
+        if in_plan_preview:
             render_plan_preview(workflow)
         else:
-            render_configuration_form(workflow)
+            updated_inputs = render_configuration_form(workflow)
+
+    if not in_plan_preview:
+        action_cols = st.columns([1.3, 1])
+        with action_cols[0]:
+            if st.button("Generate", type="primary", width="stretch"):
+                _handle_generate_plan(updated_inputs)
+        with action_cols[1]:
+            if st.button("Reset", width="stretch"):
+                request_confirmation(
+                    "reset_configuration",
+                    "This clears your selected assets, preferences, constraints, generated plan, chats, and outputs.",
+                )
+        _render_confirmation_panel()
 
 
-def render_configuration_form(workflow: dict[str, Any]) -> None:
-    """Render the editable configuration form."""
+def render_configuration_form(workflow: dict[str, Any]) -> dict[str, Any]:
+    """Render the editable configuration form, returning the current inputs."""
     inputs = dict(workflow.get("user_inputs", {}))
     selected_assets = list(inputs.get("selected_assets", []))
     objective = inputs.get("treasury_objective")
     risk_appetite = inputs.get("risk_appetite")
-    selected_models = list(inputs.get("selected_models") or DEFAULT_MODEL_IDS)
+    selected_models = list(inputs.get("selected_models") or [])
     constraints = dict(inputs.get("constraints") or {})
     issues = _issues_by_field(validate_active_configuration().get("issues", []))
 
@@ -102,18 +110,7 @@ def render_configuration_form(workflow: dict[str, Any]) -> None:
         st.markdown('<div class="alloca-note">Current deterministic validation issues are shown below the relevant controls and will be checked again before plan generation.</div>', unsafe_allow_html=True)
         _render_issue_summary(issues)
 
-    action_cols = st.columns([1.3, 1])
-    with action_cols[0]:
-        if st.button("Generate Plan", type="primary", width="stretch"):
-            _handle_generate_plan(updated_inputs)
-    with action_cols[1]:
-        if st.button("Reset Configuration", width="stretch"):
-            request_confirmation(
-                "reset_configuration",
-                "This clears your selected assets, preferences, constraints, generated plan, chats, and outputs.",
-            )
-
-    _render_confirmation_panel()
+    return updated_inputs
 
 
 def render_plan_preview(workflow: dict[str, Any]) -> None:
@@ -222,7 +219,7 @@ def _render_asset_selector(selected_assets: list[dict[str, Any]]) -> None:
     add_disabled = not selected_label or len(selected_assets) >= 10
     add_cols = st.columns([1.4, 1])
     with add_cols[0]:
-        st.caption(f"Selected assets: {len(selected_assets)} / 10. Minimum to generate a plan: 2.")
+        st.caption(f"Selected: {len(selected_assets)} / 10. Minimum: 2.")
     with add_cols[1]:
         if st.button("Add Asset", width="stretch", disabled=add_disabled):
             asset = option_map.get(selected_label)
@@ -283,24 +280,33 @@ def _render_single_choice_cards(
     return current
 
 
+_MODEL_GRID = [
+    ["mean_variance", "risk_parity"],
+    ["hierarchical_equal_risk", "hierarchical_risk_parity"],
+]
+
+
 def _render_model_cards(selected_models: list[str]) -> list[str]:
-    current = list(selected_models)
-    cols = st.columns(3)
-    for col, (model_id, label) in zip(cols, MODEL_LABELS.items()):
-        with col:
-            is_selected = model_id in current
-            if st.button(
-                label,
-                key=f"model_{model_id}",
-                width="stretch",
-                type="primary" if is_selected else "secondary",
-                help=MODEL_HELP[model_id],
-            ):
-                if is_selected and len(current) > 1:
-                    current.remove(model_id)
-                elif not is_selected:
-                    current.append(model_id)
-    return current
+    for row_models in _MODEL_GRID:
+        cols = st.columns(len(row_models))
+        for col, model_id in zip(cols, row_models):
+            label = MODEL_LABELS.get(model_id, model_id)
+            with col:
+                is_selected = model_id in selected_models
+                if st.button(
+                    label,
+                    key=f"model_btn_{model_id}",
+                    width="stretch",
+                    type="primary" if is_selected else "secondary",
+                    help=MODEL_HELP.get(model_id, ""),
+                ):
+                    if is_selected:
+                        selected_models = [m for m in selected_models if m != model_id]
+                    else:
+                        selected_models = selected_models + [model_id]
+                    update_active_inputs({"selected_models": selected_models})
+                    st.rerun()
+    return selected_models
 
 
 def _render_constraints(

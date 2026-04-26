@@ -8,7 +8,7 @@ from app.ai.models import SUPPORTED_MODELS
 TREASURY_OBJECTIVES = [
     "Maximize return",
     "Stable performance",
-    "Best risk-adjusted returns",
+    "Risk-adjusted returns",
     "Reduce drawdowns",
     "Diversify exposure",
 ]
@@ -16,7 +16,7 @@ TREASURY_OBJECTIVES = [
 TREASURY_OBJECTIVE_HELP = {
     "Maximize return": "Prioritize higher modelled returns, accepting more risk if required.",
     "Stable performance": "Favor smoother portfolio behaviour over aggressive upside.",
-    "Best risk-adjusted returns": "Look for stronger return efficiency relative to volatility.",
+    "Risk-adjusted returns": "Look for stronger return efficiency relative to volatility.",
     "Reduce drawdowns": "Focus on limiting deeper peak-to-trough declines.",
     "Diversify exposure": "Prefer broader spread across assets and model behaviour.",
 }
@@ -186,7 +186,7 @@ METRIC_SPECS = {
 OBJECTIVE_RANKING_METRIC = {
     "Maximize return": ("annualized_return_pct", "higher"),
     "Stable performance": ("annualized_volatility_pct", "lower"),
-    "Best risk-adjusted returns": ("sharpe_ratio", "higher"),
+    "Risk-adjusted returns": ("sharpe_ratio", "higher"),
     "Reduce drawdowns": ("max_drawdown_pct", "lower"),
     "Diversify exposure": ("annualized_volatility_pct", "lower"),
 }
