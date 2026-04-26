@@ -126,14 +126,21 @@ def apply_theme(phase: str) -> None:
           font-size: 1.55rem;
           font-weight: 800;
           letter-spacing: 0.04em;
-          color: var(--alloca-accent);
+          color: {text_main};
           line-height: 1;
-          padding: 0.3rem 0 0.6rem 0;
+          padding: 0.3rem 0 0.1rem 0;
+        }}
+
+        .alloca-header-subtitle {{
+          font-size: 0.9rem;
+          font-weight: 400;
+          color: {text_main};
+          padding: 0 0 0.5rem 0;
         }}
 
         /* Right-align the dark mode toggle to match the panel right edge */
         [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] {{
-          align-items: flex-end;
+          align-items: flex-end !important;
         }}
 
         /* ── Panel columns via :has() ───────────────────────────────── */
@@ -222,6 +229,8 @@ def apply_theme(phase: str) -> None:
           border-radius: 14px !important;
           background: {chat_box_bg} !important;
           overflow: hidden;
+          box-shadow: none !important;
+          outline: none !important;
         }}
 
         [data-testid="stChatInput"] textarea {{
@@ -361,7 +370,11 @@ def render_header() -> None:
 
     title_col, toggle_col = st.columns([8, 1])
     with title_col:
-        st.markdown('<div class="alloca-header-title">Allocadabra</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="alloca-header-title">Allocadabra</div>'
+            '<div class="alloca-header-subtitle">Making portfolio allocation magical.</div>',
+            unsafe_allow_html=True,
+        )
     with toggle_col:
         icon = "☀" if dark_mode else "☾"
         if st.button(icon, key="dark_mode_toggle", help="Toggle light / dark mode"):
