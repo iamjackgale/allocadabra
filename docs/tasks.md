@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-26 BST (tasks 142/143 added, HERC model) |
+| last_updated | 2026-04-26 BST (tasks 140/142 DONE, task 144 added) |
 
 # Task Tracker
 
@@ -155,10 +155,11 @@
 | 137 | DONE | Orchestrator Agent | Save the fifth Backend/Data Agent brief for tasks `064`, `135`, and `136` in `docs/prompts/briefs/backend-data-agent-5.md`. | 2026-04-25 BST |
 | 138 | DONE | Orchestrator Agent | Review Backend/Data Agent Brief 5 results; mark tasks 064, 135, 136 complete. | 2026-04-25 BST |
 | 139 | DONE | Orchestrator Agent | Review Frontend Agent Brief 4 final live run results; mark tasks 104, 105, 112, 113, 119 complete. | 2026-04-25 BST |
-| 140 | TODO | Modelling Agent | Replace static allocation-over-time chart with 13-checkpoint rolling monthly re-optimisation. Run optimizer once per monthly checkpoint over the past 12 months; fall back to equal weights when data is insufficient. |  |
+| 140 | DONE | Modelling Agent | Replace static allocation-over-time chart with 13-checkpoint rolling monthly re-optimisation. Smoke: 12-row chart (13th checkpoint skipped — predates first return), weights sum to 1.0, genuine variation confirmed. | 2026-04-26 BST |
 | 141 | DONE | Orchestrator Agent | Save Modelling Agent Brief 3 for task 140 in `docs/prompts/briefs/modelling-agent-3.md`. | 2026-04-26 BST |
-| 142 | TODO | Modelling Agent | Add Hierarchical Equal Risk Contribution (HERC) as a fourth supported model: add constant and SUPPORTED_MODELS entry, implement `_run_herc` via `rp.HCPortfolio.optimization(model="HERC")`, update dispatch in `run_supported_model`, add label to `frontend/constants.py`, extend model list in `app/ai/prompts.py`. |  |
+| 142 | DONE | Modelling Agent | Add Hierarchical Equal Risk Contribution (HERC) as fourth model via `rp.HCPortfolio.optimization(model="HERC")`. Smoke: HERC sum=1.0, HERC≠HRP weights confirmed. Removed from FUTURE_ONLY lists; added to model_registry, MODEL_HELP, prompts. | 2026-04-26 BST |
 | 143 | DONE | Orchestrator Agent | Save Modelling Agent Brief 4 for task 142 in `docs/prompts/briefs/modelling-agent-4.md`. | 2026-04-26 BST |
+| 144 | DONE | Orchestrator Agent | Review Modelling Agent Brief 3+4 results; merge tasks 140 and 142 to main. Frontend subtitle already updated by frontend agent (task 140 mini spec resolved). | 2026-04-26 BST |
 
 ## Potential Extensions Beyond V1
 
