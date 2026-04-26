@@ -52,7 +52,7 @@ Selected Assets must reflect the current app state only.
 Selected Models must contain only supported model names (Mean Variance, Risk Parity, Hierarchical Risk Parity, Hierarchical Equal Risk), matching the current selected model IDs.
 After the visible Markdown, add one fenced metadata block using this format:
 ```allocadabra-metadata
-{{"kind":"modelling_plan","selected_model_ids":["mean_variance"],"missing_required_fields":[],"parsed_plan":{{"objective":"Stable performance","risk_appetite":"Medium","selected_assets":["BTC","ETH"],"constraints":["None"],"selected_model_ids":["mean_variance"],"data_window":"Last 365 daily observations available from CoinGecko"}}}}
+{{"kind":"modelling_plan","selected_model_ids":["mean_variance"],"missing_required_fields":[],"parsed_plan":{{"objective":"Stable Performance","risk_appetite":"Medium","selected_assets":["BTC","ETH"],"constraints":["None"],"selected_model_ids":["mean_variance"],"data_window":"Last 365 daily observations available from CoinGecko"}}}}
 ```
 The metadata block is for the app and must contain valid JSON."""
 
@@ -123,18 +123,18 @@ def build_configuration_input(
                 ],
             },
             "supported_treasury_objectives": [
-                "Maximize return",
-                "Stable performance",
-                "Risk-adjusted returns",
-                "Reduce drawdowns",
-                "Diversify exposure",
+                "Maximize Return",
+                "Stable Performance",
+                "Risk-Adjusted Returns",
+                "Reduce Drawdowns",
+                "Diversify Exposure",
             ],
             "supported_risk_appetites": [
-                "Very low",
+                "Very Low",
                 "Low",
                 "Medium",
                 "High",
-                "Very high",
+                "Very High",
             ],
         }
     )

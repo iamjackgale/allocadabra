@@ -6,35 +6,35 @@ from app.ai.models import SUPPORTED_MODELS
 
 
 TREASURY_OBJECTIVES = [
-    "Maximize return",
-    "Stable performance",
-    "Risk-adjusted returns",
-    "Reduce drawdowns",
-    "Diversify exposure",
+    "Maximize Return",
+    "Stable Performance",
+    "Risk-Adjusted Returns",
+    "Reduce Drawdowns",
+    "Diversify Exposure",
 ]
 
 TREASURY_OBJECTIVE_HELP = {
-    "Maximize return": "Prioritize higher modelled returns, accepting more risk if required.",
-    "Stable performance": "Favor smoother portfolio behaviour over aggressive upside.",
-    "Risk-adjusted returns": "Look for stronger return efficiency relative to volatility.",
-    "Reduce drawdowns": "Focus on limiting deeper peak-to-trough declines.",
-    "Diversify exposure": "Prefer broader spread across assets and model behaviour.",
+    "Maximize Return": "Prioritize higher modelled returns, accepting more risk if required.",
+    "Stable Performance": "Favor smoother portfolio behaviour over aggressive upside.",
+    "Risk-Adjusted Returns": "Look for stronger return efficiency relative to volatility.",
+    "Reduce Drawdowns": "Focus on limiting deeper peak-to-trough declines.",
+    "Diversify Exposure": "Prefer broader spread across assets and model behaviour.",
 }
 
 RISK_APPETITES = [
-    "Very low",
+    "Very Low",
     "Low",
     "Medium",
     "High",
-    "Very high",
+    "Very High",
 ]
 
 RISK_APPETITE_HELP = {
-    "Very low": "Interpret results with a strong preference for lower volatility and drawdown.",
+    "Very Low": "Interpret results with a strong preference for lower volatility and drawdown.",
     "Low": "Lean toward steadier portfolios with limited downside swings.",
     "Medium": "Balance risk control and return-seeking outcomes.",
     "High": "Accept larger swings if the modelled upside improves.",
-    "Very high": "Tolerate the widest swings when comparing model trade-offs.",
+    "Very High": "Tolerate the widest swings when comparing model trade-offs.",
 }
 
 MODEL_LABELS = {model.model_id: model.display_name for model in SUPPORTED_MODELS}
@@ -184,11 +184,11 @@ METRIC_SPECS = {
 }
 
 OBJECTIVE_RANKING_METRIC = {
-    "Maximize return": ("annualized_return_pct", "higher"),
-    "Stable performance": ("annualized_volatility_pct", "lower"),
-    "Risk-adjusted returns": ("sharpe_ratio", "higher"),
-    "Reduce drawdowns": ("max_drawdown_pct", "lower"),
-    "Diversify exposure": ("annualized_volatility_pct", "lower"),
+    "Maximize Return": ("annualized_return_pct", "higher"),
+    "Stable Performance": ("annualized_volatility_pct", "lower"),
+    "Risk-Adjusted Returns": ("sharpe_ratio", "higher"),
+    "Reduce Drawdowns": ("max_drawdown_pct", "lower"),
+    "Diversify Exposure": ("annualized_volatility_pct", "lower"),
 }
 
 GENERIC_MISSING_ARTIFACT_MESSAGE = "This artifact was not generated for this run."

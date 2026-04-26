@@ -33,7 +33,7 @@ def init_ui_state() -> dict[str, Any]:
             "chat_feedback": {"configuration": None, "review": None},
             "chat_retry_messages": {"configuration": None, "review": None},
             "chat_failure_counts": {"configuration": 0, "review": 0},
-            "review_section": "summary_metrics",
+            "review_section": "modelling_plan",
             "review_model_id": None,
             "review_gate_pending": False,
             "review_opening_attempted_for": None,
@@ -148,7 +148,7 @@ def set_review_section(section_id: str) -> None:
 
 def current_review_section() -> str:
     """Return the current review section."""
-    return str(ui_state().get("review_section", "summary_metrics"))
+    return str(ui_state().get("review_section", "modelling_plan"))
 
 
 def set_review_model_id(model_id: str | None) -> None:
@@ -325,7 +325,7 @@ def ensure_interrupted_state(workflow_phase: str) -> None:
 def reset_review_ui() -> None:
     """Clear frontend-only review UI state."""
     state = ui_state()
-    state["review_section"] = "summary_metrics"
+    state["review_section"] = "modelling_plan"
     state["review_model_id"] = None
     state["review_gate_pending"] = False
     state["review_opening_attempted_for"] = None

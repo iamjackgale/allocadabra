@@ -24,19 +24,19 @@ CONSTRAINT_KEYS = {
 SELECTED_ASSET_CONSTRAINT_KEYS = {"asset_ids", "percent"}
 
 TREASURY_OBJECTIVES = {
-    "Maximize return",
-    "Stable performance",
-    "Risk-adjusted returns",
-    "Reduce drawdowns",
-    "Diversify exposure",
+    "Maximize Return",
+    "Stable Performance",
+    "Risk-Adjusted Returns",
+    "Reduce Drawdowns",
+    "Diversify Exposure",
 }
 
 RISK_APPETITES = {
-    "Very low",
+    "Very Low",
     "Low",
     "Medium",
     "High",
-    "Very high",
+    "Very High",
 }
 
 

@@ -57,7 +57,7 @@ def _step1_missing_key_handling() -> None:
                 {"id": "ethereum", "symbol": "eth", "name": "Ethereum"},
             ],
             "selected_models": ["mean_variance", "risk_parity"],
-            "treasury_objective": "Stable performance",
+            "treasury_objective": "Stable Performance",
             "risk_appetite": "Medium",
         })
 
@@ -159,7 +159,7 @@ def _step4_unsupported_model_intercept() -> None:
             {"id": "ethereum", "symbol": "eth", "name": "Ethereum"},
         ],
         "selected_models": ["mean_variance"],
-        "treasury_objective": "Stable performance",
+        "treasury_objective": "Stable Performance",
         "risk_appetite": "Medium",
     })
 
@@ -192,7 +192,7 @@ def _step5_metadata_shape_validation() -> None:
     )
 
     md = (
-        "## Objective\nStable performance\n"
+        "## Objective\nStable Performance\n"
         "## Risk Appetite\nMedium\n"
         "## Selected Assets\nBTC, ETH\n"
         "## Constraints\nNone\n"

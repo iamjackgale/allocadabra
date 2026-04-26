@@ -28,14 +28,20 @@ from frontend.runtime import (
 )
 
 
+_GENERATING_KEY = "_plan_generating"
+_PENDING_INPUTS_KEY = "_plan_pending_inputs"
+
+
 def render_configuration_panel(workflow: dict[str, Any]) -> None:
     """Render the full Configuration workflow pane."""
+    generating = bool(st.session_state.get(_GENERATING_KEY))
+
     st.markdown('<div class="alloca-phase">MODEL CONFIGURATION</div>', unsafe_allow_html=True)
 
     plan = workflow.get("modelling_plan", {})
     in_plan_preview = plan.get("status") in {"generated", "confirmed"} and plan.get("markdown")
 
-    with st.container(height=715, border=True):
+    with st.container(height=710, border=True):
         if in_plan_preview:
             render_plan_preview(workflow)
         else:
@@ -44,15 +50,24 @@ def render_configuration_panel(workflow: dict[str, Any]) -> None:
     if not in_plan_preview:
         action_cols = st.columns([1.3, 1])
         with action_cols[0]:
-            if st.button("Generate", type="primary", width="stretch"):
-                _handle_generate_plan(updated_inputs)
+            btn_label = "Generating..." if generating else "Generate"
+            if st.button(btn_label, type="primary", width="stretch", disabled=generating):
+                st.session_state[_GENERATING_KEY] = True
+                st.session_state[_PENDING_INPUTS_KEY] = updated_inputs
+                st.rerun()
         with action_cols[1]:
-            if st.button("Reset", width="stretch"):
+            if st.button("Reset", width="stretch", disabled=generating):
                 request_confirmation(
                     "reset_configuration",
                     "This clears your selected assets, preferences, constraints, generated plan, chats, and outputs.",
                 )
         _render_confirmation_panel()
+
+        if generating:
+            pending_inputs = st.session_state.pop(_PENDING_INPUTS_KEY, {})
+            st.session_state[_GENERATING_KEY] = False
+            _handle_generate_plan(pending_inputs)
+            st.rerun()
 
 
 def render_configuration_form(workflow: dict[str, Any]) -> dict[str, Any]:
@@ -152,8 +167,7 @@ def _handle_generate_plan(active_inputs: dict[str, Any]) -> None:
         )
         return
 
-    with st.spinner("Generating modelling plan..."):
-        result = generate_modelling_plan(active_inputs=active_inputs)
+    result = generate_modelling_plan(active_inputs=active_inputs)
 
     if result.get("ok"):
         set_chat_feedback("configuration", None)
@@ -243,17 +257,19 @@ def _render_selected_assets(selected_assets: list[dict[str, Any]]) -> None:
         cols = st.columns(chunk_size)
         for col, asset in zip(cols, chunk):
             with col:
-                st.markdown(
-                    f'<div class="alloca-chip alloca-chip-wrapper">'
-                    f'<div class="alloca-chip-symbol">{_chip_symbol(asset)}</div>'
-                    f'<div class="alloca-chip-name">{_chip_name(asset, selected_assets)}</div>'
-                    f'</div>',
-                    unsafe_allow_html=True,
-                )
-                if st.button("✕", key=f"remove_{asset['id']}", help="Remove asset"):
-                    next_assets = [row for row in selected_assets if row.get("id") != asset["id"]]
-                    update_active_inputs({"selected_assets": next_assets})
-                    st.rerun()
+                with st.container(border=True):
+                    info_col, btn_col = st.columns([5, 1])
+                    with info_col:
+                        st.markdown(
+                            f'<div class="alloca-chip-symbol alloca-chip-card">{_chip_symbol(asset)}</div>'
+                            f'<div class="alloca-chip-name">{_chip_name(asset, selected_assets)}</div>',
+                            unsafe_allow_html=True,
+                        )
+                    with btn_col:
+                        if st.button("✕", key=f"remove_{asset['id']}", help="Remove asset"):
+                            next_assets = [row for row in selected_assets if row.get("id") != asset["id"]]
+                            update_active_inputs({"selected_assets": next_assets})
+                            st.rerun()
 
 
 def _render_single_choice_cards(
@@ -264,7 +280,7 @@ def _render_single_choice_cards(
     help_lookup: dict[str, str],
 ) -> str | None:
     current = selected_value
-    rows = [options[i : i + 5] for i in range(0, len(options), 5)]
+    rows = [options[i : i + 3] for i in range(0, len(options), 3)]
     for row_index, row in enumerate(rows):
         cols = st.columns(len(row))
         for col, option in zip(cols, row):

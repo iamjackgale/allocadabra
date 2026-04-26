@@ -307,7 +307,8 @@ def _render_modelling_plan(artifacts: list[dict[str, Any]]) -> None:
     if not text:
         st.info("Accepted modelling plan was not generated for this run.")
         return
-    st.markdown(text)
+    with st.container(height=400, border=False):
+        st.markdown(text)
     _render_manifest_download(artifact)
 
 

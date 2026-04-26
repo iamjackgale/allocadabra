@@ -20,7 +20,7 @@ PERPLEXITY_API_KEY_ENV = "PERPLEXITY_API_KEY"
 _ORIGINAL_DOTENV_LOADER: Callable[..., Any] | None = None
 
 SYNTHETIC_PLAN_MARKDOWN = (
-    "## Objective\nStable performance\n"
+    "## Objective\nStable Performance\n"
     "## Risk Appetite\nMedium\n"
     "## Selected Assets\nBitcoin, Ethereum\n"
     "## Constraints\nNone\n"
@@ -72,7 +72,7 @@ def _load_synthetic_review_fixture() -> None:
             {"id": "bitcoin", "symbol": "btc", "name": "Bitcoin"},
             {"id": "ethereum", "symbol": "eth", "name": "Ethereum"},
         ],
-        "treasury_objective": "Stable performance",
+        "treasury_objective": "Stable Performance",
         "risk_appetite": "Medium",
         "constraints": {},
         "selected_models": ["mean_variance", "risk_parity"],

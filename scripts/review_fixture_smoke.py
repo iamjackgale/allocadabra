@@ -29,7 +29,7 @@ import pandas as pd
 SOURCE_DIR = Path("/tmp/allocadabra-synthetic-review-fixture")
 
 SYNTHETIC_PLAN_MARKDOWN = (
-    "## Objective\nStable performance\n"
+    "## Objective\nStable Performance\n"
     "## Risk Appetite\nMedium\n"
     "## Selected Assets\nBitcoin, Ethereum\n"
     "## Constraints\nNone\n"
@@ -81,7 +81,7 @@ def _setup_workflow() -> None:
             {"id": "bitcoin", "symbol": "btc", "name": "Bitcoin"},
             {"id": "ethereum", "symbol": "eth", "name": "Ethereum"},
         ],
-        "treasury_objective": "Stable performance",
+        "treasury_objective": "Stable Performance",
         "risk_appetite": "Medium",
         "selected_models": ["mean_variance", "risk_parity"],
     })

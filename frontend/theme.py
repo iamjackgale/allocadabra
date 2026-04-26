@@ -277,22 +277,12 @@ def apply_theme(phase: str) -> None:
           border-color: var(--alloca-accent) !important;
         }}
 
-        /* ── Asset chip grid: X button overlay ──────────────────────── */
-        [data-testid="column"]:has(.alloca-chip-wrapper) {{
-          position: relative !important;
+        /* ── Asset chip cards: X button inside bordered container ──────── */
+        [data-testid="stVerticalBlockBorderWrapper"]:has(.alloca-chip-card) {{
+          padding: 0.45rem 0.65rem !important;
         }}
 
-        [data-testid="column"]:has(.alloca-chip-wrapper) [data-testid="stButton"] {{
-          position: absolute !important;
-          top: 0.2rem !important;
-          right: 0.2rem !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          width: auto !important;
-          z-index: 5;
-        }}
-
-        [data-testid="column"]:has(.alloca-chip-wrapper) [data-testid="stButton"] button {{
+        [data-testid="stVerticalBlockBorderWrapper"]:has(.alloca-chip-card) [data-testid="stButton"] button {{
           width: 1.5rem !important;
           height: 1.5rem !important;
           min-height: 1.5rem !important;
@@ -300,6 +290,14 @@ def apply_theme(phase: str) -> None:
           border-radius: 50% !important;
           font-size: 0.72rem !important;
           line-height: 1 !important;
+        }}
+
+        /* ── Chat avatar colours ───────────────────────────────────── */
+        [data-testid="stChatMessageAvatarUser"] {{
+          background-color: #7bbf9a !important;
+        }}
+        [data-testid="stChatMessageAvatarAssistant"] {{
+          background-color: #cd6262 !important;
         }}
 
         /* ── Misc elements ──────────────────────────────────────────── */

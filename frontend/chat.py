@@ -42,7 +42,7 @@ def render_chat_panel(
 
     chat_disabled = chat_failure_count(mode) >= 3
 
-    history = st.container(height=625)
+    history = st.container(height=620)
     with history:
         if not messages:
             with st.chat_message("assistant"):
@@ -57,14 +57,18 @@ def render_chat_panel(
         retry_col, _ = st.columns([1, 3])
         with retry_col:
             if st.button("Retry last message", key=f"{mode}_retry", width="stretch", disabled=chat_disabled):
-                with st.spinner("Waiting for AI response..."):
-                    _submit_message(
-                        mode=mode,
-                        prompt=retry_message,
-                        model_output_summary=model_output_summary,
-                        visible_context=visible_context,
-                        detailed_context=detailed_context,
-                    )
+                with history:
+                    with st.chat_message("user"):
+                        st.markdown(retry_message)
+                    with st.chat_message("assistant"):
+                        with st.spinner("Waiting for AI response..."):
+                            _submit_message(
+                                mode=mode,
+                                prompt=retry_message,
+                                model_output_summary=model_output_summary,
+                                visible_context=visible_context,
+                                detailed_context=detailed_context,
+                            )
                 st.rerun()
 
     prompt = st.chat_input(
@@ -74,14 +78,18 @@ def render_chat_panel(
         disabled=chat_disabled,
     )
     if prompt:
-        with st.spinner("Waiting for AI response..."):
-            _submit_message(
-                mode=mode,
-                prompt=prompt,
-                model_output_summary=model_output_summary,
-                visible_context=visible_context,
-                detailed_context=detailed_context,
-            )
+        with history:
+            with st.chat_message("user"):
+                st.markdown(prompt)
+            with st.chat_message("assistant"):
+                with st.spinner("Waiting for AI response..."):
+                    _submit_message(
+                        mode=mode,
+                        prompt=prompt,
+                        model_output_summary=model_output_summary,
+                        visible_context=visible_context,
+                        detailed_context=detailed_context,
+                    )
         st.rerun()
 
 
