@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 
 import os
-import subprocess
-import sys
 
-if __name__ == "__main__":
-    port = os.environ.get("PORT", "8501")
-    subprocess.run([
-        sys.executable, "-m", "streamlit", "run", "frontend/app.py",
-        "--server.port", port,
-        "--server.headless", "true",
-        "--server.runOnSave", "false"
-    ])
+# Set environment variables for Streamlit
+os.environ['STREAMLIT_SERVER_HEADLESS'] = 'true'
+os.environ['STREAMLIT_SERVER_PORT'] = os.environ.get('PORT', '8501')
+os.environ['STREAMLIT_SERVER_RUN_ON_SAVE'] = 'false'
+
+from streamlit.web.server import Server
+
+app = Server("frontend/app.py", is_hello=False).app
