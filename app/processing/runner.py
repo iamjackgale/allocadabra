@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+from dateutil.relativedelta import relativedelta
 
 from app.processing.artifacts import ArtifactWriter
 from app.processing.dataset import DatasetBuildError, build_canonical_price_dataframe
@@ -28,13 +29,13 @@ from app.processing.progress import (
     raise_if_cancelled,
 )
 from app.processing.transformations import (
-    allocation_over_time,
     allocation_weights_table,
     build_transformations,
     MetricUnavailableReason,
     portfolio_path_tables,
     portfolio_returns,
     risk_contribution_table,
+    rolling_allocation_over_time,
     summary_metrics_for_model_with_reasons,
     summary_metric_unavailable_table,
     summary_metrics_table,
@@ -248,7 +249,8 @@ def _write_model_artifacts(
     model_dir = f"models/{model_id}"
     portfolio = portfolio_returns(returns, result.weights)
     cumulative, drawdown, rolling = portfolio_path_tables(portfolio)
-    allocation_time = allocation_over_time(prices.index, result.weights)
+    checkpoint_dates = _monthly_checkpoints(returns)
+    allocation_time = rolling_allocation_over_time(returns, model_id, checkpoint_dates)
     weights = allocation_weights_table(result.weights)
 
     writer.write_dataframe(
@@ -493,6 +495,19 @@ def _plot_frontier_weights(ax: object, df: pd.DataFrame) -> None:
     ax.set_ylabel("Weight")
     ax.legend(loc="upper left", fontsize="small")
     ax.grid(True, alpha=0.25)
+
+
+def _monthly_checkpoints(returns: pd.DataFrame) -> list:
+    """Return up to 13 monthly checkpoint dates anchored to the latest return date."""
+    today = returns.index.max()
+    raw = [today - relativedelta(months=i) for i in range(13)]
+    raw.sort()
+    checkpoints = []
+    for d in raw:
+        available = returns.index[returns.index <= d]
+        if not available.empty:
+            checkpoints.append(available.max())
+    return checkpoints
 
 
 def _plot_dendrogram(ax: object, matrix: object, labels: list[str]) -> None:

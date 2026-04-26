@@ -2,7 +2,7 @@
 |---|---|
 | created | 2026-04-26 BST |
 | last_updated | 2026-04-26 BST |
-| prompt_used |  |
+| prompt_used | 2026-04-26 BST |
 
 # Modelling Agent Brief 4
 

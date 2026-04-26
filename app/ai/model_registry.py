@@ -21,6 +21,7 @@ _FALLBACK_V1_MODELS: tuple[ModelDefinition, ...] = (
     ModelDefinition("mean_variance", "Mean Variance"),
     ModelDefinition("risk_parity", "Risk Parity"),
     ModelDefinition("hierarchical_risk_parity", "Hierarchical Risk Parity"),
+    ModelDefinition("hierarchical_equal_risk", "Hierarchical Equal Risk"),
 )
 
 

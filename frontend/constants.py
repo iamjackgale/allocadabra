@@ -43,6 +43,7 @@ MODEL_HELP = {
     "mean_variance": "Classic optimizer that searches for weights with stronger return and volatility trade-offs.",
     "risk_parity": "Balances portfolio risk contribution across assets instead of maximizing return directly.",
     "hierarchical_risk_parity": "Uses clustering to group related assets before allocating portfolio risk.",
+    "hierarchical_equal_risk": "Extends hierarchical clustering to equalise risk contribution across asset clusters.",
 }
 
 PHASE_ACCENTS = {

@@ -13,11 +13,13 @@ logger = logging.getLogger(__name__)
 MEAN_VARIANCE = "mean_variance"
 RISK_PARITY = "risk_parity"
 HIERARCHICAL_RISK_PARITY = "hierarchical_risk_parity"
+HIERARCHICAL_EQUAL_RISK = "hierarchical_equal_risk"
 
 SUPPORTED_MODELS: dict[str, str] = {
     MEAN_VARIANCE: "Mean Variance",
     RISK_PARITY: "Risk Parity",
     HIERARCHICAL_RISK_PARITY: "Hierarchical Risk Parity",
+    HIERARCHICAL_EQUAL_RISK: "Hierarchical Equal Risk",
 }
 
 
@@ -67,6 +69,8 @@ def run_supported_model(model_id: str, returns: pd.DataFrame) -> ModelResult:
         return _run_mean_variance(returns)
     if model_id == RISK_PARITY:
         return _run_risk_parity(returns)
+    if model_id == HIERARCHICAL_EQUAL_RISK:
+        return _run_herc(returns)
     return _run_hrp(returns)
 
 
@@ -127,6 +131,27 @@ def _run_risk_parity(returns: pd.DataFrame) -> ModelResult:
         model_id=RISK_PARITY,
         label=SUPPORTED_MODELS[RISK_PARITY],
         weights=_normalize_weights(RISK_PARITY, raw_weights),
+        raw_weights=raw_weights,
+    )
+
+
+def _run_herc(returns: pd.DataFrame) -> ModelResult:
+    import riskfolio as rp
+
+    port = rp.HCPortfolio(returns=returns)
+    raw_weights = port.optimization(
+        model="HERC",
+        codependence="pearson",
+        rm="MV",
+        rf=0,
+        linkage="single",
+        max_k=10,
+        leaf_order=True,
+    )
+    return ModelResult(
+        model_id=HIERARCHICAL_EQUAL_RISK,
+        label=SUPPORTED_MODELS[HIERARCHICAL_EQUAL_RISK],
+        weights=_normalize_weights(HIERARCHICAL_EQUAL_RISK, raw_weights),
         raw_weights=raw_weights,
     )
 

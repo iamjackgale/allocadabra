@@ -33,13 +33,11 @@ SUPPORTED_MODEL_ID_LOOKUP = {
 FUTURE_ONLY_MODEL_NAMES = (
     "Worst Case",
     "Ordered Weighted Average",
-    "Hierarchical Equal Risk",
 )
 
 FUTURE_ONLY_MODEL_IDS = (
     "worst_case",
     "ordered_weighted_average",
-    "hierarchical_equal_risk",
 )
 
 

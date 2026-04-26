@@ -49,7 +49,7 @@ If required fields are missing, do not invent them; identify only the missing re
 Use only supported constraint categories: max/min allocation per asset, max/min allocation to a selected asset, and max/min number of assets.
 If no optional constraints are selected, write "None" under Constraints.
 Selected Assets must reflect the current app state only.
-Selected Models must contain only Mean Variance, Risk Parity, and Hierarchical Risk Parity, matching the current selected model IDs.
+Selected Models must contain only supported model names (Mean Variance, Risk Parity, Hierarchical Risk Parity, Hierarchical Equal Risk), matching the current selected model IDs.
 After the visible Markdown, add one fenced metadata block using this format:
 ```allocadabra-metadata
 {{"kind":"modelling_plan","selected_model_ids":["mean_variance"],"missing_required_fields":[],"parsed_plan":{{"objective":"Stable performance","risk_appetite":"Medium","selected_assets":["BTC","ETH"],"constraints":["None"],"selected_model_ids":["mean_variance"],"data_window":"Last 365 daily observations available from CoinGecko"}}}}

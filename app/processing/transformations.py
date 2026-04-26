@@ -120,6 +120,35 @@ def allocation_over_time(dates: pd.Index, weights: pd.Series) -> pd.DataFrame:
     return frame.reset_index()
 
 
+def rolling_allocation_over_time(
+    returns: pd.DataFrame,
+    model_id: str,
+    checkpoint_dates: list,
+    *,
+    min_observations: int = 60,
+) -> pd.DataFrame:
+    """Re-optimise weights at each monthly checkpoint and return a row per checkpoint."""
+    from app.processing.models import run_supported_model
+
+    n_assets = len(returns.columns)
+    equal_weights = {asset: 1.0 / n_assets for asset in returns.columns}
+
+    rows = []
+    for d in checkpoint_dates:
+        returns_slice = returns.loc[returns.index <= d]
+        if len(returns_slice) < min_observations:
+            weights_dict = equal_weights
+        else:
+            try:
+                result = run_supported_model(model_id, returns_slice)
+                weights_dict = result.weights.reindex(returns.columns).astype(float).to_dict()
+            except Exception:
+                weights_dict = equal_weights
+        rows.append({"date": d, **weights_dict})
+
+    return pd.DataFrame(rows, columns=["date"] + list(returns.columns))
+
+
 def allocation_weights_table(weights: pd.Series) -> pd.DataFrame:
     """CSV-ready final allocation weights table."""
     return pd.DataFrame({"asset": weights.index, "weight": weights.astype(float).values})

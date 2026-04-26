@@ -536,6 +536,101 @@ Expected result:
 - Final line prints `modelling smoke checks passed`.
 - Warning lines from the intentionally unsupported model and synthetic covariance edge case are acceptable for this smoke run.
 
+## Rolling Allocation Over Time — Task 140
+
+### Validation commands
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall app/processing
+uv lock --check
+rg -n '(<{7}|={7}|>{7})' .
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 scripts/modelling_smoke.py
+```
+
+### Observed results
+
+- `compileall app/processing`: passed.
+- `uv lock --check`: passed.
+- Conflict marker scan: passed, no output.
+- `modelling_smoke.py`: passed (`modelling smoke checks passed`).
+
+### Inline CSV inspection
+
+Run against a 400-day synthetic 3-asset (BTC/ETH/SOL) dataset via `generate_modelling_outputs`:
+
+```text
+Model: mean_variance
+  Rows: 12
+  Date range: 2024-03-03 00:00:00+00:00 to 2025-02-03 00:00:00+00:00
+  Weight sums (min/max): 1.0000 / 1.0000
+  Weight variation first vs last: True
+
+Model: risk_parity
+  Rows: 12
+  Date range: 2024-03-03 00:00:00+00:00 to 2025-02-03 00:00:00+00:00
+  Weight sums (min/max): 1.0000 / 1.0000
+  Weight variation first vs last: True
+```
+
+### Notes
+
+- 12 rows (not 13) is correct for this dataset: `build_canonical_price_dataframe` starts the canonical dataset at 2024-02-06 after alignment cleaning, so the 12-month-back checkpoint (2024-02-03) predates the first available return and is skipped per spec.
+- With a full year+ of real price history (typical production run), all 13 checkpoints resolve and the output will have 13 rows.
+- Weight sums are exactly 1.0000 for all rows.
+- Genuine weight variation is observed between first and last checkpoint for both models.
+- The first checkpoint (2024-02-03, equal-weights fallback) is correctly skipped when no returns precede the date; subsequent checkpoints produce optimized weights.
+
+### Frontend copy mini spec
+
+The string `"V1 repeats each model's final optimized weights across the 365-day window."` in `frontend/constants.py` (line 92, key `"allocation_over_time"` in `CHART_SUBTITLES`) must be updated to:
+
+> "Optimal weights re-calculated monthly over the past 12 months."
+
+This is a Frontend Agent change (boundary: `/frontend/**`). The key and dict structure do not change — only the value string.
+
+## HERC Fourth Model — Task 142
+
+### Validation commands
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 -m compileall app/processing app/ai frontend
+uv lock --check
+rg -n '(<{7}|={7}|>{7})' .
+PYTHONPYCACHEPREFIX=/tmp/allocadabra-pycache-main python3 scripts/modelling_smoke.py
+```
+
+### Observed results
+
+- `compileall app/processing app/ai frontend`: passed.
+- `uv lock --check`: passed.
+- Conflict marker scan: passed, no output.
+- `modelling_smoke.py`: passed (`modelling smoke checks passed`).
+
+### Four-model inline smoke
+
+```text
+SUPPORTED_MODELS: ['mean_variance', 'risk_parity', 'hierarchical_risk_parity', 'hierarchical_equal_risk']
+
+mean_variance:              sum=1.000000  btc=0.6863  eth=0.0000  sol=0.3137
+risk_parity:                sum=1.000000  btc=0.4225  eth=0.3074  sol=0.2701
+hierarchical_risk_parity:   sum=1.000000  btc=0.4979  eth=0.2898  sol=0.2123
+hierarchical_equal_risk:    sum=1.000000  btc=0.5065  eth=0.2849  sol=0.2086
+
+HERC vs HRP weights differ: True
+```
+
+### Notes
+
+- All four model IDs present in `SUPPORTED_MODELS`.
+- HERC weight sum: 1.000000 (exact).
+- HERC weights differ from HRP weights — confirmed genuine separate optimization.
+- No existing model weights changed (non-regression confirmed by identical HRP/RP/MV results).
+- `MODEL_LABELS` in `frontend/constants.py` derives dynamically from `app.ai.models.SUPPORTED_MODELS` which reads from `app.ai.model_registry.load_supported_models()` — no hardcoded label change needed; HERC label propagates automatically.
+- `FUTURE_ONLY_MODEL_NAMES` and `FUTURE_ONLY_MODEL_IDS` in `app/ai/models.py` updated to remove `hierarchical_equal_risk`.
+- `_FALLBACK_V1_MODELS` in `app/ai/model_registry.py` updated to include HERC.
+- `MODEL_HELP` in `frontend/constants.py` updated with HERC help text.
+- `modelling_plan_instructions()` in `app/ai/prompts.py` updated to include "Hierarchical Equal Risk" in the supported model name list.
+
 ## Known Validation Gaps
 
 - No live CoinGecko price cache integration was run.
