@@ -40,7 +40,7 @@ def render_configuration_panel(workflow: dict[str, Any]) -> None:
         update_active_inputs({"selected_models": selected_models})
 
     plan = workflow.get("modelling_plan", {})
-    with st.container(height=900, border=True):
+    with st.container(height=810, border=True):
         if plan.get("status") in {"generated", "confirmed"} and plan.get("markdown"):
             render_plan_preview(workflow)
         else:
