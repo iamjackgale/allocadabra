@@ -141,6 +141,7 @@ def apply_theme(phase: str) -> None:
         /* Right-align the dark mode toggle to match the panel right edge */
         [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] {{
           align-items: flex-end !important;
+          margin-left: 100px !important;
         }}
 
         /* ── Panel columns via :has() ───────────────────────────────── */
