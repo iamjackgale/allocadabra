@@ -35,7 +35,7 @@ def render_configuration_panel(workflow: dict[str, Any]) -> None:
     plan = workflow.get("modelling_plan", {})
     in_plan_preview = plan.get("status") in {"generated", "confirmed"} and plan.get("markdown")
 
-    with st.container(height=725, border=True):
+    with st.container(height=715, border=True):
         if in_plan_preview:
             render_plan_preview(workflow)
         else:
