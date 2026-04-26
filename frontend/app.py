@@ -18,7 +18,7 @@ from frontend.dev_tools import apply_dev_validation_hooks
 from frontend.modelling import render_modelling_page
 from frontend.review import render_review_page
 from frontend.runtime import drain_modelling_updates, ensure_interrupted_state, init_ui_state, modelling_state, review_gate_pending
-from frontend.theme import apply_theme, render_footer, render_mobile_overlay
+from frontend.theme import apply_theme, render_footer, render_header, render_mobile_overlay
 
 
 def main() -> None:
@@ -42,6 +42,7 @@ def main() -> None:
     phase = _resolve_phase(workflow)
     apply_theme(phase)
     render_mobile_overlay()
+    render_header()
 
     if phase == "configuration":
         chat_col, config_col = st.columns([0.92, 1.08], gap="large")

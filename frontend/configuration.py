@@ -31,8 +31,7 @@ from frontend.runtime import (
 
 def render_configuration_panel(workflow: dict[str, Any]) -> None:
     """Render the full Configuration workflow pane."""
-    st.markdown('<div class="alloca-panel">', unsafe_allow_html=True)
-    st.markdown('<div class="alloca-phase">CONFIGURATION</div>', unsafe_allow_html=True)
+    st.markdown('<div class="alloca-phase">MODEL CONFIGURATION</div>', unsafe_allow_html=True)
 
     inputs = dict(workflow.get("user_inputs", {}))
     selected_models = list(inputs.get("selected_models") or DEFAULT_MODEL_IDS)
@@ -46,8 +45,6 @@ def render_configuration_panel(workflow: dict[str, Any]) -> None:
     else:
         render_configuration_form(workflow)
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
 
 def render_configuration_form(workflow: dict[str, Any]) -> None:
     """Render the editable configuration form."""
@@ -59,14 +56,11 @@ def render_configuration_form(workflow: dict[str, Any]) -> None:
     constraints = dict(inputs.get("constraints") or {})
     issues = _issues_by_field(validate_active_configuration().get("issues", []))
 
-    st.markdown("#### Build your model scope")
-    st.caption("Choose assets, preferences, and supported models before asking the AI to generate a plan.")
-
     _render_asset_selector(selected_assets)
     _render_selected_assets(selected_assets)
     _render_field_issues(issues, "selected_assets")
 
-    st.markdown("##### Treasury objective")
+    st.markdown("##### Treasury Objective")
     objective = _render_single_choice_cards(
         key_prefix="objective",
         options=TREASURY_OBJECTIVES,
@@ -75,7 +69,7 @@ def render_configuration_form(workflow: dict[str, Any]) -> None:
     )
     _render_field_issues(issues, "treasury_objective")
 
-    st.markdown("##### Risk appetite")
+    st.markdown("##### Risk Appetite")
     risk_appetite = _render_single_choice_cards(
         key_prefix="risk",
         options=RISK_APPETITES,
@@ -84,13 +78,13 @@ def render_configuration_form(workflow: dict[str, Any]) -> None:
     )
     _render_field_issues(issues, "risk_appetite")
 
-    st.markdown("##### Selected models")
+    st.markdown("##### Selected Models")
     selected_models = _render_model_cards(selected_models)
     if selected_models != inputs.get("selected_models"):
         update_active_inputs({"selected_models": selected_models})
     _render_field_issues(issues, "selected_models")
 
-    with st.expander("Optional constraints"):
+    with st.expander("Optional Constraints"):
         constraints = _render_constraints(selected_assets, constraints, issues)
 
     updated_inputs = {
@@ -124,7 +118,7 @@ def render_configuration_form(workflow: dict[str, Any]) -> None:
 def render_plan_preview(workflow: dict[str, Any]) -> None:
     """Render the generated-plan confirmation state."""
     plan = workflow.get("modelling_plan", {})
-    st.markdown("#### Confirm the modelling plan")
+    st.markdown("#### Confirm The Modelling Plan")
     st.markdown(str(plan.get("markdown", "")))
 
     action_cols = st.columns(3)
@@ -182,10 +176,12 @@ def _handle_generate_plan(active_inputs: dict[str, Any]) -> None:
 
 
 def _render_asset_selector(selected_assets: list[dict[str, Any]]) -> None:
+    st.markdown("##### Select Assets")
     search_term = st.text_input(
-        "Search assets",
+        "Select Assets",
         key="asset_search_term",
         placeholder="Search CoinGecko symbol or name",
+        label_visibility="collapsed",
     )
     try:
         tokens = list_token_options(
@@ -220,6 +216,7 @@ def _render_asset_selector(selected_assets: list[dict[str, Any]]) -> None:
         options=option_labels,
         format_func=lambda label: "Select an asset" if not label else label,
         key="asset_option_select",
+        label_visibility="collapsed",
     )
     add_disabled = not selected_label or len(selected_assets) >= 10
     add_cols = st.columns([1.4, 1])
@@ -241,24 +238,24 @@ def _render_selected_assets(selected_assets: list[dict[str, Any]]) -> None:
         st.caption("No assets selected yet.")
         return
 
-    st.markdown("##### Selected assets")
-    for asset in selected_assets:
-        cols = st.columns([6, 1])
-        with cols[0]:
-            st.markdown(
-                f"""
-                <div class="alloca-chip">
-                  <div class="alloca-chip-symbol">{_chip_symbol(asset)}</div>
-                  <div class="alloca-chip-name">{_chip_name(asset, selected_assets)}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        with cols[1]:
-            if st.button("Remove", key=f"remove_{asset['id']}", width="stretch"):
-                next_assets = [row for row in selected_assets if row.get("id") != asset["id"]]
-                update_active_inputs({"selected_assets": next_assets})
-                st.rerun()
+    st.markdown("##### Selected Assets")
+    chunk_size = 3
+    chunks = [selected_assets[i : i + chunk_size] for i in range(0, len(selected_assets), chunk_size)]
+    for chunk in chunks:
+        cols = st.columns(chunk_size)
+        for col, asset in zip(cols, chunk):
+            with col:
+                st.markdown(
+                    f'<div class="alloca-chip alloca-chip-wrapper">'
+                    f'<div class="alloca-chip-symbol">{_chip_symbol(asset)}</div>'
+                    f'<div class="alloca-chip-name">{_chip_name(asset, selected_assets)}</div>'
+                    f'</div>',
+                    unsafe_allow_html=True,
+                )
+                if st.button("✕", key=f"remove_{asset['id']}", help="Remove asset"):
+                    next_assets = [row for row in selected_assets if row.get("id") != asset["id"]]
+                    update_active_inputs({"selected_assets": next_assets})
+                    st.rerun()
 
 
 def _render_single_choice_cards(
@@ -269,12 +266,11 @@ def _render_single_choice_cards(
     help_lookup: dict[str, str],
 ) -> str | None:
     current = selected_value
-    rows = [options[i : i + 3] for i in range(0, len(options), 3)]
+    rows = [options[i : i + 5] for i in range(0, len(options), 5)]
     for row_index, row in enumerate(rows):
         cols = st.columns(len(row))
         for col, option in zip(cols, row):
             with col:
-                st.markdown('<div class="alloca-card">', unsafe_allow_html=True)
                 if st.button(
                     option,
                     key=f"{key_prefix}_{row_index}_{option}",
@@ -283,8 +279,6 @@ def _render_single_choice_cards(
                     help=help_lookup[option],
                 ):
                     current = option
-                st.caption(help_lookup[option])
-                st.markdown("</div>", unsafe_allow_html=True)
     return current
 
 
@@ -293,23 +287,18 @@ def _render_model_cards(selected_models: list[str]) -> list[str]:
     cols = st.columns(3)
     for col, (model_id, label) in zip(cols, MODEL_LABELS.items()):
         with col:
-            st.markdown('<div class="alloca-card">', unsafe_allow_html=True)
-            checked = st.checkbox(
+            is_selected = model_id in current
+            if st.button(
                 label,
-                value=model_id in current,
                 key=f"model_{model_id}",
+                width="stretch",
+                type="primary" if is_selected else "secondary",
                 help=MODEL_HELP[model_id],
-            )
-            st.caption(MODEL_HELP[model_id])
-            st.markdown("</div>", unsafe_allow_html=True)
-            if checked and model_id not in current:
-                current.append(model_id)
-            if not checked and model_id in current:
-                if len(current) == 1:
-                    st.info("Keep at least one supported model selected.")
-                    st.session_state[f"model_{model_id}"] = True
-                else:
+            ):
+                if is_selected and len(current) > 1:
                     current.remove(model_id)
+                elif not is_selected:
+                    current.append(model_id)
     return current
 
 
@@ -319,6 +308,29 @@ def _render_constraints(
     issues: dict[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
     asset_options = {f"{_chip_symbol(asset)} · {_chip_name(asset, selected_assets)}": asset["id"] for asset in selected_assets}
+
+    # Min/max number of assets — moved to top per user request
+    count_cols = st.columns(2)
+    with count_cols[0]:
+        min_assets = st.number_input(
+            "Min number of assets in portfolio",
+            min_value=0,
+            max_value=max(10, len(selected_assets)),
+            value=int(constraints.get("min_assets_in_portfolio") or 0),
+            step=1,
+            key="constraint_min_assets",
+        )
+        _render_field_issues(issues, "constraints.min_assets_in_portfolio")
+    with count_cols[1]:
+        max_assets = st.number_input(
+            "Max number of assets in portfolio",
+            min_value=0,
+            max_value=max(10, len(selected_assets)),
+            value=int(constraints.get("max_assets_in_portfolio") or len(selected_assets) or 0),
+            step=1,
+            key="constraint_max_assets",
+        )
+        _render_field_issues(issues, "constraints.max_assets_in_portfolio")
 
     global_cols = st.columns(2)
     with global_cols[0]:
@@ -383,28 +395,6 @@ def _render_constraints(
         key="constraint_selected_max_percent",
     )
     _render_field_issues(issues, "constraints.selected_asset_max_allocation.percent")
-
-    count_cols = st.columns(2)
-    with count_cols[0]:
-        min_assets = st.number_input(
-            "Min number of assets in portfolio",
-            min_value=0,
-            max_value=max(10, len(selected_assets)),
-            value=int(constraints.get("min_assets_in_portfolio") or 0),
-            step=1,
-            key="constraint_min_assets",
-        )
-        _render_field_issues(issues, "constraints.min_assets_in_portfolio")
-    with count_cols[1]:
-        max_assets = st.number_input(
-            "Max number of assets in portfolio",
-            min_value=0,
-            max_value=max(10, len(selected_assets)),
-            value=int(constraints.get("max_assets_in_portfolio") or len(selected_assets) or 0),
-            step=1,
-            key="constraint_max_assets",
-        )
-        _render_field_issues(issues, "constraints.max_assets_in_portfolio")
 
     _render_field_issues(issues, "constraints")
 

@@ -51,6 +51,7 @@ def init_ui_state() -> dict[str, Any]:
                 "export_prepared": False,
                 "interruption_checked": False,
             },
+            "dark_mode": False,
         }
     return st.session_state[UI_STATE_KEY]
 
@@ -63,6 +64,17 @@ def ui_state() -> dict[str, Any]:
 def modelling_state() -> dict[str, Any]:
     """Return the current modelling runtime state."""
     return ui_state()["modelling_run"]
+
+
+def get_dark_mode() -> bool:
+    """Return whether dark mode is currently enabled."""
+    return bool(ui_state().get("dark_mode", False))
+
+
+def toggle_dark_mode() -> None:
+    """Toggle the dark mode flag."""
+    state = ui_state()
+    state["dark_mode"] = not state.get("dark_mode", False)
 
 
 def set_chat_feedback(mode: str, message: str | None) -> None:

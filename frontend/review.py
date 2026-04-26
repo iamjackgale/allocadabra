@@ -86,12 +86,14 @@ def render_review_page(workflow: dict[str, Any]) -> None:
         model_order=model_order,
     )
 
-    _ensure_review_opening(
+    opened = _ensure_review_opening(
         manifest_key=str(workflow.get("model_outputs", {}).get("manifest_path") or ""),
         ranking_summary=ranking_summary,
         model_output_summary=model_output_summary,
         has_messages=bool(workflow.get("chat_sessions", {}).get("review")),
     )
+    if opened:
+        st.rerun()
 
     chat_col, review_col = st.columns([0.92, 1.08], gap="large")
     with chat_col:
@@ -103,50 +105,49 @@ def render_review_page(workflow: dict[str, Any]) -> None:
             detailed_context=detailed_context,
         )
 
+    objective = workflow.get("user_inputs", {}).get("treasury_objective") or "Not set"
+    risk = workflow.get("user_inputs", {}).get("risk_appetite") or "Not set"
     with review_col:
-        st.markdown('<div class="alloca-panel">', unsafe_allow_html=True)
         st.markdown('<div class="alloca-phase">REVIEW</div>', unsafe_allow_html=True)
-        objective = workflow.get("user_inputs", {}).get("treasury_objective") or "Not set"
-        risk = workflow.get("user_inputs", {}).get("risk_appetite") or "Not set"
-        st.markdown(
-            "Compare model outputs against your selected objective and risk appetite. Green/yellow/red rankings compare these models within this run only."
-        )
-        st.caption(f"Ranked for: {objective} · {risk} risk appetite")
+        with st.container(height=8000, border=False):
+            st.markdown(
+                "Compare model outputs against your selected objective and risk appetite. Green/yellow/red rankings compare these models within this run only."
+            )
+            _render_review_controls(
+                artifacts=artifacts,
+                model_order=model_order,
+                failed_models=failed_models,
+                selected_section=selected_section,
+                objective=objective,
+                risk=risk,
+            )
+            if failed_models:
+                for failed in failed_models:
+                    st.error(f"{failed.get('label', failed.get('model_id', 'Model'))}: {failed.get('reason', 'Failed during modelling.')}")
 
-        _render_review_controls(
-            artifacts=artifacts,
-            model_order=model_order,
-            failed_models=failed_models,
-            selected_section=selected_section,
-        )
-        if failed_models:
-            for failed in failed_models:
-                st.error(f"{failed.get('label', failed.get('model_id', 'Model'))}: {failed.get('reason', 'Failed during modelling.')}")
-
-        _render_sections(
-            workflow=workflow,
-            artifacts=artifacts,
-            model_order=model_order,
-            selected_model_id=selected_model_id,
-            selected_section=selected_section,
-            raw_summary=raw_summary,
-            summary_matrix=summary_matrix,
-        )
-        action_cols = st.columns(2)
-        with action_cols[0]:
-            if st.button("Return To Configure", width="stretch"):
-                request_confirmation(
-                    "return_to_configure",
-                    "This returns to Configuration and clears the current outputs and Review chat. Download results first if you want to keep them.",
-                )
-        with action_cols[1]:
-            if st.button("Start New Model", width="stretch"):
-                request_confirmation(
-                    "start_new_model",
-                    "This clears the current configuration, outputs, and Review chat. Download results first if you want to keep them.",
-                )
-        _render_review_confirmation()
-        st.markdown("</div>", unsafe_allow_html=True)
+            _render_sections(
+                workflow=workflow,
+                artifacts=artifacts,
+                model_order=model_order,
+                selected_model_id=selected_model_id,
+                selected_section=selected_section,
+                raw_summary=raw_summary,
+                summary_matrix=summary_matrix,
+            )
+            action_cols = st.columns(2)
+            with action_cols[0]:
+                if st.button("Return To Configure", width="stretch"):
+                    request_confirmation(
+                        "return_to_configure",
+                        "This returns to Configuration and clears the current outputs and Review chat. Download results first if you want to keep them.",
+                    )
+            with action_cols[1]:
+                if st.button("Start New Model", width="stretch"):
+                    request_confirmation(
+                        "start_new_model",
+                        "This clears the current configuration, outputs, and Review chat. Download results first if you want to keep them.",
+                    )
+            _render_review_confirmation()
 
 
 def _render_review_controls(
@@ -155,10 +156,14 @@ def _render_review_controls(
     model_order: list[str],
     failed_models: list[dict[str, Any]],
     selected_section: str,
+    objective: str,
+    risk: str,
 ) -> None:
     cols = st.columns([1.1, 1])
     download_all = get_download_all_payload()
+    model_labels = _model_selector_labels(model_order, failed_models)
     with cols[0]:
+        st.caption(f"Ranked for: {objective} · {risk} risk appetite")
         if download_all.get("ok") and download_all.get("path"):
             path = str(download_all["path"])
             st.download_button(
@@ -176,11 +181,10 @@ def _render_review_controls(
                 width="stretch",
             )
 
-    model_labels = _model_selector_labels(model_order, failed_models)
     with cols[1]:
         if model_labels:
             chosen_label = st.selectbox(
-                "Selected model",
+                "Selected Model",
                 options=list(model_labels),
                 index=list(model_labels).index(_current_model_label(model_labels)),
                 key="review_model_selector",
@@ -189,7 +193,7 @@ def _render_review_controls(
             set_review_model_id(model_labels[chosen_label])
         else:
             st.selectbox(
-                "Selected model",
+                "Selected Model",
                 options=["No successful models"],
                 index=0,
                 disabled=True,
@@ -429,9 +433,10 @@ def _ensure_review_opening(
     ranking_summary: dict[str, Any],
     model_output_summary: dict[str, Any],
     has_messages: bool,
-) -> None:
+) -> bool:
+    """Generate the review opening message if not yet present. Returns True if generated."""
     if has_messages or review_opening_attempted_for() == manifest_key:
-        return
+        return False
     result = generate_review_opening(
         ranking_summary=ranking_summary,
         model_output_summary=model_output_summary,
@@ -442,6 +447,7 @@ def _ensure_review_opening(
             "review",
             str(result.get("message", "The Review opening could not be generated.")),
         )
+    return bool(result.get("ok"))
 
 
 def _review_ai_context(

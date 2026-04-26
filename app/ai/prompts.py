@@ -41,6 +41,7 @@ def modelling_plan_instructions() -> str:
 
 Mode: Configuration Mode modelling-plan generation.
 Generate Markdown with exactly these headings: Objective, Risk Appetite, Selected Assets, Constraints, Selected Models, Data Window.
+Use H3 (###) for every section heading — do not use H1, H2, H4, or any other heading level.
 Respect the currently selected model IDs. Do not independently change the selected model subset.
 Use the last 365 daily observations available from CoinGecko as the data window.
 Do not add an Educational Caveats heading in V1.
