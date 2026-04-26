@@ -166,11 +166,6 @@ def apply_theme(phase: str) -> None:
           overflow: hidden;
         }}
 
-        /* Chat history container: fill remaining height instead of fixed 560px */
-        [data-testid="stHorizontalBlock"]:has(.alloca-phase) > [data-testid="column"]:first-child [data-testid="stVerticalBlockBorderWrapper"] {{
-          height: calc(100vh - 290px) !important;
-        }}
-
 
         /* Right column (config/review): scrollable container */
         [data-testid="stHorizontalBlock"]:has(.alloca-phase) > [data-testid="column"]:last-child {{
