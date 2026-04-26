@@ -1,7 +1,7 @@
 | Metadata | Value |
 |---|---|
 | created | 2026-04-20 20:06:11 BST |
-| last_updated | 2026-04-26 BST (tasks 140/142 DONE, task 144 added) |
+| last_updated | 2026-04-26 BST (tasks 145/146 added, EXT-003/EXT-008 DONE) |
 
 # Task Tracker
 
@@ -160,6 +160,8 @@
 | 142 | DONE | Modelling Agent | Add Hierarchical Equal Risk Contribution (HERC) as fourth model via `rp.HCPortfolio.optimization(model="HERC")`. Smoke: HERC sum=1.0, HERC≠HRP weights confirmed. Removed from FUTURE_ONLY lists; added to model_registry, MODEL_HELP, prompts. | 2026-04-26 BST |
 | 143 | DONE | Orchestrator Agent | Save Modelling Agent Brief 4 for task 142 in `docs/prompts/briefs/modelling-agent-4.md`. | 2026-04-26 BST |
 | 144 | DONE | Orchestrator Agent | Review Modelling Agent Brief 3+4 results; merge tasks 140 and 142 to main. Frontend subtitle already updated by frontend agent (task 140 mini spec resolved). | 2026-04-26 BST |
+| 145 | DONE | Frontend Agent | Logo branding (PNG assets, dark/light mode); 2×2 model grid supporting 4 models; MIN_MODELS 1→2 / MAX_MODELS 3→4; remove hardcoded model ID allowlist; action buttons moved outside scroll containers; objective renamed "Risk-adjusted returns"; panel height 800→725; chat height 655→635. | 2026-04-26 BST |
+| 146 | DONE | Orchestrator Agent | Merge Frontend Agent task 145 to main; mark EXT-003 and EXT-008 DONE. | 2026-04-26 BST |
 
 ## Potential Extensions Beyond V1
 
@@ -167,12 +169,12 @@
 |---|---|---|---|---|
 | EXT-001 | CANDIDATE | Add Worst Case model. | `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/specs/ai/parameters-agent.md` | Future-only model; higher parameter complexity and solver/runtime risk. |
 | EXT-002 | CANDIDATE | Add Ordered Weighted Average model. | `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/specs/ai/parameters-agent.md` | Future-only model; needs OWA tail weights and student-friendly parameterization. |
-| EXT-003 | CANDIDATE | Add Hierarchical Equal Risk model. | `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/specs/ai/parameters-agent.md` | Future-only model; likely `HERC`/`HERC2`, best after HRP is stable. |
+| EXT-003 | DONE | Add Hierarchical Equal Risk model. | `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/specs/ai/parameters-agent.md` | Implemented in task 142: `_run_herc` via `rp.HCPortfolio.optimization(model="HERC")`; 2×2 model grid in task 145. |
 | EXT-004 | CANDIDATE | Enable Perplexity web search. | `docs/specs/ai/ai-model-integration.md` | Explicitly off in V1; potential V2 feature. |
 | EXT-005 | CANDIDATE | Support alternate LLM models/providers through Perplexity. | `docs/specs/ai/ai-model-integration.md` | Perplexity Agent API is multi-provider; V1 uses `perplexity/sonar`. |
 | EXT-006 | CANDIDATE | Export AI chat transcripts. | `docs/specs/ai/ai-model-integration.md`; `docs/specs/data-backend/session-storage.md`; `docs/plan.md` | V1 excludes chat transcripts from export. |
 | EXT-007 | CANDIDATE | Give Review Mode access to full Configuration Mode transcript. | `docs/specs/ai/ai-model-integration.md`; `docs/specs/data-backend/session-storage.md`; `docs/specs/ai/review-agent.md` | V1 reinjects only confirmed modelling plan by default. |
-| EXT-008 | CANDIDATE | Add rolling optimization or scheduled rebalancing. | `docs/specs/data-backend/riskfolio-lib.md` | Would make allocation-over-time charts show changing weights rather than repeated static weights. |
+| EXT-008 | DONE | Add rolling optimization or scheduled rebalancing. | `docs/specs/data-backend/riskfolio-lib.md` | Implemented in task 140: 13-checkpoint monthly re-optimisation; allocation-over-time chart now shows genuine weight variation. |
 | EXT-009 | CANDIDATE | Define and implement standardized benchmark construction. | `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/specs/frontend/model-parameters.md`; `docs/specs/ai/parameters-agent.md` | V1 should not ask users for benchmark preference; benchmark construction remains undefined. |
 | EXT-010 | CANDIDATE | Add additional export formats and visual artifacts. | `docs/specs/data-backend/session-storage.md`; `docs/specs/data-backend/riskfolio-lib.md`; `docs/specs/data-backend/dataset-building.md`; `docs/prompts/agents/backend-data-agent.md` | V1 has `.json`, `.md`, `.csv`; visual artifact export details remain open. |
 | EXT-011 | CANDIDATE | Add cloud/server persistence or future cloud logs. | `docs/specs/app/logging.md`; `docs/specs/data-backend/data-storage.md`; `docs/specs/data-backend/session-storage.md` | V1 is local app storage and has no remote persistence. |
