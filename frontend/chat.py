@@ -68,7 +68,7 @@ def render_chat_panel(
                 st.rerun()
 
     prompt = st.chat_input(
-        "Ask the AI about your model.",
+        "Ask Perplexity about your models.",
         key=f"{mode}_chat_input",
         height=88,
         disabled=chat_disabled,
