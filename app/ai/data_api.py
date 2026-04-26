@@ -129,7 +129,6 @@ def generate_modelling_plan(
 
     validation = validate_modelling_plan(markdown, metadata, active_inputs=inputs)
     if not validation.valid:
-        append_chat_message("configuration", "assistant", markdown)
         return {
             "ok": False,
             "code": "invalid_metadata",
@@ -140,17 +139,11 @@ def generate_modelling_plan(
         }
 
     store_generated_plan(markdown=markdown, metadata=validation.metadata)
-    workflow = append_chat_message(
-        "configuration",
-        "assistant",
-        markdown,
-        metadata={"kind": "modelling_plan", **validation.metadata},
-    )
     return {
         "ok": True,
         "markdown": markdown,
         "metadata": validation.metadata,
-        "workflow": workflow,
+        "workflow": get_workflow_state(),
     }
 
 
