@@ -286,27 +286,26 @@ _MODEL_GRID = [
 ]
 
 
+_MODEL_CHK_SYNC_KEY = "_model_chk_sync"
+
+
 def _render_model_cards(selected_models: list[str]) -> list[str]:
+    fingerprint = tuple(sorted(selected_models))
+    if st.session_state.get(_MODEL_CHK_SYNC_KEY) != fingerprint:
+        for row in _MODEL_GRID:
+            for model_id in row:
+                st.session_state[f"model_chk_{model_id}"] = model_id in selected_models
+        st.session_state[_MODEL_CHK_SYNC_KEY] = fingerprint
+
+    result = []
     for row_models in _MODEL_GRID:
         cols = st.columns(len(row_models))
         for col, model_id in zip(cols, row_models):
             label = MODEL_LABELS.get(model_id, model_id)
             with col:
-                is_selected = model_id in selected_models
-                if st.button(
-                    label,
-                    key=f"model_btn_{model_id}",
-                    width="stretch",
-                    type="primary" if is_selected else "secondary",
-                    help=MODEL_HELP.get(model_id, ""),
-                ):
-                    if is_selected:
-                        selected_models = [m for m in selected_models if m != model_id]
-                    else:
-                        selected_models = selected_models + [model_id]
-                    update_active_inputs({"selected_models": selected_models})
-                    st.rerun()
-    return selected_models
+                if st.checkbox(label, key=f"model_chk_{model_id}", help=MODEL_HELP.get(model_id, "")):
+                    result.append(model_id)
+    return result
 
 
 def _render_constraints(
