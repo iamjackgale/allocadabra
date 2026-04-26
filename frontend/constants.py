@@ -89,7 +89,7 @@ PER_MODEL_REVIEW_SECTIONS = {
 SECTION_HELP = {
     "summary_metrics": "Compare model outputs side by side using shared performance and risk metrics.",
     "allocation_weights": "Compare the final optimized asset weights across successful models.",
-    "allocation_over_time": "V1 repeats each model's final optimized weights across the 365-day window.",
+    "allocation_over_time": "Optimal weights re-calculated monthly over the past 12 months.",
     "cumulative_performance": "Compounded portfolio return path from the modelled daily return series.",
     "drawdown": "Peak-to-trough decline path derived from the modelled cumulative performance.",
     "rolling_volatility": "Annualized rolling 30-day volatility from the modelled portfolio returns.",
