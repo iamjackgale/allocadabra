@@ -138,10 +138,28 @@ def apply_theme(phase: str) -> None:
           padding: 0 0 0.5rem 0;
         }}
 
-        /* Right-align the dark mode toggle to match the panel right edge */
-        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] {{
-          align-items: flex-end !important;
-          margin-left: 100px !important;
+        /* Dark mode toggle: pin to right edge of header, transparent appearance */
+        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) {{
+          position: relative !important;
+        }}
+
+        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child {{
+          position: absolute !important;
+          right: 0 !important;
+          top: 0 !important;
+          width: auto !important;
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+        }}
+
+        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child button {{
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          outline: none !important;
+          color: {text_main} !important;
         }}
 
         /* ── Panel columns via :has() ───────────────────────────────── */
