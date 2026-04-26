@@ -171,11 +171,6 @@ def apply_theme(phase: str) -> None:
           height: calc(100vh - 290px) !important;
         }}
 
-        /* Review body container: fill height below phase label, internal scroll only */
-        [data-testid="stHorizontalBlock"]:has(.alloca-phase) > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"] {{
-          height: calc(100vh - 200px) !important;
-          max-height: none !important;
-        }}
 
         /* Right column (config/review): scrollable container */
         [data-testid="stHorizontalBlock"]:has(.alloca-phase) > [data-testid="column"]:last-child {{
