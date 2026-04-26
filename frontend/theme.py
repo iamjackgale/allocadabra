@@ -131,6 +131,11 @@ def apply_theme(phase: str) -> None:
           padding: 0.3rem 0 0.6rem 0;
         }}
 
+        /* Right-align the dark mode toggle to match the panel right edge */
+        [data-testid="stHorizontalBlock"]:has(.alloca-header-title) > [data-testid="column"]:last-child > [data-testid="stVerticalBlock"] {{
+          align-items: flex-end;
+        }}
+
         /* ── Panel columns via :has() ───────────────────────────────── */
         /* Only columns containing a phase label get the frosted-glass panel style */
         [data-testid="column"]:has(.alloca-phase) {{
