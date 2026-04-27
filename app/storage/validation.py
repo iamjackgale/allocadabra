@@ -9,7 +9,7 @@ from typing import Any
 MIN_ASSETS = 2
 MAX_ASSETS = 10
 MIN_MODELS = 2
-MAX_MODELS = 4
+MAX_MODELS = 3
 
 
 CONSTRAINT_KEYS = {
@@ -138,7 +138,7 @@ def validate_configuration_inputs(inputs: dict[str, Any]) -> ValidationResult:
             ValidationIssue(
                 field="selected_models",
                 code="too_many_models",
-                message="Choose no more than 4 models for comparison.",
+                message="Choose no more than 3 models for comparison.",
             )
         )
 

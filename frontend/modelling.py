@@ -45,7 +45,7 @@ def render_modelling_page(workflow: dict[str, Any]) -> None:
         return
 
     st.markdown('<div class="alloca-panel">', unsafe_allow_html=True)
-    st.markdown('<div class="alloca-phase-center">MODELLING</div>', unsafe_allow_html=True)
+    st.markdown('<div class="alloca-phase">MODELLING</div>', unsafe_allow_html=True)
     st.caption("Do not close or refresh the app while modelling is active.")
 
     if state.get("status") in {"running", "cancel_requested"}:
@@ -74,7 +74,8 @@ def _render_live_modelling_fragment(workflow: dict[str, Any]) -> None:
         )
         st.rerun()
 
-    _render_confirmation_panel()
+    if confirmation_state():
+        _confirmation_dialog()
     _render_plan_preview(workflow)
 
 
@@ -105,7 +106,8 @@ def _render_run_result(workflow: dict[str, Any]) -> None:
                 "This abandons the current modelling run, deletes partial outputs, and returns to Configuration with your previous options selected.",
             )
 
-    _render_confirmation_panel()
+    if confirmation_state():
+        _confirmation_dialog()
     _render_plan_preview(workflow)
 
 
@@ -149,7 +151,7 @@ def _render_live_status(progress_events: list[dict[str, Any]]) -> None:
 
 def _render_interrupted_state() -> None:
     st.markdown('<div class="alloca-panel">', unsafe_allow_html=True)
-    st.markdown('<div class="alloca-phase-center">MODELLING</div>', unsafe_allow_html=True)
+    st.markdown('<div class="alloca-phase">MODELLING</div>', unsafe_allow_html=True)
     st.warning(
         "The previous modelling run was interrupted. You can return to Configuration with your previous options selected, or restart the run."
     )
@@ -168,7 +170,7 @@ def _render_interrupted_state() -> None:
 
 def _render_review_gate() -> None:
     st.markdown('<div class="alloca-panel">', unsafe_allow_html=True)
-    st.markdown('<div class="alloca-phase-center">MODELLING</div>', unsafe_allow_html=True)
+    st.markdown('<div class="alloca-phase">MODELLING</div>', unsafe_allow_html=True)
     st.success("Review artifacts are ready.")
     st.markdown("### Review Results")
     st.caption("Modelling completed. Failed models, if any, will be marked in Review.")
@@ -183,13 +185,16 @@ def _render_plan_preview(workflow: dict[str, Any]) -> None:
     markdown = str(workflow.get("modelling_plan", {}).get("markdown") or "")
     if not markdown:
         return
-    with st.expander("Confirmed modelling plan"):
-        st.markdown(markdown)
+    with st.expander("Confirmed modelling plan", expanded=True):
+        with st.container(height=300, border=False):
+            st.markdown(markdown)
 
 
-def _render_confirmation_panel() -> None:
+@st.dialog("Cancel Modelling")
+def _confirmation_dialog() -> None:
     confirmation = confirmation_state()
-    if not confirmation or confirmation.get("action") != "cancel_modelling":
+    if not confirmation:
+        st.rerun()
         return
     st.warning(confirmation["message"])
     cols = st.columns(2)

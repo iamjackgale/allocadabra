@@ -36,10 +36,6 @@ def render_chat_panel(
 
     st.markdown('<div class="alloca-phase">AI ASSISTANT</div>', unsafe_allow_html=True)
 
-    feedback = get_chat_feedback(mode)
-    if feedback:
-        st.info(feedback)
-
     chat_disabled = chat_failure_count(mode) >= 3
 
     history = st.container(height=620)
@@ -51,6 +47,9 @@ def render_chat_panel(
             role = str(message.get("role") or "assistant")
             with st.chat_message(role):
                 st.markdown(str(message.get("content", "")))
+        feedback = get_chat_feedback(mode)
+        if feedback:
+            st.info(feedback)
 
     retry_message = retry_message_for(mode)
     if retry_message:

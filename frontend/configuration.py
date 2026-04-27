@@ -47,6 +47,27 @@ def render_configuration_panel(workflow: dict[str, Any]) -> None:
         else:
             updated_inputs = render_configuration_form(workflow)
 
+    if in_plan_preview:
+        action_cols = st.columns(3)
+        with action_cols[0]:
+            if st.button("Run", type="primary", width="stretch"):
+                start_modelling_run()
+                st.rerun()
+        with action_cols[1]:
+            if st.button("Reset", width="stretch"):
+                request_confirmation(
+                    "reset_configuration",
+                    "This clears your selected assets, preferences, constraints, generated plan, chats, and outputs.",
+                )
+        with action_cols[2]:
+            if st.button("Reconfigure", width="stretch"):
+                request_confirmation(
+                    "reconfigure_plan",
+                    "This abandons the current plan and returns to Configuration with your previous selections still filled in.",
+                )
+        if confirmation_state():
+            _confirmation_dialog()
+
     if not in_plan_preview:
         action_cols = st.columns([1.3, 1])
         with action_cols[0]:
@@ -61,7 +82,8 @@ def render_configuration_panel(workflow: dict[str, Any]) -> None:
                     "reset_configuration",
                     "This clears your selected assets, preferences, constraints, generated plan, chats, and outputs.",
                 )
-        _render_confirmation_panel()
+        if confirmation_state():
+            _confirmation_dialog()
 
         if generating:
             pending_inputs = st.session_state.pop(_PENDING_INPUTS_KEY, {})
@@ -103,6 +125,7 @@ def render_configuration_form(workflow: dict[str, Any]) -> dict[str, Any]:
     _render_field_issues(issues, "risk_appetite")
 
     st.markdown("##### Selected Models")
+    st.caption("Select 2 or 3 models to compare.")
     selected_models = _render_model_cards(selected_models)
     if selected_models != inputs.get("selected_models"):
         update_active_inputs({"selected_models": selected_models})
@@ -133,29 +156,8 @@ def render_plan_preview(workflow: dict[str, Any]) -> None:
     plan = workflow.get("modelling_plan", {})
     st.markdown("#### Confirm The Modelling Plan")
     st.markdown(str(plan.get("markdown", "")))
-
-    action_cols = st.columns(3)
-    with action_cols[0]:
-        if st.button("Run", type="primary", width="stretch"):
-            start_modelling_run()
-            st.rerun()
-    with action_cols[1]:
-        if st.button("Regenerate", width="stretch"):
-            _handle_generate_plan(dict(workflow.get("user_inputs", {})))
-    with action_cols[2]:
-        if st.button("Reconfigure", width="stretch"):
-            request_confirmation(
-                "reconfigure_plan",
-                "This abandons the current plan and returns to Configuration with your previous selections still filled in.",
-            )
-
-    if st.button("Reset Configuration", width="stretch"):
-        request_confirmation(
-            "reset_configuration",
-            "This clears your selected assets, preferences, constraints, generated plan, chats, and outputs.",
-        )
-
-    _render_confirmation_panel()
+    if st.button("Regenerate", width="stretch"):
+        _handle_generate_plan(dict(workflow.get("user_inputs", {})))
 
 
 def _handle_generate_plan(active_inputs: dict[str, Any]) -> None:
@@ -266,7 +268,7 @@ def _render_selected_assets(selected_assets: list[dict[str, Any]]) -> None:
                             unsafe_allow_html=True,
                         )
                     with btn_col:
-                        if st.button("✕", key=f"remove_{asset['id']}", help="Remove asset"):
+                        if st.button("✕", key=f"remove_{asset['id']}", help="Remove asset", width="stretch"):
                             next_assets = [row for row in selected_assets if row.get("id") != asset["id"]]
                             update_active_inputs({"selected_assets": next_assets})
                             st.rerun()
@@ -305,6 +307,18 @@ _MODEL_GRID = [
 _MODEL_CHK_SYNC_KEY = "_model_chk_sync"
 
 
+def _on_model_change() -> None:
+    """Persist model selection and update sync key immediately on checkbox change."""
+    new_selection = [
+        model_id
+        for row in _MODEL_GRID
+        for model_id in row
+        if st.session_state.get(f"model_chk_{model_id}", False)
+    ]
+    update_active_inputs({"selected_models": new_selection})
+    st.session_state[_MODEL_CHK_SYNC_KEY] = tuple(sorted(new_selection))
+
+
 def _render_model_cards(selected_models: list[str]) -> list[str]:
     fingerprint = tuple(sorted(selected_models))
     if st.session_state.get(_MODEL_CHK_SYNC_KEY) != fingerprint:
@@ -319,7 +333,7 @@ def _render_model_cards(selected_models: list[str]) -> list[str]:
         for col, model_id in zip(cols, row_models):
             label = MODEL_LABELS.get(model_id, model_id)
             with col:
-                if st.checkbox(label, key=f"model_chk_{model_id}", help=MODEL_HELP.get(model_id, "")):
+                if st.checkbox(label, key=f"model_chk_{model_id}", help=MODEL_HELP.get(model_id, ""), on_change=_on_model_change):
                     result.append(model_id)
     return result
 
@@ -440,11 +454,12 @@ def _render_constraints(
     }
 
 
-def _render_confirmation_panel() -> None:
+@st.dialog("Confirm")
+def _confirmation_dialog() -> None:
     confirmation = confirmation_state()
     if not confirmation:
+        st.rerun()
         return
-
     st.warning(confirmation["message"])
     cols = st.columns(2)
     with cols[0]:

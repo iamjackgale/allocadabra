@@ -109,7 +109,7 @@ def render_review_page(workflow: dict[str, Any]) -> None:
     risk = workflow.get("user_inputs", {}).get("risk_appetite") or "Not set"
     with review_col:
         st.markdown('<div class="alloca-phase">REVIEW</div>', unsafe_allow_html=True)
-        with st.container(height=725, border=True):
+        with st.container(height=712, border=True):
             st.markdown(
                 "Compare model outputs against your selected objective and risk appetite. Green/yellow/red rankings compare these models within this run only."
             )
@@ -148,7 +148,8 @@ def render_review_page(workflow: dict[str, Any]) -> None:
                     "start_new_model",
                     "This clears the current configuration, outputs, and Review chat. Download results first if you want to keep them.",
                 )
-        _render_review_confirmation()
+        if confirmation_state():
+            _confirmation_dialog()
 
 
 def _render_review_controls(
@@ -164,7 +165,7 @@ def _render_review_controls(
     download_all = get_download_all_payload()
     model_labels = _model_selector_labels(model_order, failed_models)
     with cols[0]:
-        st.caption(f"Ranked for: {objective} · {risk} risk appetite")
+        st.caption(f"{objective} · {risk} Risk")
         if download_all.get("ok") and download_all.get("path"):
             path = str(download_all["path"])
             st.download_button(
@@ -183,6 +184,7 @@ def _render_review_controls(
             )
 
     with cols[1]:
+        st.markdown('<span class="alloca-review-model-selector" style="position:absolute;visibility:hidden;"></span>', unsafe_allow_html=True)
         if model_labels:
             chosen_label = st.selectbox(
                 "Selected Model",
@@ -527,9 +529,11 @@ def _current_model_label(model_labels: dict[str, str]) -> str:
     return next(iter(model_labels))
 
 
-def _render_review_confirmation() -> None:
+@st.dialog("Confirm")
+def _confirmation_dialog() -> None:
     confirmation = confirmation_state()
     if not confirmation:
+        st.rerun()
         return
     st.warning(confirmation["message"])
     cols = st.columns(2)

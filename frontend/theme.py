@@ -126,8 +126,8 @@ def apply_theme(phase: str) -> None:
 
         /* ── Layout ─────────────────────────────────────────────────── */
         .block-container {{
-          padding-top: 0.5rem;
-          padding-bottom: 2rem;
+          padding-top: calc(0.1rem - 10px);
+          padding-bottom: 1rem;
           max-width: 1380px;
         }}
 
@@ -137,15 +137,15 @@ def apply_theme(phase: str) -> None:
           font-weight: 800;
           letter-spacing: 0.04em;
           color: {text_main};
-          line-height: 1;
+          line-height: 0.9;
           padding: 0.3rem 0 0.1rem 0;
         }}
 
         .alloca-header-subtitle {{
-          font-size: 0.9rem;
+          font-size: 0.8rem;
           font-weight: 400;
           color: {text_main};
-          padding: 0 0 0.5rem 0;
+          padding: 0 0 0rem 0;
           margin-top: -1rem;
         }}
 
@@ -235,6 +235,11 @@ def apply_theme(phase: str) -> None:
           margin-bottom: 0.3rem !important;
         }}
 
+        /* ── Chat message text: justified ──────────────────────────── */
+        [data-testid="stChatMessage"] p {{
+          text-align: justify !important;
+        }}
+
         /* ── Chat message container and input: matching borders ─────── */
         [data-testid="stVerticalBlockBorderWrapper"] {{
           border: 1.5px solid {border_col} !important;
@@ -278,18 +283,49 @@ def apply_theme(phase: str) -> None:
         }}
 
         /* ── Asset chip cards: X button inside bordered container ──────── */
+        /* Specificity must beat panel button rule (0,3,1); these are (0,4,1)/(0,4,2) */
         [data-testid="stVerticalBlockBorderWrapper"]:has(.alloca-chip-card) {{
           padding: 0.45rem 0.65rem !important;
         }}
 
-        [data-testid="stVerticalBlockBorderWrapper"]:has(.alloca-chip-card) [data-testid="stButton"] button {{
-          width: 1.5rem !important;
-          height: 1.5rem !important;
-          min-height: 1.5rem !important;
+        [data-testid="column"]:has(.alloca-phase) [data-testid="stVerticalBlockBorderWrapper"]:has(.alloca-chip-card) button {{
+          height: 1.3rem !important;
+          min-height: 1.3rem !important;
+          max-height: 1.3rem !important;
           padding: 0 !important;
-          border-radius: 50% !important;
-          font-size: 0.72rem !important;
+          border-radius: 6px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          overflow: hidden !important;
+          font-size: 0.45rem !important;
+        }}
+
+        [data-testid="column"]:has(.alloca-phase) [data-testid="stVerticalBlockBorderWrapper"]:has(.alloca-chip-card) button > div {{
+          padding: 0 !important;
+          margin: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 100% !important;
+          height: 100% !important;
+          font-size: 0.45rem !important;
+        }}
+
+        [data-testid="column"]:has(.alloca-phase) [data-testid="stVerticalBlockBorderWrapper"]:has(.alloca-chip-card) button p,
+        [data-testid="column"]:has(.alloca-phase) [data-testid="stVerticalBlockBorderWrapper"]:has(.alloca-chip-card) button * {{
+          font-size: 0.45rem !important;
+          margin: 0 !important;
+          padding: 0 !important;
           line-height: 1 !important;
+          text-align: center !important;
+        }}
+
+        /* ── Review model selector: white box ──────────────────────── */
+        [data-testid="column"]:has(.alloca-review-model-selector) [data-testid="stSelectbox"] > div > div {{
+          background: white !important;
+          border: 1px solid rgba(18, 24, 40, 0.25) !important;
+          border-radius: 8px !important;
         }}
 
         /* ── Chat avatar colours ───────────────────────────────────── */
@@ -388,6 +424,7 @@ def apply_theme(phase: str) -> None:
     )
 
 
+
 def render_header() -> None:
     """Render the Allocadabra brand logo and subtitle."""
     from frontend.runtime import get_dark_mode
@@ -432,8 +469,8 @@ def render_footer() -> None:
         st.markdown(
             """
             <div class="alloca-footer">
-              Experimental project produced for educational purposes only. No warranty as to correctness. Licence: MIT<br/>
-              &copy; 2026 <a href="https://jackgale.uk" target="_blank">Jack Harry Gale</a>
+              Experimental project produced for educational purposes only. No warranty as to correctness.<br/>
+              Licence: MIT | 2026 | <a href="https://jackgale.uk" target="_blank">Jack Harry Gale</a>
             </div>
             """,
             unsafe_allow_html=True,
