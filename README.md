@@ -151,6 +151,17 @@ This project is a solo submission for The Accountant Quits [Vibe Coding Hackatho
 
 ---
 
+## More Links
+
+To learn more about the model, checkout:
+- [Agent Plan](docs/plan.md) - full agentic plan for app build, used to develop specs and prompts for different agents and give all agents context of the big picture idea.
+- [Tasks List](docs/tasks.md) - a full summary of all the core agentic tasks that were assigned and completed throughout the initial hackathon build.
+- [Hackathon Submission Video](https://www.youtube.com/watch?v=P_582FmJzDY) - comprehensive walkthrough of the project and using the app.
+- [Crypto Treasury Management Course](https://www.theaccountantquits.com/crypto-treasury-management-academy) - home page for the course that this project was built to support. Sign up to dive deeper into this and related topics on crypto treasury management.
+- [X Page](https://x.com/iamjackgale) - to reach out and give me some public feedback.
+
+---
+
 ## Author
 
 jackgale.eth
